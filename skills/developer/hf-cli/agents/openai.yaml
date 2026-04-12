@@ -1,0 +1,6 @@
+interface:
+  display_name: "HF CLI"
+  short_description: "Manage Hub models, datasets, and repos"
+  icon_small: "./assets/app-icon.png"
+  icon_large: "./assets/app-icon.png"
+  default_prompt: "Use $hf-cli to authenticate with Hugging Face, inspect the local environment, and download or upload the repo assets I need."

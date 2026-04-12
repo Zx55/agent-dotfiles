@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Reminders"
+  short_description: "Manage synced Apple Reminders on macOS"
+  icon_small: "./assets/apple-reminders-small.png"
+  icon_large: "./assets/apple-reminders.png"
+  default_prompt: "Use $apple-reminders to list, add, or update reminders in Apple Reminders on this Mac."

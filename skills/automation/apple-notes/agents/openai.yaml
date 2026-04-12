@@ -1,0 +1,6 @@
+interface:
+  display_name: "Apple Notes"
+  short_description: "Manage synced Apple Notes on macOS"
+  icon_small: "./assets/apple-notes-small.png"
+  icon_large: "./assets/apple-notes.png"
+  default_prompt: "Use $apple-notes to create, search, or update notes in Apple Notes on this Mac."

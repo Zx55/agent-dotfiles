@@ -1,0 +1,6 @@
+interface:
+  display_name: "p5.js"
+  short_description: "Build creative coding sketches in the browser"
+  icon_small: "./assets/p5js-small.png"
+  icon_large: "./assets/p5js.png"
+  default_prompt: "Use $p5js to build a polished browser-based sketch or interactive visual for this task."

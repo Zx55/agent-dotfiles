@@ -1,0 +1,7 @@
+interface:
+  display_name: "Creative Ideation"
+  short_description: "Generate concrete, buildable creative ideas"
+  icon_small: "./assets/creative-ideation-small.png"
+  icon_large: "./assets/creative-ideation.png"
+  brand_color: "#bd4c3a"
+  default_prompt: "Use $creative-ideation to propose a small set of strong, buildable ideas tailored to the user constraints."

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Telegram Codex Bot"
+  short_description: "Set up Codex on Telegram with cc-connect"
+  icon_small: "./assets/telegram-codex-bot-small.png"
+  icon_large: "./assets/telegram-codex-bot.png"
+  default_prompt: "Use $telegram-codex-bot to set up or troubleshoot cc-connect so Telegram can control a local Codex agent on macOS."

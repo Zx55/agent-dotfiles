@@ -1,0 +1,6 @@
+interface:
+  display_name: "ASCII Art"
+  short_description: "Create banners and text-native ASCII art"
+  icon_small: "./assets/ascii-art-small.png"
+  icon_large: "./assets/ascii-art.png"
+  default_prompt: "Use $ascii-art to create readable, stylish ASCII art for this task and place the final text in the right file or response."

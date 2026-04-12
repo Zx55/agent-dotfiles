@@ -1,0 +1,6 @@
+interface:
+  display_name: "Gradio UI"
+  short_description: "Build Gradio demos and web UIs"
+  icon_small: "./assets/app-icon.png"
+  icon_large: "./assets/app-icon.png"
+  default_prompt: "Use $gradio-ui to build or update a Gradio demo with the right components, events, and layout for this task."

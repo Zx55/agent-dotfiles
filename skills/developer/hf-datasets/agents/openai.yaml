@@ -1,0 +1,6 @@
+interface:
+  display_name: "HF Datasets"
+  short_description: "Explore datasets with the Viewer API"
+  icon_small: "./assets/app-icon.png"
+  icon_large: "./assets/app-icon.png"
+  default_prompt: "Use $hf-datasets to inspect a Hugging Face dataset, preview rows, and fetch the metadata, splits, or parquet links I need."
