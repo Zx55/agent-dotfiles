@@ -1,8 +1,8 @@
-# Config Reference
+# Config reference
 
 Use this reference when creating or reviewing `~/.cc-connect/config.toml` for `Codex + Telegram`.
 
-## Minimal Working Config
+## Minimal working config
 
 ```toml
 [log]
@@ -28,7 +28,7 @@ token = "your-telegram-bot-token"
 allow_from = "123456789"
 ```
 
-## Field Guidance
+## Field guide
 
 ### `name`
 
@@ -73,7 +73,7 @@ Use the Telegram bot token from `@BotFather`.
 
 ### `allow_from`
 
-Safer production pattern:
+Safer rollout pattern:
 
 1. Start with `allow_from = "*"` only if needed for first bootstrap.
 2. Once the bot is online, send `/whoami` from Telegram.
@@ -81,7 +81,7 @@ Safer production pattern:
 
 This prevents other Telegram users from interacting with the bot.
 
-## Validation Pattern
+## Validate in the foreground
 
 Before installing the daemon, validate the config in the foreground:
 
@@ -112,7 +112,7 @@ platform started
 cc-connect is running
 ```
 
-## Config Pitfalls
+## Common pitfalls
 
 ### Local `config.toml` interference
 
@@ -129,4 +129,4 @@ A wide working directory can make the bot feel powerful at first, but it increas
 
 ### Locking down `allow_from` too early
 
-If the bot is online but ignoring the user, confirm the Telegram numeric id is correct.
+If the bot is online but ignoring the user, confirm that the Telegram numeric id is correct.

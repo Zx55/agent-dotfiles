@@ -1,8 +1,8 @@
-# macOS Daemon And Proxy Reference
+# macOS daemon and proxy reference
 
 Use this reference when moving from a working foreground setup to a durable background service on macOS.
 
-## Install The Daemon
+## Install the daemon
 
 Use the directory that contains `config.toml`:
 
@@ -22,7 +22,7 @@ The LaunchAgent is usually created at:
 ~/Library/LaunchAgents/com.cc-connect.service.plist
 ```
 
-## Why `--work-dir` Matters
+## Why `--work-dir` matters
 
 For daemon installation, `cc-connect` is more reliable when given the config directory instead of the config file path.
 
@@ -40,7 +40,7 @@ cc-connect --config ~/.cc-connect/config.toml daemon install
 
 Foreground runs often accept `--config`, but daemon setup can behave differently.
 
-## What The LaunchAgent Does
+## What the LaunchAgent does
 
 The generated plist typically enables:
 
@@ -49,7 +49,7 @@ The generated plist typically enables:
 
 This means the bot is login-start, not necessarily pre-login system-start.
 
-## Foreground vs Daemon Proxy Behavior
+## Foreground vs daemon proxy behavior
 
 Do not assume the user already has shell helpers, aliases, or wrapper commands for proxying.
 
@@ -63,9 +63,9 @@ Interactive shell helpers, aliases, or wrapper commands can help in a terminal s
 
 They do not automatically carry into `launchd`.
 
-If Telegram requires a proxy, persist proxy environment variables into the LaunchAgent plist.
+If Telegram requires a proxy, persist proxy environment variables in the LaunchAgent plist.
 
-## Persist Proxy Into The LaunchAgent
+## Persist proxy variables in the LaunchAgent
 
 Example for a local proxy on `127.0.0.1:7890`:
 
@@ -81,11 +81,11 @@ plutil -replace EnvironmentVariables.all_proxy   -string socks5://127.0.0.1:7890
 plutil -replace EnvironmentVariables.ALL_PROXY   -string socks5://127.0.0.1:7890 ~/Library/LaunchAgents/com.cc-connect.service.plist
 ```
 
-The lowercase and uppercase variants are both worth setting because different tools and libraries may read different names.
+Set both lowercase and uppercase variants because different tools and libraries may read different names.
 
 Replace the example address with the user's actual proxy values.
 
-## Reload The LaunchAgent
+## Reload the LaunchAgent
 
 After editing the plist:
 
@@ -102,7 +102,7 @@ cc-connect daemon status --work-dir ~/.cc-connect
 tail -n 80 ~/.cc-connect/logs/cc-connect.log
 ```
 
-## Daily Service Commands
+## Daily service commands
 
 ```bash
 cc-connect daemon status --work-dir ~/.cc-connect
@@ -114,8 +114,8 @@ cc-connect daemon restart --work-dir ~/.cc-connect
 
 If `restart` behaves oddly, use `stop` and `start` separately.
 
-## Dependency Reminder
+## Remember the proxy dependency
 
-Persisting proxy settings into the plist solves only the `cc-connect` side.
+Persisting proxy settings in the plist solves only the `cc-connect` side.
 
 The proxy program itself must still be running and listening on the configured local address after login.

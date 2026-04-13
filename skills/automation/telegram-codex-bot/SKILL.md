@@ -7,65 +7,58 @@ description: Install a Telegram bot that controls a local Codex agent through cc
 
 Install `cc-connect` on macOS so Telegram can talk to a local `Codex` CLI, then make the bot durable enough to survive logins and restarts.
 
-Keep the main workflow in this file. Load the reference files only when their details are needed:
+## Core workflow
 
-- For `config.toml` structure and field choices, read [references/config.md](references/config.md).
-- For macOS daemon setup and proxy persistence, read [references/daemon-and-proxy.md](references/daemon-and-proxy.md).
-- For verification steps and common failures, read [references/troubleshooting.md](references/troubleshooting.md).
+### Confirm prerequisites
 
-## Core Workflow
+Make sure `codex` and `npm` are installed. Confirm the machine can either reach `api.telegram.org` directly or has a working proxy path.
 
-1. Confirm prerequisites.
-   Make sure `codex`, `npm`, and `cc-connect` are installed. Confirm the machine can either reach `api.telegram.org` directly or has a working proxy path.
+### Install `cc-connect`
 
-2. Build the minimal `cc-connect` config.
-   Create one `[[projects]]` entry with `type = "codex"` and one Telegram platform entry. Prefer a narrow `work_dir` instead of a broad directory.
+Install `cc-connect` before touching config or `launchd`. Prefer the shortest stable path for Telegram + Codex on macOS:
 
-3. Start with safe agent permissions.
-   Prefer `mode = "suggest"` for the first working version. Only recommend `auto-edit`, `full-auto`, or `yolo` after the user understands the tradeoffs.
+```bash
+npm install -g cc-connect
+cc-connect --version
+```
 
-4. Validate in the foreground first.
-   Start `cc-connect` manually before installing the daemon. This isolates config and Telegram issues from launchd issues.
+Only switch to GitHub Releases or build-from-source instructions if `npm install -g cc-connect` is blocked or the user explicitly wants a non-`npm` install path. For those cases, read [`cc-connect` INSTALL.md](https://github.com/chenhg5/cc-connect/blob/main/INSTALL.md).
 
-5. Lock down Telegram access after bootstrap.
-   If needed, begin with `allow_from = "*"`, then get the user's Telegram numeric id with `/whoami` and replace it with that id.
+### Build the minimal config
 
-6. Install the daemon only after the foreground test passes.
-   On macOS, prefer `cc-connect daemon install --work-dir ~/.cc-connect`. Do not assume `--config ~/.cc-connect/config.toml` behaves the same during daemon install.
+Create one `[[projects]]` entry with `type = "codex"` and one Telegram platform entry. Prefer a narrow `work_dir` instead of a broad directory. For exact `config.toml` structure, field choices, and minimal examples, read [references/config.md](references/config.md).
 
-7. Treat proxy setup as a service concern, not just a shell concern.
-   First ask whether the host needs a proxy for Telegram, what the proxy address is, and how the user normally enables it. If Telegram needs a proxy, foreground testing can use the user's normal method or inline environment variables, but the background service still needs proxy environment variables persisted in the LaunchAgent.
+### Validate in the foreground
 
-8. Verify from Telegram and from the host.
-   Use `/status` in Telegram and check daemon status plus logs on the host. A bot can appear installed but still fail during Telegram auth.
+Prefer `mode = "suggest"` for the first working version. Start `cc-connect` manually before installing the daemon so config and Telegram issues stay separate from `launchd` issues. For verification details and common failures, read [references/troubleshooting.md](references/troubleshooting.md).
 
-## macOS Install Focus
+### Tighten Telegram access after bootstrap
 
-- Keep the main path install-oriented. Prefer the shortest sequence that gets the bot online, verified in Telegram, and durable through `launchd`.
-- Keep the initial config minimal. Explain only the tradeoffs that block installation, such as `work_dir`, `mode`, or whether Telegram needs a proxy.
-- Treat proxy persistence as part of installation on macOS when the host cannot reach Telegram directly.
-- Move debugging branches, failure analysis, and repeated edge-case handling to [references/troubleshooting.md](references/troubleshooting.md).
+If needed, begin with `allow_from = "*"`, then get the user's Telegram numeric id with `/whoami` and replace it with that id.
 
-## Reference Map
+### Install the daemon
 
-- `references/config.md`
-  Use for minimal and tightened `config.toml` examples, field explanations, and rollout advice for `allow_from`, `work_dir`, and `mode`.
+Only install the daemon after the foreground test passes. On macOS, prefer `cc-connect daemon install --work-dir ~/.cc-connect`. Do not assume `--config ~/.cc-connect/config.toml` behaves the same during daemon install.
 
-- `references/daemon-and-proxy.md`
-  Use for macOS `launchd`, `daemon install --work-dir`, proxy persistence in the LaunchAgent plist, and reload commands.
+Treat proxy setup as a service concern, not just a shell concern. If Telegram needs a proxy, foreground testing can use the user's normal method or inline environment variables, but the background service still needs proxy environment variables persisted in the LaunchAgent. For `launchd`, proxy persistence, reload commands, and host-side verification, read [references/daemon-and-proxy.md](references/daemon-and-proxy.md).
 
-- `references/troubleshooting.md`
-  Use for `curl` checks, log inspection, startup signatures, and the most common failure patterns.
+## macOS install focus
 
-## Output Expectations
+- Keep the main path install-oriented and minimal.
+- Do not move to config or daemon setup until `cc-connect` is installed and `cc-connect --version` works.
+- Link to deeper references only at the step where they become relevant.
+- Treat proxy persistence as part of setup only when the host actually needs a proxy for Telegram.
+- Push debugging branches and edge cases into [references/troubleshooting.md](references/troubleshooting.md).
+
+## Output expectations
 
 When using this skill, produce:
 
-- a minimal working config first
-- a clear foreground validation step
-- a daemon setup path only after the foreground path succeeds
-- proxy persistence guidance only when the network actually requires it
-- a macOS-specific install path that ends with a working `launchd` service
-- troubleshooting guidance only by linking or switching to `references/troubleshooting.md` when the install path stops being straightforward
+- an explicit `cc-connect` install step and version check
+- a minimal working config
+- a foreground validation step
+- a daemon setup path that starts only after the foreground path succeeds
+- proxy guidance only when the network actually requires it
+- a clear handoff to the relevant reference when the main path stops being straightforward
 
 Keep recommendations concrete. Prefer exact commands, exact paths, and a small number of decision branches.

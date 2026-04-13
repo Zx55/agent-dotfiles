@@ -2,7 +2,7 @@
 
 Use this reference when `cc-connect`, Telegram, and Codex do not all behave as expected.
 
-## Fast Triage
+## Fast triage
 
 Check these in order:
 
@@ -12,27 +12,27 @@ Check these in order:
 4. Does the LaunchAgent include proxy variables if the host needs a proxy?
 5. Is `allow_from` preventing the user from talking to the bot?
 
-## Quick Commands
+## Quick commands
 
-### Daemon status
+### Check daemon status
 
 ```bash
 cc-connect daemon status --work-dir ~/.cc-connect
 ```
 
-### Logs
+### Tail logs
 
 ```bash
 tail -n 80 ~/.cc-connect/logs/cc-connect.log
 ```
 
-### Telegram reachability without proxy
+### Check Telegram reachability without proxy
 
 ```bash
 curl -I --max-time 15 https://api.telegram.org
 ```
 
-### Telegram reachability with proxy
+### Check Telegram reachability with proxy
 
 Ask the user for the proxy address if it is not already known.
 
@@ -51,7 +51,7 @@ Replace the example values with the user's actual proxy settings.
 plutil -p ~/Library/LaunchAgents/com.cc-connect.service.plist
 ```
 
-## Healthy Startup Signature
+## Healthy startup signature
 
 Good logs usually include:
 
@@ -63,7 +63,7 @@ engine started
 cc-connect is running
 ```
 
-## Common Failure Patterns
+## Common failure patterns
 
 ### Foreground works, daemon fails
 
