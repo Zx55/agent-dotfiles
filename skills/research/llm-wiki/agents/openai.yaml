@@ -1,0 +1,6 @@
+interface:
+  display_name: "LLM Wiki"
+  short_description: "Capture and maintain a personal research wiki"
+  icon_small: "./assets/llm-wiki-small.png"
+  icon_large: "./assets/llm-wiki.png"
+  default_prompt: "Use $llm-wiki to capture, query, lint, or maintain the personal markdown-first research wiki, and follow the skill references as needed."
