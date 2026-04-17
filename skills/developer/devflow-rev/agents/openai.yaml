@@ -1,0 +1,6 @@
+interface:
+  display_name: "Reviewer"
+  short_description: "Design-first code and architecture review with durable findings"
+  icon_small: "./assets/devflow-rev.png"
+  icon_large: "./assets/devflow-rev.png"
+  default_prompt: "Use $devflow-rev to review this work against the design first, then the implementation, and present findings with clear repair directions."

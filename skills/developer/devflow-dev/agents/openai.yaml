@@ -1,0 +1,6 @@
+interface:
+  display_name: "Developer"
+  short_description: "Plan-first implementation for feature work and review-driven fixes"
+  icon_small: "./assets/devflow-dev.png"
+  icon_large: "./assets/devflow-dev.png"
+  default_prompt: "Use $devflow-dev to read the project docs, analyze the task, and produce an explicit step-by-step plan before making any code or document changes."

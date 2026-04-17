@@ -1,0 +1,6 @@
+interface:
+  display_name: "Architect"
+  short_description: "Bootstrap project docs, boundaries, and development rules before coding"
+  icon_small: "./assets/devflow-arch.png"
+  icon_large: "./assets/devflow-arch.png"
+  default_prompt: "Use $devflow-arch to define the documentation baseline, architectural boundaries, workflow rules, and development guidance for this project before implementation begins."

@@ -10,6 +10,7 @@ level = "info"
 
 [[projects]]
 name = "my-codex"
+admin_from = "123456789"
 
 [projects.agent]
 type = "codex"
@@ -81,6 +82,14 @@ Safer rollout pattern:
 
 This prevents other Telegram users from interacting with the bot.
 
+### `admin_from`
+
+`admin_from` controls privileged commands such as `/dir`, `/shell`, `/restart`, `/upgrade`, and `/commands addexec`.
+
+Set it explicitly if the user should be able to run those commands.
+
+Use the same Telegram numeric id pattern as `allow_from`. Send `/whoami` or `/status` to the bot to get the id.
+
 ## Validate in the foreground
 
 Before installing the daemon, validate the config in the foreground:
@@ -130,3 +139,7 @@ A wide working directory can make the bot feel powerful at first, but it increas
 ### Locking down `allow_from` too early
 
 If the bot is online but ignoring the user, confirm that the Telegram numeric id is correct.
+
+### Privileged commands blocked because `admin_from` is unset
+
+If normal chat works but `/dir` or `/shell` is rejected, check whether `admin_from` is missing from the project config.

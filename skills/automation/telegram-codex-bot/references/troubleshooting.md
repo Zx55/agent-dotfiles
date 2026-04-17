@@ -11,6 +11,7 @@ Check these in order:
 3. Do the logs show a Telegram auth failure or a later-stage issue?
 4. Does the LaunchAgent include proxy variables if the host needs a proxy?
 5. Is `allow_from` preventing the user from talking to the bot?
+6. Is `admin_from` missing for privileged Telegram commands?
 
 ## Quick commands
 
@@ -98,6 +99,41 @@ Action:
 
 - check `/whoami`
 - compare it with `allow_from` in `~/.cc-connect/config.toml`
+
+### Bot can chat, but `/dir` or `/shell` is blocked
+
+Most likely cause:
+
+- `admin_from` is not set for that project
+
+Typical log pattern:
+
+```text
+admin_from is not set — privileged commands are blocked
+```
+
+Action:
+
+- send `/whoami` or `/status` to get the Telegram numeric id
+- set `admin_from` in the matching `[[projects]]` entry
+- restart the foreground process or daemon after saving config
+
+### Bot can read, but cannot write files
+
+Most likely cause:
+
+- the current session is still in `suggest` mode
+
+Background:
+
+- this skill uses `mode = "suggest"` as the default starting point
+- in that mode, the bot can inspect and propose changes, but file edits still require approval
+
+Action:
+
+- switch modes in Telegram with `/mode auto-edit` or `/mode full-auto`
+- make the needed file changes
+- switch back to `/mode suggest` after the write task is done
 
 ### Daemon status looks running, but the service is crash-looping
 
