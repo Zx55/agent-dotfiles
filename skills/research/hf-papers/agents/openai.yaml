@@ -1,6 +1,0 @@
-interface:
-  display_name: "HF Papers"
-  short_description: "Read and analyze AI research papers"
-  icon_small: "./assets/app-icon.png"
-  icon_large: "./assets/app-icon.png"
-  default_prompt: "Use $hf-papers to look up the referenced Hugging Face paper or arXiv entry, extract the key metadata, and summarize the main ideas clearly."

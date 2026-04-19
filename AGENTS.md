@@ -12,13 +12,38 @@
 - `proxy_on` and `proxy_off` are aliases defined in `~/.zshrc`.
 - After the network-dependent task is finished, turn the proxy off with `proxy_off` unless there is a clear reason to keep it enabled.
 
+## Collaboration / Planning
+
+- For non-trivial work, do not start implementing substantial changes without first discussing the approach.
+- Before substantial implementation, present the proposed architecture, implementation plan, main tradeoffs, and design rationale.
+- Wait for explicit user approval before proceeding with substantial implementation.
+- For trivial, low-risk tasks, proceed directly and state any assumptions afterward.
+- If a request is materially ambiguous, do not guess silently. Surface the ambiguity, present the main interpretations, and recommend one.
+
 ## Coding / Architecture
 
-- Do not start implementing substantial changes without first discussing the approach.
-- For non-trivial work, first present the proposed architecture, implementation plan, and main tradeoffs.
-- Explain the design rationale before making changes, especially why this approach was chosen over simpler or alternative designs.
-- Wait for explicit user approval before proceeding with substantial implementation.
 - Prefer clean separation of concerns, well-scoped modules, and designs with clear boundaries between responsibilities.
+- Prefer the simplest solution that fully solves the stated problem.
+- Do not add speculative abstractions, configurability, or extensibility unless they are requested or clearly justified by the existing code.
+- If a simpler approach exists than the one implied by the request, say so before coding.
+- Match the surrounding codebase style and conventions unless there is a strong reason not to.
+
+## Change Scope
+
+- Make surgical changes. Touch only what is needed for the request.
+- Do not refactor, reformat, or "improve" adjacent code unless it is directly necessary for the requested change.
+- Clean up only the artifacts created by your own changes.
+- If you notice unrelated issues, dead code, or follow-up opportunities, mention them separately instead of fixing them opportunistically.
+- Every changed line should be traceable to the user's request or to verification required for that request.
+
+## Execution / Verification
+
+- Before substantial work, state the goal, assumptions, and success criteria.
+- For multi-step tasks, provide a short plan where each step includes how success will be verified.
+- Prefer verifiable outcomes over vague completion criteria.
+- When fixing bugs, prefer reproducing the issue first and then verifying the fix.
+- When refactoring, verify behavior before and after.
+- Use tests when appropriate, but do not add heavyweight scaffolding for trivial changes.
 
 ## Knowledge Capture
 

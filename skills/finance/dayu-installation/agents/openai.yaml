@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dayu Installation"
+  short_description: "Install and initialize the Dayu CLI with uv."
+  default_prompt: "Use $dayu-installation to install or update Dayu CLI with uv and initialize a workspace."
