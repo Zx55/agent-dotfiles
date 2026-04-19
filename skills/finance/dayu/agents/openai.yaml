@@ -1,0 +1,4 @@
+interface:
+  display_name: "Dayu Research"
+  short_description: "Use Dayu for dialogue-first public-company research."
+  default_prompt: "Use $dayu to research a listed company in dialogue form, downloading US filings when useful and asking for uploads for A-share or Hong Kong materials."
