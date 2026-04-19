@@ -90,7 +90,7 @@ After installation or update:
 
 - rerun [scripts/dayu_doctor.sh](scripts/dayu_doctor.sh)
 - verify `dayu-cli --help`
-- verify `dayu-render --help`
+- verify `dayu-render` is executable and responds with usage text when invoked without arguments
 - verify the target workspace has a populated `config/` directory after init
 
 Warn, but do not fail setup, if `pandoc` or Google Chrome is missing. Those are only needed for some render flows.
@@ -108,6 +108,7 @@ These steps depend on GitHub and Astral downloads. If a network command hangs, t
 
 - Read [references/install.md](references/install.md) for the standard install and update path.
 - Read [references/troubleshooting.md](references/troubleshooting.md) when setup fails or the doctor reports a broken state.
+- Read [references/openai_compatible_provider.md](references/openai_compatible_provider.md) when the user's API key or endpoint is OpenAI-compatible but not OpenAI itself.
 
 ## Output Expectations
 

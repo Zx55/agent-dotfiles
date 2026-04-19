@@ -5,6 +5,7 @@ set -euo pipefail
 REPO_API_BASE="https://api.github.com/repos/noho/dayu-agent/releases"
 DAYU_PACKAGE_NAME="dayu-agent"
 DEFAULT_WORKSPACE="$HOME/.dayu/workspace"
+TEMP_UV_CACHE_DIR=0
 
 usage() {
   cat <<'EOF'
@@ -35,8 +36,29 @@ die() {
   exit 1
 }
 
+cleanup() {
+  if [[ "${TEMP_UV_CACHE_DIR:-0}" -eq 1 ]] && [[ -n "${UV_CACHE_DIR:-}" ]]; then
+    rm -rf "$UV_CACHE_DIR"
+  fi
+}
+
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || die "Missing required command: $1"
+}
+
+setup_uv_cache_dir() {
+  if [[ -n "${UV_CACHE_DIR:-}" ]]; then
+    return
+  fi
+
+  if mkdir -p "$HOME/.cache/uv" >/dev/null 2>&1 && [[ -w "$HOME/.cache/uv" ]]; then
+    return
+  fi
+
+  UV_CACHE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/dayu-uv-cache.XXXXXX")"
+  export UV_CACHE_DIR
+  TEMP_UV_CACHE_DIR=1
+  warn "uv cache directory is not writable; using temporary UV_CACHE_DIR=$UV_CACHE_DIR"
 }
 
 parse_args() {
@@ -174,9 +196,19 @@ resolve_executable() {
 verify_dayu_commands() {
   DAYU_CLI_BIN="$(resolve_executable dayu-cli)" || die "dayu-cli was not found after installation"
   DAYU_RENDER_BIN="$(resolve_executable dayu-render)" || die "dayu-render was not found after installation"
+  local render_output render_status
 
   "$DAYU_CLI_BIN" --help >/dev/null || die "dayu-cli --help failed after installation"
-  "$DAYU_RENDER_BIN" --help >/dev/null || die "dayu-render --help failed after installation"
+  set +e
+  render_output="$("$DAYU_RENDER_BIN" 2>&1)"
+  render_status=$?
+  set -e
+  if [[ "$render_status" -eq 0 ]]; then
+    return
+  fi
+  printf '%s\n' "$render_output" | grep -q 'Usage:' \
+    && printf '%s\n' "$render_output" | grep -Eq 'input_markdown|dayu-render' \
+    || die "dayu-render did not return expected usage text after installation"
 }
 
 run_init_if_requested() {
@@ -242,8 +274,10 @@ print_summary() {
 }
 
 main() {
+  trap cleanup EXIT
   parse_args "$@"
   detect_uv
+  setup_uv_cache_dir
   ensure_managed_python
   resolve_release_metadata
   install_dayu_tool

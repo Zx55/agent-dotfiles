@@ -3,6 +3,7 @@
 set -euo pipefail
 
 DEFAULT_WORKSPACE="$HOME/.dayu/workspace"
+TEMP_UV_CACHE_DIR=0
 
 usage() {
   cat <<'EOF'
@@ -28,6 +29,27 @@ warn() {
 fail() {
   printf '[dayu-doctor][error] %s\n' "$*" >&2
   STATUS=1
+}
+
+cleanup() {
+  if [[ "${TEMP_UV_CACHE_DIR:-0}" -eq 1 ]] && [[ -n "${UV_CACHE_DIR:-}" ]]; then
+    rm -rf "$UV_CACHE_DIR"
+  fi
+}
+
+setup_uv_cache_dir() {
+  if [[ -n "${UV_CACHE_DIR:-}" ]]; then
+    return
+  fi
+
+  if mkdir -p "$HOME/.cache/uv" >/dev/null 2>&1 && [[ -w "$HOME/.cache/uv" ]]; then
+    return
+  fi
+
+  UV_CACHE_DIR="$(mktemp -d "${TMPDIR:-/tmp}/dayu-uv-cache.XXXXXX")"
+  export UV_CACHE_DIR
+  TEMP_UV_CACHE_DIR=1
+  warn "uv cache directory is not writable; using temporary UV_CACHE_DIR=$UV_CACHE_DIR"
 }
 
 parse_args() {
@@ -87,9 +109,11 @@ resolve_executable() {
 }
 
 check_uv() {
+  setup_uv_cache_dir
+
   if command -v uv >/dev/null 2>&1; then
     UV_BIN="$(command -v uv)"
-    note "uv: $UV_BIN ($("$UV_BIN" --version))"
+    note "uv: $UV_BIN ($("$UV_BIN" --version 2>/dev/null))"
   elif [[ -x "$HOME/.local/bin/uv" ]]; then
     UV_BIN="$HOME/.local/bin/uv"
     warn "uv is installed at $UV_BIN but is not on PATH"
@@ -112,8 +136,14 @@ check_dayu_install() {
 
   if [[ -n "${UV_BIN:-}" ]]; then
     local tool_list
-    tool_list="$("$UV_BIN" tool list --show-version-specifiers --show-python 2>/dev/null || true)"
-    if printf '%s\n' "$tool_list" | grep -q 'dayu-agent'; then
+    local tool_list_status
+    set +e
+    tool_list="$("$UV_BIN" tool list --show-version-specifiers --show-python 2>&1)"
+    tool_list_status=$?
+    set -e
+    if [[ "$tool_list_status" -ne 0 ]]; then
+      warn "could not inspect uv tool list; continuing with executable checks"
+    elif printf '%s\n' "$tool_list" | grep -q 'dayu-agent'; then
       note "uv tool list contains dayu-agent"
     else
       warn "uv tool list does not show dayu-agent"
@@ -130,9 +160,19 @@ check_dayu_install() {
   fi
 
   if render_bin="$(resolve_executable dayu-render)"; then
+    local render_output render_status
     note "dayu-render: $render_bin"
-    if ! "$render_bin" --help >/dev/null 2>&1; then
-      fail "dayu-render exists but --help failed"
+    set +e
+    render_output="$("$render_bin" 2>&1)"
+    render_status=$?
+    set -e
+    if [[ "$render_status" -eq 0 ]]; then
+      note "dayu-render invocation succeeded"
+    elif printf '%s\n' "$render_output" | grep -q 'Usage:' \
+      && printf '%s\n' "$render_output" | grep -Eq 'input_markdown|dayu-render'; then
+      note "dayu-render responds with usage text"
+    else
+      fail "dayu-render exists but did not return expected usage text"
     fi
   else
     fail "dayu-render is not available"
@@ -170,6 +210,7 @@ check_optional_dependencies() {
 
 main() {
   STATUS=0
+  trap cleanup EXIT
   parse_args "$@"
 
   note "workspace target: $WORKSPACE"

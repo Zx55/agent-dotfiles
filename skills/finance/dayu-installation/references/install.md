@@ -44,7 +44,7 @@ Healthy setup means:
 - `uv` runs
 - `uv python find --managed-python 3.11` succeeds
 - `dayu-cli --help` succeeds
-- `dayu-render --help` succeeds
+- `dayu-render` is present and returns usage text when invoked without arguments
 - the target workspace has a populated `config/` directory after `init`
 
 ## Optional render dependencies

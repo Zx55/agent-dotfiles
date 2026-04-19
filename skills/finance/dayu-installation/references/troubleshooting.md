@@ -52,6 +52,12 @@ Then verify:
 uv python find --managed-python 3.11
 ```
 
+If `uv` reports cache initialization or permission errors in a restricted environment, rerun the command with a writable cache directory, for example:
+
+```bash
+UV_CACHE_DIR="$(mktemp -d)" uv python find --managed-python 3.11
+```
+
 ## Dayu installed but `dayu-cli` is not found
 
 Check the `uv` tool bin directory:
@@ -82,9 +88,15 @@ If the workspace was initialized before and needs to be rebuilt, rerun init with
 
 ## Render checks fail
 
-`dayu-render --help` should work once the tool is installed. Actual PDF output may still need:
+`dayu-render` currently does not support `--help` in the same way as `dayu-cli`. A healthy install means the binary exists and returns usage text such as `Usage: python render.py <input_markdown> [output_docx]` when invoked without arguments. Actual PDF output may still need:
 
 - `pandoc`
 - Google Chrome
 
 Missing render dependencies should be treated as a follow-up task, not a core install failure, unless the user explicitly asked for PDF rendering during setup.
+
+## OpenAI-compatible provider key or endpoint
+
+If the user's API key or endpoint is for an OpenAI-compatible provider such as Moonshot/Kimi instead of OpenAI itself, `dayu-cli init` may finish successfully but the default model config can still be wrong for real requests.
+
+See [openai_compatible_provider.md](openai_compatible_provider.md) for the post-init configuration pattern.
