@@ -10,9 +10,9 @@ For many single-turn questions, use:
 dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> "<question>"
 ```
 
-Then summarize the answer conversationally.
+Then return Dayu's final answer directly in chat by default.
 
-Important rule:
+## Core rule
 
 - the host prepares the request and relays the result
 - Dayu performs the substantive company analysis
@@ -36,25 +36,57 @@ Default path:
 3. if US-listed and local filings are missing, run `download`
 4. choose `prompt` or `interactive`
 5. let Dayu answer the analytical question
-6. summarize Dayu's answer conversationally
+6. relay Dayu's final answer directly unless the user explicitly asks for a summary or rewrite
 
 Do not append a second host-originated analysis stage after step 5.
 
 ## Waiting rule
 
-When Dayu is running, waiting a few minutes is normal.
-
 For `dayu-cli prompt` in particular:
 
-- 2-3 minutes of runtime can be normal
+### Waiting posture
+
 - do not treat a short silent period as proof of failure
-- do not switch to host-side fallback just because the command feels slow
+- do not use elapsed time by itself as the failure test
+- keep the original `dayu-cli prompt` session open and give it an initial wait window of at least 180 seconds
+- prefer waiting on the original session over opening sidecar sleep commands or replacement runs
+- while `dayu-cli runs` still shows the run as active, do not cancel it, do not rerun the same question, do not switch models, and do not add `--max-iterations` unless the user explicitly asked for a shorter or faster tradeoff
+- treat `final_answer` plus stream or command completion as the success signal
+### Check sequence
+
+When output appears stuck, use this order:
+
+1. wait on the original Dayu command session for the initial 180-second window
+2. poll the original Dayu command session again and read any newly arrived output
+3. if it is still quiet, check active runs:
+
+```bash
+dayu-cli runs --base ~/.dayu/workspace
+```
+
+4. if you need a broader host view, check:
+
+```bash
+dayu-cli host --base ~/.dayu/workspace status
+```
+
+5. if Dayu still shows an active run, continue waiting on the original command output and do not perform another status check for at least 60 seconds
+6. only move to failure handling when the run no longer appears active and there is explicit failure evidence
+
+### Failure evidence
 
 Only treat the run as blocked when there is real failure evidence such as:
 
 - the process exits with an error
 - Dayu emits explicit error output
-- the runtime is well beyond normal waiting behavior with no sign of progress
+- Dayu emits explicit cancelled output such as timeout cancellation
+- the run disappears from the active list and the command output confirms cancellation or failure
+
+Important exception for filing ingestion:
+
+- if `upload_filing` reports explicit PDF conversion failure such as `Docling 转换失败`, do not keep retrying the same PDF upload path
+- for Hong Kong or A-share filings, switch to the Markdown filing fallback in [materials.md](materials.md)
+- this is still a Dayu ingestion path, not host-side financial analysis
 
 ### User asks to prepare documents
 
@@ -68,6 +100,7 @@ Path:
 
 - US listing -> `download`
 - A-share / HK / local PDF -> download guidance from [ah_share_download.md](ah_share_download.md), then upload flow from [materials.md](materials.md)
+- if a Hong Kong / A-share filing PDF fails in Dayu conversion, follow the Markdown fallback in [materials.md](materials.md) before trying broader workarounds
 
 ### User asks for continuing back-and-forth analysis
 
@@ -78,7 +111,7 @@ Examples:
 
 If the user wants many linked follow-ups on the same company, prefer `interactive`.
 
-Use `prompt` instead if you only need one or two clearly framed turns.
+Use `prompt` instead if you only need one or two clearly framed turns that can be returned directly.
 
 If Dayu's first answer is incomplete, continue the same analytical path by asking Dayu follow-up questions.
 
@@ -112,8 +145,7 @@ If the user does not have documents ready:
 
 - follow [ah_share_download.md](ah_share_download.md) to locate an official filing source
 - ask them to upload the filing PDF or supporting material
-- tell them the minimum useful set, such as latest annual report plus latest interim report if available
-- optionally help locate an official IR or exchange page, but keep that separate from Dayu's native ingestion path
+- use [materials.md](materials.md) for the minimum useful set and upload flow
 
 Once the material is ready, return to Dayu for the actual analysis rather than analyzing the downloaded document directly outside Dayu.
 

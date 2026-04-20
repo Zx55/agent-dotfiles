@@ -14,7 +14,7 @@ Use `interactive` when:
 Use `prompt` instead when:
 
 - the task is a single well-formed question
-- you want one clean result to summarize externally
+- you want one clean result to return directly
 - there are only one or two follow-up turns
 
 ## Command
@@ -61,4 +61,4 @@ Treat this carefully:
 
 - do not assume exit code `1` means the interactive analysis itself failed
 - judge success by whether the session started, accepted input, and returned meaningful answers
-- if exit handling becomes a repeated pain point, fall back to repeated `prompt` calls
+- if exit handling becomes a repeated pain point, switch to repeated `prompt` calls

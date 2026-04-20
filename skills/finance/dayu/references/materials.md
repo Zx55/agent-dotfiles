@@ -28,9 +28,12 @@ Useful optional fields:
 - `--filing-date`
 - `--report-date`
 - `--company-name`
+- `--company-id`
 - `--infer`
 - `--overwrite`
 - `--amended`
+
+If the workspace does not already know the company, `create` may require `--company-id`.
 
 ## Minimum metadata to collect from the user
 
@@ -43,8 +46,50 @@ When the user uploads a filing, try to confirm:
 
 If the workspace does not already know the company, you may also need:
 
+- company id
 - company name
 - or `--infer` if the ticker is good enough for FMP-based enrichment
+
+## PDF conversion fallback
+
+Use this when the source file is an official Hong Kong or A-share PDF, but `upload_filing` fails on PDF conversion or clearly gets stuck in the same conversion step for that PDF.
+
+Do not keep retrying the same PDF upload path once there is real conversion failure evidence such as `Docling 转换失败`.
+
+Preferred fallback:
+
+1. keep the official PDF as the source of record
+2. extract the PDF text to a Markdown file locally
+3. preserve page boundaries with headings such as `## Page 1`
+4. add a short metadata header with:
+   - company name
+   - ticker
+   - filing date
+   - report date
+   - fiscal year / period
+   - original source URL when known
+5. retry `upload_filing` using the `.md` file instead of the original PDF
+
+Practical note:
+
+- for Hong Kong and mainland filings, Markdown upload can be more reliable than direct PDF ingestion when the PDF conversion chain is unstable
+- this fallback is still preferred over host-side analysis outside Dayu
+
+Example shape:
+
+```bash
+dayu-cli upload_filing \
+  --base ~/.dayu/workspace \
+  --ticker 1810.HK \
+  --files /tmp/xiaomi-2025-fy-results-announcement.md \
+  --fiscal-year 2025 \
+  --fiscal-period FY \
+  --filing-date 2026-03-24 \
+  --report-date 2025-12-31 \
+  --company-id 1810.HK \
+  --company-name "Xiaomi Corporation" \
+  --overwrite
+```
 
 ## Supplementary materials
 

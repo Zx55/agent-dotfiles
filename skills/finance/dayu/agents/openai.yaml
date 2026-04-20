@@ -1,4 +1,6 @@
 interface:
   display_name: "Dayu Research"
-  short_description: "Use Dayu for dialogue-first public-company research."
-  default_prompt: "Use $dayu to research a listed company in dialogue form, downloading US filings when useful and asking for uploads for A-share or Hong Kong materials."
+  short_description: "Use Dayu for public-company research and return its answer directly."
+  icon_small: "./assets/dayu-small.png"
+  icon_large: "./assets/dayu.png"
+  default_prompt: "Use $dayu to research a listed company, return Dayu's answer directly in chat, download US filings when useful, and ask for uploads for A-share or Hong Kong materials."

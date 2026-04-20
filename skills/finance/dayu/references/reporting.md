@@ -30,12 +30,12 @@ Useful options:
 Even in explicit report mode, decide whether the user wants:
 
 - the artifact itself
-- a conversational summary based on the artifact
+- a summary or extracted answer based on the artifact
 - both
 
-If the user asked for analysis and only loosely mentioned a report, it is acceptable to generate the draft internally, read it, and reply conversationally.
+If the user asked for analysis and only loosely mentioned a report, it is acceptable to generate the draft internally, inspect it, and reply with the requested answer format.
 
-If the user clearly asks for the report output, give them the artifact path.
+If the user clearly asks for the report output, give them the artifact path and do not silently replace that with only a paraphrase.
 
 ## Rendering
 

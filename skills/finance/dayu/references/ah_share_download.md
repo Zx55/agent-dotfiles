@@ -20,21 +20,17 @@ Do not default to random mirrors, reposted PDFs, or broker-hosted copies when an
 
 ## Minimum useful set
 
-If the user only wants enough material to start research, prioritize:
-
-1. latest annual report
-2. latest interim report or latest quarterly update that matters for the question
-3. optional earnings deck, transcript, or results announcement
+If the user only wants enough material to start research, see the minimum-material guidance in [materials.md](materials.md). This download guide focuses only on finding the official files.
 
 ## Hong Kong workflow
 
-### Official sources
+### Source priority
 
 - HKEXnews title search: [HKEXnews title search](https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=EN)
 - HKEXnews predefined annual reports: [HKEXnews annual reports](https://www1.hkexnews.hk/search/predefineddoc.xhtml?predefineddocuments=3)
 - company IR page when available
 
-### Manual steps
+### Minimal steps
 
 1. Search by stock code or company name on HKEXnews.
 2. Filter for `Annual Report`, `Interim Report`, or related financial statements.
@@ -42,7 +38,7 @@ If the user only wants enough material to start research, prioritize:
 4. If HKEX search is awkward, use the company IR financial reports page as a fallback.
 5. Download the PDF locally.
 
-### Agent-followable guidance
+### Agent guidance
 
 An agent can:
 
@@ -91,7 +87,7 @@ Use Xiaomi as the model case for this fallback rule:
 
 ## A-share workflow
 
-### Official sources
+### Source priority
 
 - Shanghai Stock Exchange: [SSE](https://www.sse.com.cn/)
 - SSE STAR Market company page example: [SMIC on SSE STAR Market](https://www.sse.com.cn/star/en/marketdata/snapshot/c/5481443.shtml)
@@ -104,7 +100,7 @@ Use the exchange site that matches the listing venue whenever possible. CNINFO i
 
 ### Exchange-first routing
 
-#### SSE / STAR Market
+#### SSE / STAR Market prefixes
 
 Prefer:
 
@@ -113,15 +109,9 @@ Prefer:
 - then company IR
 - then CNINFO as a fallback search surface
 
-This is the right default for companies such as:
+This is the right default for companies with prefixes such as `600`, `601`, `603`, `605`, and `688`.
 
-- `600xxx`
-- `601xxx`
-- `603xxx`
-- `605xxx`
-- `688xxx`
-
-#### SZSE
+#### SZSE prefixes
 
 Prefer:
 
@@ -129,15 +119,9 @@ Prefer:
 - then company IR
 - then CNINFO
 
-This is the right default for companies such as:
+This is the right default for companies with prefixes such as `000`, `001`, `002`, `003`, and `300`.
 
-- `000xxx`
-- `001xxx`
-- `002xxx`
-- `003xxx`
-- `300xxx`
-
-### Manual steps
+### Minimal steps
 
 1. Identify whether the company is on SSE, STAR Market, SZSE, or another mainland venue.
 2. Search by stock code or company name on the matching exchange site first, then use CNINFO if needed.
@@ -145,7 +129,7 @@ This is the right default for companies such as:
 4. Open the official PDF.
 5. Download it locally.
 
-### Agent-followable guidance
+### Agent guidance
 
 An agent should prefer browser-style navigation over undocumented scraping:
 
@@ -179,48 +163,17 @@ Verified official source:
 
 ## After download
 
-Once the PDF is local, upload it into Dayu.
+Once the PDF is local, switch to [materials.md](materials.md) for upload commands, required metadata, and the return path back into `prompt`.
 
-For a filing:
+## If the PDF upload fails
 
-```bash
-dayu-cli upload_filing \
-  --base ~/.dayu/workspace \
-  --ticker <TICKER> \
-  --files <DOWNLOADED_PDF> \
-  --fiscal-year <YEAR> \
-  --fiscal-period <Q1|Q2|Q3|Q4|FY|H1>
-```
+For Hong Kong and A-share filings, an official PDF may still fail during Dayu conversion. In that case, follow the PDF-to-Markdown fallback in [materials.md](materials.md) rather than repeating the same upload path here.
 
-For the verified SMIC annual report example:
+Xiaomi is a concrete example of this pattern:
 
-```bash
-dayu-cli upload_filing \
-  --base ~/.dayu/workspace \
-  --ticker 688981.SH \
-  --files /tmp/smic-688981-2024-annual.pdf \
-  --fiscal-year 2024 \
-  --fiscal-period FY \
-  --company-name "中芯国际"
-```
-
-For supporting materials such as decks or transcripts:
-
-```bash
-dayu-cli upload_material \
-  --base ~/.dayu/workspace \
-  --ticker <TICKER> \
-  --action create \
-  --forms <FORM_TYPE> \
-  --material-name "<NAME>" \
-  --files <DOWNLOADED_FILE>
-```
-
-After upload, continue with:
-
-```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> "<question>"
-```
+- official HKEX PDF download was fine
+- direct PDF upload hit conversion trouble
+- Markdown converted from the same official PDF uploaded successfully and unblocked Dayu analysis
 
 ## Common pitfalls
 

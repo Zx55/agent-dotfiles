@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000" viewBox="0 0 1000 1000" fill="none">
+  <defs>
+    <linearGradient id="dayuBg" x1="160" y1="120" x2="860" y2="880" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#153D31" />
+      <stop offset="1" stop-color="#2E8B61" />
+    </linearGradient>
+    <linearGradient id="dayuGlow" x1="240" y1="220" x2="760" y2="780" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8FE4B8" stop-opacity="0.34" />
+      <stop offset="1" stop-color="#8FE4B8" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <rect x="70" y="70" width="860" height="860" rx="220" fill="url(#dayuBg)" />
+  <rect x="70" y="70" width="860" height="860" rx="220" fill="url(#dayuGlow)" />
+  <rect x="70" y="70" width="860" height="860" rx="220" stroke="#B8F0CF" stroke-opacity="0.18" stroke-width="16" />
+  <g transform="translate(188 188) scale(26)" stroke="#F6FFF9" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 19l16 0" />
+    <path d="M4 15l4 -6l4 2l4 -5l4 4" />
+  </g>
+</svg>
