@@ -1,6 +1,6 @@
 ---
 name: devflow-dev
-description: Use for implementation work in projects that already have design docs and development rules. This skill enforces plan-first execution for both feature work and review-driven fixes, with explicit step breakdowns, risks, tests, and acceptance criteria.
+description: Use for implementation work in projects that already have design docs and development rules. This skill enforces plan-first execution for feature work, refactors, and accepted review follow-up, with explicit step breakdowns, risks, tests, and acceptance criteria.
 ---
 
 # Devflow Dev
@@ -17,19 +17,46 @@ Read these first:
 
 ## Modes
 
-### Review-Driven
+Read `references/routing.md` when deciding between Implementation Worker and Multi-Agent Development Orchestration.
 
-- The user may give you a review directly, or point you to a review report or review comments file.
-- Analyze each review item one by one.
-- If an item is valid, provide a complete modification plan.
-- If an item is not valid, explain why, what risk it introduces, and what a better solution would be.
-- If the review does not include acceptance criteria, add them.
+### Implementation Worker
 
-### Feature-Driven
+- This is the default mode.
+- Do not spawn subagents in this mode.
+- Use this mode for ordinary implementation, single-agent refactors, and bounded tasks assigned by a main orchestrator.
+- Every change starts with a plan unless the user or orchestrator explicitly says the plan is approved and asks you to write code directly.
+- When assigned by `devflow-rev` or `devflow-dev` orchestration, follow the assigned ownership, expected files, do-not-touch areas, tests, and acceptance criteria.
+- Do not re-enter multi-agent mode from a subagent task.
 
-- Based on the docs and the current implementation state, propose candidate implementation plans and priorities.
+### Multi-Agent Development Orchestration
+
+- Use this mode only when the user explicitly asks for `multi-agent`, subagents, parallel development, delegated implementation, or asks that subagents do the development work.
+- The main agent becomes the orchestrator and owns planning, durable plan documents, task assignment, integration, testing, commits, and user reporting.
+- Subagents are implementation workers and must use `$devflow-dev` in Implementation Worker mode, not Multi-Agent Development Orchestration.
+- Read `references/multi-agent.md` before spawning or assigning subagents.
+
+## Development Activities
+
+These activities can appear in Implementation Worker mode or as the main agent's planning/integration work during Multi-Agent Development Orchestration.
+
+### Feature Planning
+
+- Based on the docs and current implementation state, propose candidate implementation plans and priorities.
 - Be explicit about what should be done and what should not be done.
-- After the user selects a plan, continue by breaking it down further.
+- After the user selects a plan, expand it into concrete steps with files, risks, tests, and acceptance criteria.
+
+### Plan Execution
+
+- Implement the approved plan or assigned step.
+- Keep changes surgical and traceable to the approved plan.
+- Run the relevant tests and report anything that could not be verified.
+
+### Accepted Review Follow-Up
+
+- Treat an accepted review report or review finding as implementation input.
+- Do not re-litigate review validity unless implementation reveals a concrete contradiction or hidden risk.
+- If review validity is unclear, route the issue back to `$devflow-rev` instead of deciding it inside `$devflow-dev`.
+- If the accepted review input is missing implementation details, add a plan with acceptance criteria before coding.
 
 ## Hard Rules
 
@@ -38,14 +65,17 @@ Read these first:
 - Only skip the planning step if the user explicitly says to write code directly or edit directly.
 - Do not widen public surface area just to make implementation or testing easier.
 - If a change affects design boundaries, workflow semantics, persistence format, or testing boundaries, explicitly state which documents need to be updated.
+- Default to Implementation Worker unless the user explicitly requests Multi-Agent Development Orchestration.
 
 ## Template
 
-This skill includes a reusable implementation-plan template:
+This skill includes one reusable feature-plan template:
 
-- `templates/docs/development/implementation-plan.template.md`
+- `templates/docs/development/feature-plan.template.md`
 
-Use it as a structure guide for feature plans, review follow-up plans, and step-by-step execution proposals.
+Use `feature-plan.template.md` for durable plans in both single-agent and multi-agent work.
+
+Only write a feature-plan document after the user has approved the plan. New plan documents should normally start with `status: approved`, not `status: draft`.
 
 ## Plan Format
 

@@ -1,20 +1,23 @@
-# Multi-Agent Review Remediation
+# Multi-Agent Development Orchestration
 
-Use this reference only after `references/routing.md` selects Multi-Agent Review Remediation.
+Use this reference only after `references/routing.md` selects Multi-Agent Development Orchestration.
 
-The default `devflow-rev` behavior remains Review-Only. Multi-agent mode is an explicit orchestration mode for review-driven repair work.
+The default `devflow-dev` behavior remains Implementation Worker. Multi-agent mode is an explicit orchestration mode for feature and refactor development.
 
 ## 1. Shared Truth
 
-- Create or update a durable review report before assigning implementation work.
-- Treat the review report as the shared source of truth for findings, repair direction, boundary constraints, acceptance criteria, and resolution status.
-- The main agent owns the review report.
-- Subagent tasks must cite the relevant finding or acceptance criteria from the review report.
-- If review findings are reclassified during discussion, update the report before assigning dependent work.
+- Create or update a durable feature plan before assigning implementation work.
+- Prefer `docs/development/features/YYYY-MM-DD-PN.md` for multi-agent feature/refactor plans unless the project already has a better convention.
+- Treat the plan as the shared source of truth for goals, non-goals, constraints, selected approach, step plan, acceptance criteria, and resolution status.
+- The main agent owns the plan document.
+- Subagent tasks must cite the relevant step or acceptance criteria from the plan.
+- If the implementation approach changes, update the plan before assigning dependent work.
+- Only write the feature plan after the user has approved the plan direction. New feature-plan documents should normally start with `status: approved`.
 
-## 2. Task Planning And Rounds
+## 2. Planning And Rounds
 
-- Plan tasks before spawning subagents.
+- First propose a high-level development plan and priority order for the user to choose from.
+- After the user selects the path, expand it into concrete steps with ownership, files, risks, tests, and acceptance criteria.
 - Group work into rounds based on dependencies and expected file ownership.
 - Prefer assigning tasks with disjoint write scopes in the same round.
 - Resolve dependency-blocking tasks before tasks that depend on them.
@@ -25,7 +28,8 @@ The default `devflow-rev` behavior remains Review-Only. Multi-agent mode is an e
 
 ## 3. Subagent Work Boundaries
 
-- Subagents are implementation workers and must use `$devflow-dev` in Implementation Worker mode, not `$devflow-dev` multi-agent mode.
+- Subagents must use `$devflow-dev` in Implementation Worker mode.
+- Subagents must not enter Multi-Agent Development Orchestration.
 - Every subagent prompt must include ownership, expected files, do-not-touch areas, acceptance criteria, and expected tests.
 - Tell subagents they are not alone in the codebase.
 - Tell subagents not to commit.
@@ -39,7 +43,7 @@ The default `devflow-rev` behavior remains Review-Only. Multi-agent mode is an e
 ## 4. Main-Agent Review, Integration, And Commits
 
 - Use subagent summaries as orientation only.
-- Validate completion from `git diff`, actual code, tests, and the review report acceptance criteria.
+- Validate completion from `git diff`, actual code, tests, and the plan acceptance criteria.
 - The main agent owns conflict resolution, integration decisions, final review, and verification.
 - The main agent may accept, modify, or reject subagent work.
 - If multiple subagents changed overlapping files, the main agent resolves the integration and records the tradeoff.
@@ -51,14 +55,14 @@ The default `devflow-rev` behavior remains Review-Only. Multi-agent mode is an e
 ## 5. Reporting And Control Flow
 
 - At the end of each round, report what was assigned, accepted, changed, tested, and committed.
-- Summarize remaining findings and the proposed next round.
+- Summarize remaining steps and the proposed next round.
 - Do not automatically start the next round; wait for the user to say to continue.
 - Keep unresolved user or unrelated worktree changes separate from subagent task commits.
 - If verification fails, report the failing command and decide whether to fix locally, send a follow-up task, or stop for user input.
 
 ## Main-Agent Round Checklist
 
-1. Confirm the current review report and acceptance criteria.
+1. Confirm the current feature or implementation plan and acceptance criteria.
 2. Inspect the current dirty worktree.
 3. Plan the round by dependency order and file ownership.
 4. Assign only non-overlapping or intentionally sequenced tasks.
@@ -68,4 +72,5 @@ The default `devflow-rev` behavior remains Review-Only. Multi-agent mode is an e
 8. Stage only that task's files.
 9. Commit with one focused commit.
 10. Run broader verification when appropriate.
-11. Report round outcome and wait for user approval before continuing.
+11. Update the plan document with implementation notes or resolution status.
+12. Report round outcome and wait for user approval before continuing.
