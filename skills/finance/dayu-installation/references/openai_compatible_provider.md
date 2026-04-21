@@ -4,6 +4,7 @@ Use this reference when the user wants Dayu to call a provider that speaks an Op
 
 Common examples:
 
+- MiMo Plan overseas
 - Moonshot / Kimi
 - custom gateway services that expose `/v1/chat/completions`
 - other vendors that instruct users to reuse an OpenAI-style client
@@ -13,6 +14,8 @@ Common examples:
 `dayu-cli init` asks the user to choose a provider and will happily accept an existing `OPENAI_API_KEY`. That is enough only when the requests should really go to OpenAI.
 
 If the key actually belongs to a different OpenAI-compatible provider, Dayu may still need a post-init config change in `workspace/config/llm_models.json` and sometimes in `workspace/config/prompts/manifests/*.json`.
+
+If a release note says a provider is now handled by `dayu-cli init`, prefer trying init first when the user wants that provider. Use the manual JSON path below only if init does not produce the needed config.
 
 ## What to change
 

@@ -65,11 +65,13 @@ If the doctor shows setup is already healthy and the user only asked for verific
 
 Use [scripts/dayu_install_or_update.sh](scripts/dayu_install_or_update.sh) for the actual setup path.
 
+For first install or repair, read [references/install.md](references/install.md). For update requests, read [references/update.md](references/update.md) before and after installation; that reference owns release-note review, version-specific cleanup, CLI surface checks, and deciding whether this skill or the sibling `dayu` skill needs documentation changes.
+
 Default behavior:
 
 - install `uv` with the official standalone installer if it is missing
 - install `uv`-managed Python `3.11`
-- resolve the latest stable Dayu GitHub release wheel
+- resolve the requested stable Dayu GitHub release wheel
 - install Dayu with `uv tool install`
 - verify the installed executables
 - run `dayu-cli init` unless `--skip-init` is explicitly requested
@@ -84,16 +86,13 @@ Because `init` is interactive, do not try to fake provider selection or API key 
 
 If the workspace already has config and the user wants to rebuild it, rerun init with overwrite enabled.
 
+For provider/config refreshes after an update, follow [references/update.md](references/update.md). Only use overwrite when the user wants that refresh.
+
 ### 5. Verify the final state
 
-After installation or update:
+After installation or update, rerun [scripts/dayu_doctor.sh](scripts/dayu_doctor.sh). For update-specific verification, including CLI help checks and stale documentation search, follow [references/update.md](references/update.md).
 
-- rerun [scripts/dayu_doctor.sh](scripts/dayu_doctor.sh)
-- verify `dayu-cli --help`
-- verify `dayu-render` is executable and responds with usage text when invoked without arguments
-- verify the target workspace has a populated `config/` directory after init
-
-Warn, but do not fail setup, if `pandoc` or Google Chrome is missing. Those are only needed for some render flows.
+Warn, but do not fail setup, if optional render dependencies are missing. Those are only needed for some render flows.
 
 ## Network And Proxy
 
@@ -106,7 +105,8 @@ These steps depend on GitHub and Astral downloads. If a network command hangs, t
 
 ## References
 
-- Read [references/install.md](references/install.md) for the standard install and update path.
+- Read [references/install.md](references/install.md) for the standard install path.
+- Read [references/update.md](references/update.md) when Dayu is being upgraded or when the CLI may have changed.
 - Read [references/troubleshooting.md](references/troubleshooting.md) when setup fails or the doctor reports a broken state.
 - Read [references/openai_compatible_provider.md](references/openai_compatible_provider.md) when the user's API key or endpoint is OpenAI-compatible but not OpenAI itself.
 
@@ -118,5 +118,6 @@ When using this skill, produce:
 - the doctor result before changes
 - the exact install or update command used
 - whether `init` was run and against which workspace
+- for updates, the release/CLI audit result and any skill files changed
 - the final verification result
 - any remaining manual follow-up, such as adding the `uv` tool bin directory to `PATH`

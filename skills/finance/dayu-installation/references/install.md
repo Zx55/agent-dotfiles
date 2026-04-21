@@ -1,4 +1,4 @@
-# Install And Update Path
+# Install Path
 
 This skill installs Dayu through `uv tool install`, not through system Python, conda, or a project virtualenv.
 
@@ -25,14 +25,24 @@ Useful variants:
 ```bash
 ./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --overwrite-init
 ./scripts/dayu_install_or_update.sh --workspace /path/to/dayu-workspace --skip-init
-./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --version v0.1.1
+./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --version <tag>
 ```
 
-The script resolves the latest wheel dynamically when `--version latest` is used.
+The script resolves the latest wheel dynamically when `--version latest` is used. If GitHub REST API release lookup is blocked or rate-limited, it falls back to `gh release view`; for explicit release tags it can also verify the conventional wheel URL directly.
+
+Manual fallback for a known release tag:
+
+```bash
+tag=vX.Y.Z
+version="${tag#v}"
+uv tool install --managed-python --python 3.11 --force \
+  "dayu-agent @ https://github.com/noho/dayu-agent/releases/download/${tag}/dayu_agent-${version}-py3-none-any.whl"
+```
 
 ## What the installer script assumes
 
 - `curl` is available for network fetches.
+- `gh` is optional but useful when GitHub REST API release lookup returns 403.
 - `uv` may be missing and should be installed with Astral's standalone installer.
 - Python should come from `uv`, not from conda or a system interpreter.
 - `dayu-cli init` is interactive and should be run in a TTY.
@@ -63,3 +73,4 @@ Prefer stability over aggressive upgrades:
 - do not auto-check for updates before every Dayu usage
 - update only when the user asks, or when install or repair work already requires it
 - if the user wants a pinned version, pass `--version <tag>`
+- keep version-specific notes in [update.md](update.md), not in this install path reference

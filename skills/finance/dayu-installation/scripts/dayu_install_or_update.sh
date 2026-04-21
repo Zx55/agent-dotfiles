@@ -16,7 +16,7 @@ Usage:
 
 Options:
   --workspace PATH   Workspace to initialize with dayu-cli init. Default: ~/.dayu/workspace
-  --version VALUE    Release tag such as v0.1.1, or latest. Default: latest
+  --version VALUE    Release tag such as vX.Y.Z, or latest. Default: latest
   --skip-init        Install or update Dayu without running dayu-cli init
   --overwrite-init   Pass --overwrite to dayu-cli init
   -h, --help         Show this help text
@@ -141,7 +141,16 @@ ensure_managed_python() {
   PYTHON_REQUEST="3.11"
 }
 
-resolve_release_metadata() {
+parse_release_metadata_json() {
+  local release_json="$1"
+
+  RESOLVED_TAG="$(printf '%s\n' "$release_json" | sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1)"
+  WHEEL_URL="$(printf '%s\n' "$release_json" | sed -n 's/.*"browser_download_url":[[:space:]]*"\([^"]*dayu_agent-[^"]*\.whl\)".*/\1/p' | head -n1)"
+
+  [[ -n "$RESOLVED_TAG" && -n "$WHEEL_URL" ]]
+}
+
+resolve_release_metadata_with_api() {
   local api_url
   local release_json
 
@@ -152,13 +161,58 @@ resolve_release_metadata() {
   fi
 
   release_json="$(curl --fail --silent --show-error --location --retry 2 --retry-delay 1 "$api_url")" \
-    || die "Failed to resolve Dayu release metadata from GitHub. Check network settings, and if this environment requires a proxy, configure it before retrying."
+    || return 1
 
-  RESOLVED_TAG="$(printf '%s\n' "$release_json" | sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1)"
-  WHEEL_URL="$(printf '%s\n' "$release_json" | sed -n 's/.*"browser_download_url":[[:space:]]*"\([^"]*dayu_agent-[^"]*\.whl\)".*/\1/p' | head -n1)"
+  parse_release_metadata_json "$release_json"
+}
 
-  [[ -n "$RESOLVED_TAG" ]] || die "Could not parse the Dayu release tag from GitHub metadata"
-  [[ -n "$WHEEL_URL" ]] || die "Could not find a Dayu wheel asset in GitHub release metadata"
+resolve_release_metadata_with_gh() {
+  command -v gh >/dev/null 2>&1 || return 1
+
+  local release_info
+  if [[ "$RELEASE_TAG" == "latest" ]]; then
+    release_info="$(gh release view --repo noho/dayu-agent --json tagName,assets --jq '.tagName, (.assets[] | select(.name | test("^dayu_agent-.*\\.whl$")) | .url)' 2>/dev/null)" \
+      || return 1
+  else
+    release_info="$(gh release view "$RELEASE_TAG" --repo noho/dayu-agent --json tagName,assets --jq '.tagName, (.assets[] | select(.name | test("^dayu_agent-.*\\.whl$")) | .url)' 2>/dev/null)" \
+      || return 1
+  fi
+
+  RESOLVED_TAG="$(printf '%s\n' "$release_info" | sed -n '1p')"
+  WHEEL_URL="$(printf '%s\n' "$release_info" | sed -n '2p')"
+
+  [[ -n "$RESOLVED_TAG" && -n "$WHEEL_URL" ]]
+}
+
+resolve_release_metadata_with_direct_tag() {
+  [[ "$RELEASE_TAG" != "latest" ]] || return 1
+
+  local version="${RELEASE_TAG#v}"
+  local wheel_url="https://github.com/noho/dayu-agent/releases/download/$RELEASE_TAG/dayu_agent-$version-py3-none-any.whl"
+
+  curl --fail --silent --show-error --location --head "$wheel_url" >/dev/null \
+    || return 1
+
+  RESOLVED_TAG="$RELEASE_TAG"
+  WHEEL_URL="$wheel_url"
+}
+
+resolve_release_metadata() {
+  if resolve_release_metadata_with_api; then
+    return
+  fi
+
+  warn "GitHub API release lookup failed; trying gh release metadata fallback"
+  if resolve_release_metadata_with_gh; then
+    return
+  fi
+
+  warn "gh release metadata fallback failed; trying direct wheel URL for explicit tag"
+  if resolve_release_metadata_with_direct_tag; then
+    return
+  fi
+
+  die "Failed to resolve Dayu release metadata. Check network/proxy settings, or pass an explicit --version tag with the standard wheel naming pattern."
 }
 
 install_dayu_tool() {

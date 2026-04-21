@@ -18,7 +18,16 @@ If `curl` hangs, times out, or fails with connectivity errors:
 If GitHub API access is rate-limited or blocked, rerun the installer with an explicit release tag:
 
 ```bash
-./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --version v0.1.1
+./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --version <tag>
+```
+
+The installer first tries GitHub REST API metadata, then `gh release view`, then a direct wheel URL for explicit tags. If all metadata paths fail but the release tag is known, install the wheel directly:
+
+```bash
+tag=vX.Y.Z
+version="${tag#v}"
+uv tool install --managed-python --python 3.11 --force \
+  "dayu-agent @ https://github.com/noho/dayu-agent/releases/download/${tag}/dayu_agent-${version}-py3-none-any.whl"
 ```
 
 ## `uv` installed but not on `PATH`
@@ -86,9 +95,11 @@ If the workspace was initialized before and needs to be rebuilt, rerun init with
 ./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --overwrite-init
 ```
 
+For update-related provider refreshes, follow [update.md](update.md). Do not use overwrite casually; it replaces existing config files.
+
 ## Render checks fail
 
-`dayu-render` currently does not support `--help` in the same way as `dayu-cli`. A healthy install means the binary exists and returns usage text such as `Usage: python render.py <input_markdown> [output_docx]` when invoked without arguments. Actual PDF output may still need:
+`dayu-render` currently does not support `--help` in the same way as `dayu-cli`. A healthy install means the binary exists and returns usage text such as `Usage: dayu-render <input_markdown> [output_path]` when invoked without arguments. Actual PDF output may still need:
 
 - `pandoc`
 - Google Chrome

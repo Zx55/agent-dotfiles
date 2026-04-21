@@ -32,6 +32,8 @@ Read `references/routing.md` when deciding between Review-Only and Multi-Agent R
 - Use this mode only when the user explicitly asks for `multi-agent`, subagents, parallel remediation, delegated implementation, or asks that subagents do the repair work.
 - The main agent remains the reviewer, planner, integrator, tester, and committer.
 - Subagents are implementation workers and should normally use `$devflow-dev`.
+- For subagents that write or modify code, always spawn them with model `gpt-5.4` and reasoning effort `high`.
+- Lightweight subagent models may be used only for read-only code exploration, investigation, or summarization tasks with no file edits.
 - Read `references/multi-agent.md` before spawning or assigning subagents.
 
 ## Review Activities
