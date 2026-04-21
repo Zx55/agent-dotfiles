@@ -12,6 +12,13 @@ dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> "<question>"
 
 Then return Dayu's final answer directly in chat by default.
 
+Default posture:
+
+- start with `prompt`, not `interactive`
+- do not assume a fresh `prompt` call remembers the previous `prompt` answer
+- if a later follow-up still fits in one clean question, use another `prompt` and restate the needed context yourself
+- only escalate to `interactive` when the user clearly wants Dayu-managed multi-turn continuity
+
 ## Core rule
 
 - the host prepares the request and relays the result
@@ -34,11 +41,32 @@ Default path:
 1. resolve ticker and market
 2. inspect whether local materials already exist under `~/.dayu/workspace/portfolio/<ticker>`
 3. if US-listed and local filings are missing, run `download`
-4. choose `prompt` or `interactive`
+4. default to `prompt`; choose `interactive` only when continuity is clearly worth the added session state
 5. let Dayu answer the analytical question
 6. relay Dayu's final answer directly unless the user explicitly asks for a summary or rewrite
 
 Do not append a second host-originated analysis stage after step 5.
+
+### User asks a follow-up after a prior `prompt`
+
+Examples:
+
+- "上面那个保守情景是怎么假设的"
+- "基于刚才的结论，再展开说下现金流"
+- "继续追一下海外风险"
+
+Default path:
+
+1. keep using `prompt` for one or two follow-up turns when the next question can be framed cleanly
+2. include a concise recap in the new prompt:
+   - company / ticker
+   - which filing or material was used
+   - the prior Dayu conclusion that matters for this follow-up
+   - the user's new question
+3. do not assume `prompt` is resuming the previous Dayu-side thread
+4. if the user keeps drilling down and each next turn depends heavily on the prior answer, switch to `interactive --new-session`
+
+Do not switch to `interactive` merely because a single follow-up happened.
 
 ## Waiting rule
 
@@ -114,6 +142,16 @@ If the user wants many linked follow-ups on the same company, prefer `interactiv
 Use `prompt` instead if you only need one or two clearly framed turns that can be returned directly.
 
 If Dayu's first answer is incomplete, continue the same analytical path by asking Dayu follow-up questions.
+
+When the host decides to switch into Dayu-side continuity:
+
+- prefer `dayu-cli interactive --base ~/.dayu/workspace --new-session`
+- do not rely on bare `interactive` resuming some unknown previous local session
+- use the first interactive message to restate the working context:
+  - ticker / company
+  - materials already available
+  - the previous answer's key conclusion
+  - the next question to investigate
 
 ### User asks for a report
 

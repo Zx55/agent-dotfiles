@@ -17,6 +17,27 @@ Read these first:
 
 ## Modes
 
+Read `references/routing.md` when deciding between Review-Only and Multi-Agent Review Remediation.
+
+### Review-Only
+
+- This is the default mode.
+- Do not spawn subagents in this mode.
+- Use this mode when the user asks for a code review, architecture review, review evaluation, review report, document alignment, or acceptance review without explicitly requesting delegated implementation.
+- Focus on review findings, risks, smallest reasonable repair directions, durable review reports, and verification/acceptance.
+- If the user asks to implement fixes after the review, switch to `$devflow-dev` or ask for explicit approval before changing code.
+
+### Multi-Agent Review Remediation
+
+- Use this mode only when the user explicitly asks for `multi-agent`, subagents, parallel remediation, delegated implementation, or asks that subagents do the repair work.
+- The main agent remains the reviewer, planner, integrator, tester, and committer.
+- Subagents are implementation workers and should normally use `$devflow-dev`.
+- Read `references/multi-agent.md` before spawning or assigning subagents.
+
+## Review Activities
+
+These activities can appear in Review-Only mode or as the main agent's review/acceptance work during Multi-Agent Review Remediation.
+
 ### Review-Authoring
 
 - Review code, design-to-implementation alignment, testing boundaries, and module boundaries.
@@ -31,12 +52,19 @@ Read these first:
 - For valid items, translate them into actionable repair directions.
 - If the original review is missing acceptance criteria or boundary constraints, add them.
 
+### Acceptance Review
+
+- Evaluate an implementation against the review report, acceptance criteria, tests, and actual diff.
+- Prefer `git diff` and verified behavior over implementation summaries.
+- Report accepted items, rejected items, remaining risks, and verification results.
+
 ## Working Principles
 
 - Review against the design first, then against the implementation.
 - Focus primarily on boundary integrity, ownership, extensibility, redundancy, and test placement.
 - If code conflicts with design, treat it as a design deviation unless the user has explicitly accepted a design change.
 - Your job is review, risk identification, document alignment, and refactoring guidance. Do not default to implementation.
+- Default to Review-Only unless the user explicitly requests Multi-Agent Review Remediation.
 
 ## Template
 

@@ -105,11 +105,88 @@ For each item, explain:
 
 ## Documented Review Workflow
 
-If the project uses durable review documents, explain:
+Use a documented review document when the work is structural rather than purely local, or when the review should leave behind a durable execution record.
 
-- when to open one
-- where to place it
-- how it should be named
-- what structure it should use
+Typical triggers include:
 
-If review docs are not needed in the project, explicitly say so.
+- cross-module boundary cleanup
+- crate-surface or visibility changes
+- test migration across ownership boundaries
+- large internal module splits or merges
+- architectural cleanup that should happen in sequenced steps
+- review work that will be implemented over multiple follow-up steps
+
+Place documented review documents under `docs/development/review/` using this filename pattern:
+
+- `YYYY-MM-DD-PN.md`
+
+Do not rename the file later just to reflect archive status. Keep the filename stable and record lifecycle state in frontmatter instead.
+
+Required frontmatter:
+
+```yaml
+---
+create-date: 2026-04-16
+lifecycle: active
+resolution: in_progress
+review_snapshot: main@abc1234
+archive_snapshot:
+description: Short summary of the review topic.
+---
+```
+
+Field meanings:
+
+- `create-date`: the date the document was opened
+- `lifecycle`: `active` or `archived`
+- `resolution`: `in_progress`, `done`, or `deprecated`
+- `review_snapshot`: the git branch and commit snapshot the review was originally based on
+- `archive_snapshot`: the git branch and commit snapshot recorded when the document was archived; leave empty while active
+- `description`: a short human-readable summary
+
+Typical state combinations:
+
+- active work in progress:
+  - `lifecycle: active`
+  - `resolution: in_progress`
+- completed and retained as historical record:
+  - `lifecycle: archived`
+  - `resolution: done`
+- superseded or intentionally abandoned:
+  - `lifecycle: archived`
+  - `resolution: deprecated`
+
+Use this recommended structure unless there is a clear reason to shorten it:
+
+- `# YYYY-MM-DD-PN Review Report`
+- `Summary`
+- `Goals`
+- `Non-Goals`
+- `Scope`
+- `Review Findings` or `Current Problems`
+- `Review Principles`
+- `Execution Plan`
+- `Implementation Notes`
+- `Risks And Review Checkpoints`
+- `Acceptance Criteria`
+
+Do not add a standalone `Purpose` section unless it contributes review-specific information that is not already obvious from the title, summary, and description.
+
+`Execution Plan` and `Implementation Notes` have different jobs and should not be collapsed together.
+
+- `Execution Plan` records the intended sequence before or during the work
+- `Implementation Notes` record what the implementation owner actually did while carrying out the review follow-up work
+
+The implementation owner should update both sections during execution:
+
+- revise `Execution Plan` when the intended sequence or scope changes
+- append or refine `Implementation Notes` as steps are completed and concrete decisions are made
+
+Use them to record:
+
+- what was actually implemented
+- where implementation intentionally differed from the initial plan
+- what boundary or ownership decision was selected
+- any follow-up constraints that future review should preserve
+
+Treat `Implementation Notes` as decision records, not as a generic changelog.

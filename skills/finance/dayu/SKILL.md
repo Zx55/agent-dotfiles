@@ -48,6 +48,16 @@ Pass it explicitly to Dayu commands with `--base ~/.dayu/workspace`.
 - do not paraphrase, summarize, translate, critique, or restructure it unless the user explicitly asks
 - do not generate reports unless the user explicitly asks for a report, draft, markdown, docx, html, or pdf
 
+### Session Continuity
+
+- default to `dayu-cli prompt` for the first analytical question; do not default to `interactive`
+- do not assume a new `dayu-cli prompt` call remembers prior `prompt` turns
+- if the user asks one or two follow-up questions after a prior `prompt`, keep using `prompt` but include a short recap of the prior Dayu answer and the current question in the new prompt
+- only switch to `interactive` when the user clearly wants a sustained multi-turn Dayu-side thread or the follow-up chain is strongly dependent on prior answers
+- when the host starts `interactive`, prefer `dayu-cli interactive --base ~/.dayu/workspace --new-session` unless you are intentionally resuming a skill-owned interactive session from the same workflow
+- when switching from `prompt` to `interactive`, seed the first interactive message with a compact recap: ticker, materials used, prior conclusion, and the new question
+- remember that `interactive` is a terminal TTY workflow; it is not the default path for normal single-turn skill use
+
 ### Waiting and Failure
 
 - prefer explicit Dayu completion or failure signals over elapsed-time heuristics

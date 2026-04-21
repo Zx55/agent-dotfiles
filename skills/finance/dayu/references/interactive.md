@@ -16,6 +16,7 @@ Use `prompt` instead when:
 - the task is a single well-formed question
 - you want one clean result to return directly
 - there are only one or two follow-up turns
+- the host is operating in a non-interactive workflow and can simply restate the needed context in another `prompt`
 
 ## Command
 
@@ -29,6 +30,11 @@ Useful option:
 dayu-cli interactive --base ~/.dayu/workspace --new-session
 ```
 
+Host-side default:
+
+- when the host intentionally starts `interactive`, prefer the `--new-session` form
+- only omit `--new-session` when you are deliberately resuming a known interactive session that the same workflow already created
+
 ## Session behavior
 
 Dayu's README says `interactive` defaults to resuming the same local multi-turn session. It stores the current binding under:
@@ -40,8 +46,14 @@ Dayu's README says `interactive` defaults to resuming the same local multi-turn 
 That means:
 
 - reopening `interactive` may continue the previous Dayu-side thread
-- this is good for sustained research on one company
+- this is good for sustained research on one company when you explicitly want that exact thread
 - if you want a fresh start, use `--new-session`
+
+Important boundary:
+
+- `interactive` is a TTY terminal workflow, not a generic non-interactive API-style command
+- do not treat it as the default path for normal single-turn host automation
+- if you transition from `prompt` into `interactive`, send a recap in the first interactive message instead of assuming Dayu already knows the prior `prompt` answer
 
 ## Practical guidance
 
@@ -52,6 +64,13 @@ Choose `interactive` as the primary mode when the user says things like:
 - "先别总结，我想边看边问"
 
 In those cases, Dayu's own multi-turn memory can be more natural than reconstructing context through repeated single-turn prompts.
+
+Recommended first message after switching from `prompt`:
+
+- identify the company / ticker
+- state which filing or materials are already in scope
+- summarize the key conclusion from the earlier `prompt`
+- ask the next question you want Dayu to pursue
 
 ## Exit caveat
 
