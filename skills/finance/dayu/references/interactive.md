@@ -21,18 +21,18 @@ Use `prompt` instead when:
 ## Command
 
 ```bash
-dayu-cli interactive --base ~/.dayu/workspace
+dayu-cli interactive --base ~/.dayu/workspace --thinking
 ```
 
 Useful option:
 
 ```bash
-dayu-cli interactive --base ~/.dayu/workspace --new-session
+dayu-cli interactive --base ~/.dayu/workspace --new-session --thinking
 ```
 
 Host-side default:
 
-- when the host intentionally starts `interactive`, prefer the `--new-session` form
+- when the host intentionally starts `interactive`, prefer the `--new-session --thinking` form
 - only omit `--new-session` when you are deliberately resuming a known interactive session that the same workflow already created
 
 ## Session behavior
@@ -47,7 +47,7 @@ That means:
 
 - reopening `interactive` may continue the previous Dayu-side thread
 - this is good for sustained research on one company when you explicitly want that exact thread
-- if you want a fresh start, use `--new-session`
+- if you want a fresh start, use `--new-session --thinking`
 
 Important boundary:
 

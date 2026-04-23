@@ -7,7 +7,7 @@ This reference maps user intent to Dayu behavior.
 For many single-turn questions, use:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> "<question>"
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --thinking "<question>"
 ```
 
 Then return Dayu's final answer directly in chat by default.
@@ -64,7 +64,7 @@ Default path:
    - the prior Dayu conclusion that matters for this follow-up
    - the user's new question
 3. do not assume `prompt` is resuming the previous Dayu-side thread
-4. if the user keeps drilling down and each next turn depends heavily on the prior answer, switch to `interactive --new-session`
+4. if the user keeps drilling down and each next turn depends heavily on the prior answer, switch to `interactive --new-session --thinking`
 
 Do not switch to `interactive` merely because a single follow-up happened.
 
@@ -76,16 +76,18 @@ For `dayu-cli prompt` in particular:
 
 - do not treat a short silent period as proof of failure
 - do not use elapsed time by itself as the failure test
-- keep the original `dayu-cli prompt` session open and give it an initial wait window of at least 180 seconds
+- pass `--thinking` by default so the host has reasoning/tool-visible output as the first liveness clue
+- keep the original `dayu-cli prompt --thinking` session open and watch its output before starting side checks
 - prefer waiting on the original session over opening sidecar sleep commands or replacement runs
+- if `--thinking` continues to produce output, treat the run as active and keep waiting
 - while `dayu-cli runs` still shows the run as active, do not cancel it, do not rerun the same question, do not switch models, and do not add `--max-iterations` unless the user explicitly asked for a shorter or faster tradeoff
 - treat `final_answer` plus stream or command completion as the success signal
 ### Check sequence
 
 When output appears stuck, use this order:
 
-1. wait on the original Dayu command session for the initial 180-second window
-2. poll the original Dayu command session again and read any newly arrived output
+1. wait on the original Dayu command session and read newly arrived `--thinking` or answer output first
+2. if the original session has been quiet for a materially long period, poll that same command session again before opening side checks
 3. if it is still quiet, check active runs:
 
 ```bash
@@ -98,7 +100,7 @@ dayu-cli runs --base ~/.dayu/workspace
 dayu-cli host --base ~/.dayu/workspace status
 ```
 
-5. if Dayu still shows an active run, continue waiting on the original command output and do not perform another status check for at least 60 seconds
+5. if Dayu still shows an active run, continue waiting on the original command output and keep status checks low-frequency
 6. only move to failure handling when the run no longer appears active and there is explicit failure evidence
 
 ### Failure evidence
@@ -145,7 +147,7 @@ If Dayu's first answer is incomplete, continue the same analytical path by askin
 
 When the host decides to switch into Dayu-side continuity:
 
-- prefer `dayu-cli interactive --base ~/.dayu/workspace --new-session`
+- prefer `dayu-cli interactive --base ~/.dayu/workspace --new-session --thinking`
 - do not rely on bare `interactive` resuming some unknown previous local session
 - use the first interactive message to restate the working context:
   - ticker / company

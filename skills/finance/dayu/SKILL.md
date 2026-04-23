@@ -54,14 +54,14 @@ Pass it explicitly to Dayu commands with `--base ~/.dayu/workspace`.
 - do not assume a new `dayu-cli prompt` call remembers prior `prompt` turns
 - if the user asks one or two follow-up questions after a prior `prompt`, keep using `prompt` but include a short recap of the prior Dayu answer and the current question in the new prompt
 - only switch to `interactive` when the user clearly wants a sustained multi-turn Dayu-side thread or the follow-up chain is strongly dependent on prior answers
-- when the host starts `interactive`, prefer `dayu-cli interactive --base ~/.dayu/workspace --new-session` unless you are intentionally resuming a skill-owned interactive session from the same workflow
+- when the host starts `interactive`, prefer `dayu-cli interactive --base ~/.dayu/workspace --new-session --thinking` unless you are intentionally resuming a skill-owned interactive session from the same workflow
 - when switching from `prompt` to `interactive`, seed the first interactive message with a compact recap: ticker, materials used, prior conclusion, and the new question
 - remember that `interactive` is a terminal TTY workflow; it is not the default path for normal single-turn skill use
 
 ### Waiting and Failure
 
 - prefer explicit Dayu completion or failure signals over elapsed-time heuristics
-- for `dayu-cli prompt`, wait on the original session first; the detailed 180-second initial wait and low-frequency status-check rules live in [references/routing.md](references/routing.md)
+- for `dayu-cli prompt` and `dayu-cli interactive`, pass `--thinking` by default and treat reasoning/tool-visible output as the primary liveness clue; the detailed quiet-period fallback rules live in [references/routing.md](references/routing.md)
 - while a run remains active, do not cancel it, do not restart the same prompt, do not switch models, and do not add limiting flags such as `--max-iterations` unless the user explicitly asked for that tradeoff
 - for Hong Kong or A-share PDF conversion failures such as `Docling 转换失败`, follow the Markdown fallback in [references/materials.md](references/materials.md)
 

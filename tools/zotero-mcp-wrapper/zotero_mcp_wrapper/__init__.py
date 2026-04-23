@@ -1,0 +1,2 @@
+"""zotero-mcp-wrapper package."""
+

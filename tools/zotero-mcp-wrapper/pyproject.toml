@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zotero-mcp-wrapper"
+version = "0.1.0"
+description = "A macOS-only request-aware stdio wrapper for zotero-mcp."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+zotero-mcp-wrapper = "zotero_mcp_wrapper.cli:main"
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.16.0,<7",
+]
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["zotero_mcp_wrapper"]

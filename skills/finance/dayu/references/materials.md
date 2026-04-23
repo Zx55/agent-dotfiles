@@ -133,5 +133,5 @@ This generates an upload script rather than fully ingesting everything by itself
 Once the relevant documents are present, switch back to the normal conversational path:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> "<question>"
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --thinking "<question>"
 ```
