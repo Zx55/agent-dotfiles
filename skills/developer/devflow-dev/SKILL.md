@@ -33,7 +33,8 @@ Read `references/routing.md` when deciding between Implementation Worker and Mul
 - Use this mode only when the user explicitly asks for `multi-agent`, subagents, parallel development, delegated implementation, or asks that subagents do the development work.
 - The main agent becomes the orchestrator and owns planning, durable plan documents, task assignment, integration, testing, commits, and user reporting.
 - Subagents are implementation workers and must use `$devflow-dev` in Implementation Worker mode, not Multi-Agent Development Orchestration.
-- For subagents that write or modify code, always spawn them with model `gpt-5.4` and reasoning effort `high`.
+- For subagents that write or modify code, always spawn them with model `gpt-5.5` and reasoning effort `high`.
+- When explicitly setting a subagent model or reasoning effort, spawn with `fork_context=false`; include all required task context in the prompt instead of relying on full-history fork context.
 - Lightweight subagent models may be used only for read-only code exploration, investigation, or summarization tasks with no file edits.
 - Read `references/multi-agent.md` before spawning or assigning subagents.
 

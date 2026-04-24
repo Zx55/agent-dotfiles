@@ -26,6 +26,9 @@ The default `devflow-rev` behavior remains Review-Only. Multi-agent mode is an e
 ## 3. Subagent Work Boundaries
 
 - Subagents are implementation workers and must use `$devflow-dev` in Implementation Worker mode, not `$devflow-dev` multi-agent mode.
+- Subagents that write or modify code must be spawned with model `gpt-5.5` and reasoning effort `high`.
+- When setting `model` or `reasoning_effort`, use `fork_context=false`; full-history forked subagents inherit the main agent's model and reasoning effort and cannot override them.
+- Because `fork_context=false` does not copy the main agent's conversation, every subagent prompt must be self-contained.
 - Every subagent prompt must include ownership, expected files, do-not-touch areas, acceptance criteria, and expected tests.
 - Tell subagents they are not alone in the codebase.
 - Tell subagents not to commit.
