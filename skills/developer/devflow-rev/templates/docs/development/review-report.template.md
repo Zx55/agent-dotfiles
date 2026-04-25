@@ -46,7 +46,76 @@ List what this review is not trying to solve.
 
 Define which modules, workflows, or boundaries are in scope.
 
-## Review Findings
+## Code Review Lane
+
+Record findings from the code review lane.
+
+Typical categories:
+
+- request or spec compliance
+- correctness and bug risk
+- security or data-safety risk
+- implementation quality
+- test placement or test coverage
+
+For each finding, explain:
+
+- the problem
+- why it matters
+- severity or priority
+- the smallest repair direction
+
+Write `Out of scope` if the user explicitly requested architecture-only review.
+
+## Architecture Review Lane
+
+Record findings from the architecture review lane.
+
+Typical categories:
+
+- boundary drift
+- ownership or responsibility drift
+- hidden coupling
+- extensibility risk
+- redundancy at system or workflow level
+- deviation from `docs/design/`
+
+Include architectural status when useful:
+
+- `CLEAR`: no unresolved architectural blocker found
+- `WATCH`: non-blocking design risk to track
+- `BLOCK`: design issue that should prevent merge-ready acceptance
+
+Write `Out of scope` if the user explicitly requested code-only review.
+
+## Plan-Critic Notes
+
+Use this section when reviewing a repair plan, remediation plan, or implementation handoff.
+
+Record whether the plan has:
+
+- clear ownership and file scope
+- explicit do-not-touch areas
+- testable acceptance criteria
+- concrete risks and verification steps
+
+Write `Not applicable` when this review is not evaluating a plan or handoff.
+
+## Verification Evidence
+
+Use this section during acceptance review.
+
+Record:
+
+- `git diff` or artifact evidence checked
+- commands, tests, diagnostics, or manual checks run
+- missing evidence
+- pre-existing failures
+- remaining risk
+
+Write `Not applicable` when this is not an acceptance review.
+
+## Review Findings Summary
 
 Group the main findings by severity or ownership.
 

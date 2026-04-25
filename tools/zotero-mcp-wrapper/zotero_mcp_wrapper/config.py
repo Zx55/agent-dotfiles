@@ -15,6 +15,8 @@ DEFAULT_ZOTERO_PORT = 23119
 DEFAULT_STARTUP_TIMEOUT_SEC = 30.0
 DEFAULT_CONNECT_TIMEOUT_SEC = 0.25
 DEFAULT_STABLE_POLLS = 2
+DEFAULT_ADD_LOCAL_FILE_PATH = "/zotero-add-local-file/add-from-file"
+DEFAULT_ADD_LOCAL_FILE_TIMEOUT_SEC = 30.0
 
 
 @dataclass(frozen=True)
@@ -29,6 +31,9 @@ class Config:
     connect_timeout_sec: float
     auto_launch: bool
     stable_polls: int
+    add_local_file_token: str | None
+    add_local_file_path: str
+    add_local_file_timeout_sec: float
 
 
 def _env_flag(name: str, default: bool) -> bool:
@@ -65,5 +70,10 @@ def load_config() -> Config:
         connect_timeout_sec=_env_float("ZOTERO_CONNECT_TIMEOUT_SEC", DEFAULT_CONNECT_TIMEOUT_SEC),
         auto_launch=_env_flag("ZOTERO_AUTO_LAUNCH", True),
         stable_polls=_env_int("ZOTERO_READY_STABLE_POLLS", DEFAULT_STABLE_POLLS),
+        add_local_file_token=(os.getenv("ZOTERO_ADD_LOCAL_FILE_TOKEN") or "").strip() or None,
+        add_local_file_path=os.getenv("ZOTERO_ADD_LOCAL_FILE_PATH", DEFAULT_ADD_LOCAL_FILE_PATH).strip(),
+        add_local_file_timeout_sec=_env_float(
+            "ZOTERO_ADD_LOCAL_FILE_TIMEOUT_SEC",
+            DEFAULT_ADD_LOCAL_FILE_TIMEOUT_SEC,
+        ),
     )
-

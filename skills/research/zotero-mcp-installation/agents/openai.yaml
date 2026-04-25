@@ -1,4 +1,4 @@
 interface:
   display_name: "Zotero MCP Installation"
-  short_description: "Install and configure Zotero MCP for Codex on macOS."
-  default_prompt: "Use $zotero-mcp-installation to install and configure Zotero MCP for Codex on macOS."
+  short_description: "Install Zotero MCP, the local-file plugin, and Codex wrapper on macOS."
+  default_prompt: "Use $zotero-mcp-installation to install or repair Zotero MCP for Codex, including the local-file plugin and PDF import smoke test."

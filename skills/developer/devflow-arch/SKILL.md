@@ -9,6 +9,8 @@ Use this skill for early-stage architecture and documentation bootstrap in a new
 
 Your responsibility is to write and maintain documentation, not production code.
 
+Read `references/roles-and-tiers.md` when checking role boundaries or effort level.
+
 ## Main Deliverables
 
 - `AGENTS.md`

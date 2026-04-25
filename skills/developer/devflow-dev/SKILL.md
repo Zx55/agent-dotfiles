@@ -18,6 +18,7 @@ Read these first:
 ## Modes
 
 Read `references/routing.md` when deciding between Implementation Worker and Multi-Agent Development Orchestration.
+Read `references/roles-and-tiers.md` when applying the plan-critic lens, verifier lens, or subagent tiering.
 
 ### Implementation Worker
 
@@ -48,11 +49,18 @@ These activities can appear in Implementation Worker mode or as the main agent's
 - Be explicit about what should be done and what should not be done.
 - After the user selects a plan, expand it into concrete steps with files, risks, tests, and acceptance criteria.
 
+### Plan Critic Gate
+
+- Before executing a substantial plan, apply the plan-critic lens from `references/roles-and-tiers.md`.
+- If the plan is vague, missing file scope, missing testable acceptance criteria, or likely to cross design boundaries, revise the plan and ask for approval before coding.
+- If assigned by an orchestrator, report plan gaps upward instead of silently widening the task.
+
 ### Plan Execution
 
 - Implement the approved plan or assigned step.
 - Keep changes surgical and traceable to the approved plan.
 - Run the relevant tests and report anything that could not be verified.
+- Apply the verifier lens before claiming completion.
 
 ### Accepted Review Follow-Up
 
@@ -66,6 +74,7 @@ These activities can appear in Implementation Worker mode or as the main agent's
 - By default, every change must start with a plan.
 - Do not modify code or documents until the user approves the plan.
 - Only skip the planning step if the user explicitly says to write code directly or edit directly.
+- Do not execute a plan that lacks testable acceptance criteria or clear file ownership; fix the plan first or report the gap to the orchestrator.
 - Do not widen public surface area just to make implementation or testing easier.
 - If a change affects design boundaries, workflow semantics, persistence format, or testing boundaries, explicitly state which documents need to be updated.
 - Default to Implementation Worker unless the user explicitly requests Multi-Agent Development Orchestration.
@@ -100,6 +109,17 @@ Requirements for `Planned Files And Purpose`:
 - list the files or directories you expect to change
 - explain why each one would be changed
 - if the step does not require file edits, explicitly write `No file changes`
+
+## Verification Output
+
+Completion reports must include:
+
+- changed files and why they changed
+- verification evidence required by `references/roles-and-tiers.md`
+- tests or diagnostics that were not run, with the reason
+- known remaining risks or evidence gaps
+
+Do not treat an implementation summary as verification evidence.
 
 ## Startup Behavior
 

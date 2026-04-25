@@ -16,6 +16,7 @@ The working design for this repository comes from the discussion in this workspa
 - stdio only
 - wraps `zotero-mcp` only
 - transparent forwarding by default
+- one explicit non-transparent override is allowed: when `ZOTERO_ADD_LOCAL_FILE_TOKEN` is configured, `zotero_add_from_file` may be handled by the local Zotero Add Local File plugin so attachments are imported through Zotero Desktop storage
 - no business-level interpretation of Zotero tool semantics
 
 If implementation pressure conflicts with these constraints, prefer keeping the scope narrow instead of widening the design.

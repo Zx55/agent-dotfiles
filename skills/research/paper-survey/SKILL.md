@@ -1,6 +1,6 @@
 ---
 name: paper-survey
-description: Run an end-to-end, topic-driven literature survey workflow across multiple academic papers. Use when the user wants a survey of a research topic across multiple papers rather than a summary or deep reading of a single paper, with optional Zotero capture.
+description: Run an end-to-end, topic-driven literature survey workflow across multiple academic papers. Use when the user wants a survey of a research topic across multiple papers rather than a summary or deep reading of a single paper, with default Zotero capture for selected core papers.
 ---
 
 # Paper Survey
@@ -9,14 +9,15 @@ Use this skill when the user wants a literature survey rather than a single-pape
 
 This skill covers:
 
+- deriving a survey topic from text, PDFs, images, or their combination
 - turning a topic into multiple search queries
 - broad retrieval and triage
 - shortlist construction
 - deep reading of core papers
 - comparison and synthesis
-- optional Zotero lookup or capture
+- default Zotero dedupe and capture for selected core papers
 
-This skill does not require Zotero. Zotero is optional support for library lookup, dedupe, and capture.
+This skill assumes Zotero MCP is available. If Zotero MCP is unavailable, read $zotero-mcp-installation skill and help the user install, configure, or repair Zotero MCP before library capture.
 
 ## Main-Agent References
 
@@ -26,7 +27,7 @@ Then load other references only as needed:
 
 - [references/reading-depth.md](references/reading-depth.md) for skim, comparison, and deep-reading rules
 - [references/subagent-prompting.md](references/subagent-prompting.md) when spawning search or deep-reading subagents
-- [references/zotero-integration.md](references/zotero-integration.md) only when Zotero lookup, dedupe, tagging, or capture is needed
+- [references/zotero-integration.md](references/zotero-integration.md) before capturing selected core papers into Zotero
 
 Before running the survey workflow, initialize a task-local survey workspace with:
 
@@ -62,19 +63,19 @@ Do not ask subagents to improvise the entire workflow. Give them a bounded input
 
 ## Subagent Contract
 
+Use [references/subagent-prompting.md](references/subagent-prompting.md) for the full subagent prompt contract.
+
 Default subagent settings:
 
 - model: `gpt-5.5`
 - reasoning effort: `high`
 - `fork_context=false`
 
-Behavior rules:
+Core behavior rules:
 
-- search subagents only do broad retrieval and triage
-- deep-reading subagents only do one core-paper reading task
-- do not reuse a search subagent for deep reading
-- once a subagent writes its report artifact, close it
-- the main agent should consume report artifacts, not rely on long free-form chat output
+- give subagents bounded local tasks
+- make subagents write report artifacts into the survey workspace
+- close subagents after their artifact is complete
 
 ## Output Contract
 

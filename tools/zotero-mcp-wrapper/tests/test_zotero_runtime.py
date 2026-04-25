@@ -18,6 +18,9 @@ class ZoteroRuntimeTests(unittest.TestCase):
             connect_timeout_sec=0.1,
             auto_launch=True,
             stable_polls=1,
+            add_local_file_token=None,
+            add_local_file_path="/zotero-add-local-file/add-from-file",
+            add_local_file_timeout_sec=30.0,
         )
 
     @mock.patch("zotero_mcp_wrapper.zotero_runtime.socket.create_connection")

@@ -30,6 +30,7 @@ The subagent should be told to write the report artifact first and return a shor
 Include:
 
 - the survey topic
+- the input basis and seed terms or seed papers, if relevant
 - one search query
 - the goal of that query
 - any date, venue, benchmark, or exclusion constraints
@@ -40,6 +41,8 @@ Ask the subagent to:
 
 - find papers relevant to the query
 - filter obvious misses
+- record primary source links or stable IDs
+- distinguish observed source evidence from inference
 - avoid doing full deep reading
 - fill the report using the template structure
 - stop after the report is written
@@ -52,11 +55,17 @@ You are handling one search slice inside a paper survey.
 Survey topic:
 <topic>
 
+Input basis / seed context:
+<text, PDF, image, or mixed input summary; seed papers, figures, methods, datasets, or terms>
+
 Query:
 <query>
 
 Why this query exists:
 <reason>
+
+Time window:
+<time constraint or "none specified">
 
 Constraints:
 <constraints>
@@ -67,7 +76,7 @@ Use this template:
 Write the completed report to:
 <output path>
 
-Do broad retrieval and triage only. Do not do full deep reading. Read the task-local template, write the report artifact, then return a short note confirming completion and the output path.
+Do broad retrieval and triage only. Do not do full deep reading. Read the task-local template, record primary source links or stable IDs, distinguish observed evidence from inference, write the report artifact, then return a short note confirming completion and the output path.
 ```
 
 ## Deep-Reading Subagent Prompt Contract
@@ -83,6 +92,8 @@ Include:
 Ask the subagent to:
 
 - read the paper deeply enough to complete the template
+- ground important claims in section, page, figure, table, appendix, or metric references where available
+- flag claims that need cross-validation from another paper or source
 - stay focused on the survey question
 - avoid expanding into unrelated paper search
 - write the report artifact and stop
@@ -107,5 +118,5 @@ Use this template:
 Write the completed report to:
 <output path>
 
-Read only as deeply as needed to complete the template well for this survey. Do not broaden into a new literature search. Read the task-local template, write the report artifact, then return a short note confirming completion and the output path.
+Read only as deeply as needed to complete the template well for this survey. Do not broaden into a new literature search. Read the task-local template, ground important claims in specific paper locations where available, flag claims that need cross-validation, write the report artifact, then return a short note confirming completion and the output path.
 ```

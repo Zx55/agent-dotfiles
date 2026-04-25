@@ -8,6 +8,7 @@ Its job is intentionally narrow:
 - launch and manage the real `zotero-mcp` child process
 - check whether Zotero local API is available before request forwarding
 - auto-launch Zotero Desktop when needed
+- handle `zotero_add_from_file` through the local Zotero Add Local File plugin when configured
 - forward MCP messages without changing their meaning
 
 This project is not a general-purpose MCP framework. It is a focused wrapper for the Zotero local workflow discussed in this repository.
@@ -21,6 +22,7 @@ Current V1 assumptions:
 - wraps `zotero-mcp` only
 - uses Zotero Desktop local API on port `23119`
 - no message rewriting beyond minimal request inspection
+- `zotero_add_from_file` may be handled locally to store attachments through Zotero Desktop instead of Web API upload
 
 Out of scope for V1:
 
@@ -69,6 +71,7 @@ The current implementation covers the MVP building blocks:
 - request classification
 - macOS Zotero launch and readiness checks
 - transparent client-to-child request forwarding
+- local `zotero_add_from_file` interception when `ZOTERO_ADD_LOCAL_FILE_TOKEN` is set
 - basic unit tests for the core helpers
 
 ## Development
@@ -123,5 +126,8 @@ The MVP reads these environment variables:
 - `ZOTERO_CONNECT_TIMEOUT_SEC`
 - `ZOTERO_AUTO_LAUNCH`
 - `ZOTERO_READY_STABLE_POLLS`
+- `ZOTERO_ADD_LOCAL_FILE_TOKEN`
+- `ZOTERO_ADD_LOCAL_FILE_PATH`
+- `ZOTERO_ADD_LOCAL_FILE_TIMEOUT_SEC`
 
 Defaults are defined in `zotero_mcp_wrapper/config.py`.

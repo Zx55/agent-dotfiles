@@ -44,13 +44,31 @@ The main agent should always be explicit about the paths it expects subagents to
 
 ## Phase 0: Scope
 
-Start by clarifying:
+The user input can be any combination of:
+
+- text topic or question
+- one or more PDFs
+- one or more images, such as screenshots, figures, diagrams, tables, or paper snippets
+
+At least one input must be present.
+
+First normalize the inputs into:
 
 - the target topic or question
+- the input basis: text, PDF, image, or mixed
+- seed papers, figures, methods, datasets, or terms extracted from the inputs
+- explicit constraints from the user
+- inferred constraints that should be treated as assumptions
+
+Then clarify:
+
 - the intended outcome: overview, method comparison, reading-group note, implementation-oriented summary, or decision support
 - the expected depth and time budget
+- the time window, if the user specified one
 
 If the request is underspecified, make a reasonable default assumption and state it in the final report.
+
+Do not invent a time limit by default. If the user asks for "recent", "latest", "last N months", or names a date range, convert it into an explicit search constraint and pass it to search subagents.
 
 ## Phase 0.5: Initialize Survey Workspace
 
@@ -75,6 +93,8 @@ Prefer mixing these angles:
 - synonyms or adjacent terminology
 - recent or foundational framing when appropriate
 
+Carry forward time constraints from Phase 0. For example, "recent", "last six months", and "since 2024" should become explicit query constraints.
+
 The main agent owns query design.
 
 ## Phase 2: Broad Retrieval And Triage
@@ -96,9 +116,11 @@ The artifact should capture:
 - the query
 - why the query exists
 - candidate papers
-- short relevance notes
+- primary source links or IDs
+- short relevance notes grounded in observed source text
 - obvious coverage gaps
 - keep / borderline / drop recommendations
+- claims that need verification during deep reading
 
 The main agent should then:
 
@@ -134,9 +156,29 @@ Selection criteria:
 
 Avoid selecting five slight variants of the same idea.
 
+## Phase 4.5: Zotero Capture
+
+Before deep reading, use [zotero-integration.md](zotero-integration.md) to dedupe and capture the selected core papers into Zotero.
+
+Default behavior:
+
+- check whether each selected core paper already exists in Zotero
+- avoid duplicate imports using DOI, arXiv ID, title, and stable URL signals
+- import missing core papers with PDF attachments when available
+- inspect imported child items
+- delete low-value arXiv import notes when they only contain acceptance, homepage, or venue metadata
+- remove all tags from newly imported items
+- choose the best existing target collection for the survey topic
+- place newly imported and already-existing core papers into that target collection
+- preserve useful user-created notes and annotations
+
+If Zotero MCP is unavailable, read $zotero-mcp-installation skill and help the user install, configure, or repair Zotero MCP. If capture still cannot be completed in the current run, record the unresolved capture status in the final report.
+
 ## Phase 5: Deep Reading
 
 Assign one deep-reading subagent per core paper.
+
+Use [reading-depth.md](reading-depth.md) for the skim, comparison-read, and deep-read criteria.
 
 Each deep-reading subagent should receive:
 
@@ -152,12 +194,27 @@ The main agent should then:
 
 - read the deep-reading artifacts
 - extract stable comparison dimensions
+- preserve claim-to-evidence links from the evidence logs
 - build a comparison matrix
 - identify missing evidence
+- mark which important claims still need cross-validation
 
 Deep-reading subagents should stop after writing their report artifact. Close them once the artifact is complete.
 
-## Phase 6: Comparison And Synthesis
+## Phase 6: Cross-Validation Gate
+
+Before writing synthesis, the main agent must classify key claims into:
+
+- cross-validated: supported by at least two independent sources, or by one source plus directly checked primary evidence
+- single-source: supported by one paper only
+- indirect: inferred from related evidence but not directly stated or tested
+- unsupported: not backed by a located source
+
+Evidence gaps are mandatory. If a claim is single-source, indirect, or unsupported, either soften it in the final report or move it into `Evidence Gaps And Uncertainties`.
+
+Use lightweight comparison reads when cross-validation is needed for an important claim. Do not add extra reading just to confirm minor background details.
+
+## Phase 7: Comparison And Synthesis
 
 The main agent should compare core papers across a stable set of dimensions, such as:
 
@@ -170,9 +227,11 @@ The main agent should compare core papers across a stable set of dimensions, suc
 - empirical weaknesses
 - failure modes or limitations
 
+Only promote a synthesis claim when it is traceable to a search report, deep-reading report, or directly checked source. If the evidence is weak or not cross-validated, mark it as an evidence gap or explicitly lower the confidence.
+
 If an important comparison dimension is still unsupported, add `2-3` lightweight comparison reads rather than promoting many more papers to full deep reading.
 
-## Phase 7: Final Report
+## Phase 8: Final Report
 
 The main agent should write the root `final_report.md` in the survey workspace, using the task-local `templates/final_report.md` as the structure reference.
 
@@ -182,6 +241,15 @@ It should be based on:
 - the search report artifacts
 - the deep-reading artifacts
 - any gap-filling comparison reads
+
+The final report should include an evidence section that distinguishes:
+
+- well-supported claims
+- weakly supported claims
+- missing comparisons
+- points that require another source check
+
+The final report must include `Evidence Gaps And Uncertainties`, even when the section says no major gaps were found.
 
 ## Stopping Rule
 

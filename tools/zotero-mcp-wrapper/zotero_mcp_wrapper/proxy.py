@@ -9,6 +9,11 @@ from typing import BinaryIO
 from zotero_mcp_wrapper.child_process import ChildProcess
 from zotero_mcp_wrapper.config import Config
 from zotero_mcp_wrapper.framing import FrameError, encode_json_frame, read_frame
+from zotero_mcp_wrapper.local_file_plugin import (
+    LocalFilePluginError,
+    call_add_from_file_plugin,
+    is_add_from_file_tool_call,
+)
 from zotero_mcp_wrapper.types import JsonRpcRequest
 from zotero_mcp_wrapper.zotero_runtime import ZoteroLaunchError, ZoteroRuntime
 
@@ -93,6 +98,10 @@ class Proxy:
                     self._send_request_error(request, str(error))
                     continue
 
+            if request is not None and is_add_from_file_tool_call(payload) and self._config.add_local_file_token:
+                self._handle_local_add_from_file(request, payload)
+                continue
+
             self._child.stdin.write(frame.raw)
             self._child.stdin.flush()
 
@@ -108,3 +117,36 @@ class Proxy:
         sys.stdout.buffer.write(encode_json_frame(payload))
         sys.stdout.buffer.flush()
 
+    def _handle_local_add_from_file(self, request: JsonRpcRequest, payload: object) -> None:
+        assert isinstance(payload, dict)
+        params = payload.get("params")
+        arguments = params.get("arguments") if isinstance(params, dict) else None
+        if not isinstance(arguments, dict):
+            self._send_tool_result(request, "zotero_add_from_file arguments must be an object", is_error=True)
+            return
+
+        try:
+            result = call_add_from_file_plugin(self._config, arguments)
+        except LocalFilePluginError as error:
+            self._send_tool_result(request, str(error), is_error=True)
+            return
+
+        self._send_tool_result(request, result.text, is_error=False)
+
+    def _send_tool_result(self, request: JsonRpcRequest, text: str, *, is_error: bool) -> None:
+        payload = {
+            "jsonrpc": "2.0",
+            "id": request.request_id,
+            "result": {
+                "content": [
+                    {
+                        "type": "text",
+                        "text": text,
+                    }
+                ],
+            },
+        }
+        if is_error:
+            payload["result"]["isError"] = True
+        sys.stdout.buffer.write(encode_json_frame(payload))
+        sys.stdout.buffer.flush()
