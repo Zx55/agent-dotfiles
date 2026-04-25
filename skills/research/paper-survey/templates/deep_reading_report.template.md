@@ -7,53 +7,136 @@
 - Year:
 - Source / Venue:
 - Link / ID:
+- Local PDF:
+- Zotero Item:
+- Depth:
+- Report language:
 
-## One-Paragraph Summary
+## Executive Takeaway
 
-- Summary:
-- Evidence basis:
+1. **Claim:**
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
 
-## Problem And Setting
+2. **Claim:**
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
 
-- What problem does the paper solve?
-- What assumptions define the setting?
-- Evidence location:
+## Visual Anchor
 
-## Method
+- Asset:
+- Source location:
+- Asset type: original paper figure / original paper crop / agent-created schematic / generated illustration / none
+- What it shows:
+- Why it matters for this survey:
+- If no visual anchor is used, concrete reason:
 
-- Core idea:
-- Key mechanism or pipeline:
-- What seems novel:
-- Evidence location:
+## Problem Framing
+
+1. **Problem claim:**
+   - Setting:
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
+
+2. **Assumption / scope claim:**
+   - Setting:
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
+
+## Method Analysis
+
+1. **Core mechanism:**
+   - How it works:
+   - Design tradeoff:
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
+
+2. **Novel or differentiating choice:**
+   - How it works:
+   - Design tradeoff:
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
 
 ## Experimental Setup
 
-- Datasets / benchmarks:
-- Baselines:
-- Metrics:
-- Evidence location:
+1. **Evaluation scope:**
+   - Datasets / benchmarks:
+   - Baselines:
+   - Metrics:
+   - Evidence:
+   - Location:
+   - Confidence:
+
+2. **Training / supervision assumptions:**
+   - Data sources:
+   - Synthetic or proprietary components:
+   - Evidence:
+   - Location:
+   - Confidence:
 
 ## Main Results
 
-- Strongest empirical result:
-- Where results are weak or unclear:
-- Evidence location:
+1. **Strongest empirical result:**
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
+
+2. **Weak or unclear result:**
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
+
+## Strengths With Evidence
+
+1. **Strength:**
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
+
+2. **Strength:**
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
+
+## Limitations / Risks With Evidence
+
+1. **Limitation / risk:**
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
+
+2. **Limitation / risk:**
+   - Why it matters for this survey:
+   - Evidence:
+   - Location:
+   - Confidence:
 
 ## Evidence Log
+
+Use this section for additional claims that matter but do not fit cleanly under strengths or limitations.
 
 | Claim | Evidence Location | Evidence Summary | Confidence | Cross-Validation Need |
 | --- | --- | --- | --- | --- |
 |  |  |  |  |  |
 
-Use specific locations when available, such as section names, page numbers, figure/table IDs, appendix sections, or quoted metric names.
-
-## Strengths
-
-- 
-
-## Limitations
-
-- 
+Use specific locations when available, such as PDF page numbers, section names, figure/table IDs, appendix sections, or quoted metric names. If a claim is inferred rather than directly stated, mark the location as `Inference` and explain the basis.
 
 ## Unsupported Or Unverified Points
 
@@ -66,6 +149,13 @@ Use specific locations when available, such as section names, page numbers, figu
 - Claims that need another paper or source:
 - Comparisons that require another benchmark or baseline:
 - Results that should be checked against follow-up work:
+
+## What To Carry Into The Final Comparison
+
+- Comparison dimensions affected:
+- Claims safe to promote:
+- Claims to soften:
+- Follow-up checks:
 
 ## Relation To Survey Topic
 

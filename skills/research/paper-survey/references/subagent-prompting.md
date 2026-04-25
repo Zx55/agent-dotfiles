@@ -1,6 +1,6 @@
 # Subagent Prompting
 
-Use this reference when the main agent spawns search or deep-reading subagents.
+Use this reference only when the user explicitly asks for multi-agent execution and the main agent spawns search or deep-reading subagents.
 
 ## Default Contract
 
@@ -14,30 +14,25 @@ Pass only the local task context the subagent needs. Do not copy the full conver
 
 Subagents should usually not read the full skill or the reference set. The main agent should translate the needed instructions into the subagent prompt and point the subagent to the task-local files inside the initialized survey workspace.
 
-Every subagent prompt should explicitly specify:
+Subagents should not read, edit, or update `manifest.md`. Required gates are main-agent orchestration state. Subagents only write their assigned report artifact and any explicitly requested asset files.
 
-- the task
-- the inputs
-- the task-local template path to follow
-- the output file path
-- any scope boundaries
-- what not to do
+Every subagent prompt should have three blocks:
+
+- **Context:** task, inputs, scope boundaries, report language.
+- **Artifacts:** task-local template path, output file path, assets directory when relevant.
+- **Stop rule:** what not to do, and when to stop.
 
 The subagent should be told to write the report artifact first and return a short completion note with the artifact path.
 
 ## Search Subagent Prompt Contract
 
-Include:
+Prompt fields:
 
-- the survey topic
-- the input basis and seed terms or seed papers, if relevant
-- one search query
-- the goal of that query
-- any date, venue, benchmark, or exclusion constraints
-- the task-local `templates/search_report.md` path
-- the exact output path for the report artifact
+- **Context:** survey topic, input basis, seed terms or seed papers, one search query, why that query exists, time window, report language.
+- **Constraints:** date, venue, benchmark, source-quality, and exclusion constraints.
+- **Artifacts:** task-local `templates/search_report.md` path and exact output path.
 
-Ask the subagent to:
+Task requirements:
 
 - find papers relevant to the query
 - filter obvious misses
@@ -67,6 +62,9 @@ Why this query exists:
 Time window:
 <time constraint or "none specified">
 
+Report language:
+<language>
+
 Constraints:
 <constraints>
 
@@ -81,18 +79,19 @@ Do broad retrieval and triage only. Do not do full deep reading. Read the task-l
 
 ## Deep-Reading Subagent Prompt Contract
 
-Include:
+Prompt fields:
 
-- the survey topic
-- the target paper identity, link, or local source
-- the comparison dimensions that matter to the survey
-- the task-local `templates/deep_reading_report.md` path
-- the exact output path for the report artifact
+- **Context:** survey topic, target paper identity or local source, comparison dimensions, report language.
+- **Artifacts:** task-local `templates/deep_reading_report.md` path, assets directory, exact output path.
+- **Scope:** read this paper only; do not broaden into literature search.
 
-Ask the subagent to:
+Task requirements:
 
 - read the paper deeply enough to complete the template
 - ground important claims in section, page, figure, table, appendix, or metric references where available
+- pair each important strength and limitation/risk with evidence
+- make one explicit visual-anchor decision
+- for architecture, system, tokenizer, training-pipeline, benchmark, or empirical model papers, add one useful visual anchor by default, using an original crop when feasible or an agent-created deterministic schematic when cropping is not feasible
 - flag claims that need cross-validation from another paper or source
 - stay focused on the survey question
 - avoid expanding into unrelated paper search
@@ -112,11 +111,17 @@ Target paper:
 Focus comparison dimensions:
 <dimensions>
 
+Report language:
+<language>
+
 Use this template:
 <survey workspace>/templates/deep_reading_report.md
+
+Use this assets directory for optional visual anchors:
+<survey workspace>/assets
 
 Write the completed report to:
 <output path>
 
-Read only as deeply as needed to complete the template well for this survey. Do not broaden into a new literature search. Read the task-local template, ground important claims in specific paper locations where available, flag claims that need cross-validation, write the report artifact, then return a short note confirming completion and the output path.
+Read only as deeply as needed to complete the template well for this survey. Do not broaden into a new literature search. Read the task-local template, write in the requested report language, ground important claims in specific paper locations where available, pair strengths and limitations/risks with evidence, make one explicit visual-anchor decision, add an anchor by default for architecture/system papers unless there is a concrete reason not to, flag claims that need cross-validation, write the report artifact, then return a short note confirming completion and the output path.
 ```

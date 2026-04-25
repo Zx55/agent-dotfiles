@@ -6,12 +6,20 @@ Use this reference to run the survey from topic to synthesis.
 
 The workflow is artifact-based.
 
-That means:
+Core rules:
 
 - the main agent should initialize a task-local survey workspace first
-- subagents should write structured Markdown report artifacts
-- the main agent should read those artifacts for the next step
+- structured Markdown report artifacts are the handoff surface between workflow stages
+- `manifest.md` is the task-local progress and gate checklist
+- update `manifest.md` when a required gate is completed or explicitly marked unresolved
+- in multi-agent mode, only the main agent updates `manifest.md`; subagents should not read, edit, or reason about required gates
+- the main agent should read completed artifacts before moving to the next stage
 - do not rely on long free-form chat output as the main handoff surface
+
+Execution modes:
+
+- default single-agent mode: the main agent writes all report artifacts itself
+- explicit multi-agent mode: subagents may write assigned search and deep-reading artifacts
 
 Recommended workspace shape:
 
@@ -24,6 +32,7 @@ surveys/
       final_report.md
     search_reports/
     deep_read_reports/
+    assets/
     final_report.md
     manifest.md
 ```
@@ -40,9 +49,23 @@ Recommended artifact names inside the workspace:
 - deep reading stage: `deep_read_<paper_slug>.md`
 - final synthesis: `final_report.md`
 
-The main agent should always be explicit about the paths it expects subagents to read and write.
+The main agent should always be explicit about artifact paths. In multi-agent mode, it should also be explicit about the paths it expects each subagent to read and write.
 
-## Phase 0: Scope
+## Workflow Focus Map
+
+Use this table to keep the run oriented. Each phase should finish with an artifact or a manifest gate, not just a chat update.
+
+| Phase | Focus | Main Artifact / Gate |
+| --- | --- | --- |
+| Setup | normalize topic, language, time window, workspace | `Workspace initialized` |
+| Search | broad retrieval and triage by complementary query | `search_reports/*.md` |
+| Merge | dedupe, cluster, and pick core papers | `Core papers selected` |
+| Zotero | dedupe library, import verified PDFs, place collection | `Zotero capture completed or explicitly marked unresolved` |
+| Deep Read | claim-level evidence for core papers | `deep_read_reports/*.md` |
+| Visuals | one visual-anchor decision per core paper | `assets/*` or explicit `none` reason |
+| Synthesis | comparison, claims, gaps, next steps | `final_report.md` |
+
+## Setup: Scope
 
 The user input can be any combination of:
 
@@ -68,18 +91,32 @@ Then clarify:
 
 If the request is underspecified, make a reasonable default assumption and state it in the final report.
 
-Do not invent a time limit by default. If the user asks for "recent", "latest", "last N months", or names a date range, convert it into an explicit search constraint and pass it to search subagents.
+Do not invent a time limit by default. If the user asks for "recent", "latest", "last N months", or names a date range, convert it into an explicit search constraint. In multi-agent mode, pass that constraint to search subagents.
 
-## Phase 0.5: Initialize Survey Workspace
+## Setup: Report Language
 
-Before spawning subagents:
+Match the report language to the user's request by default:
+
+- if the user request is primarily Chinese, write search reports, deep-reading reports, and the final report in Chinese
+- if the user request is primarily English, write the reports in English
+- preserve paper titles, model names, benchmark names, metric names, citation keys, URLs, and quoted source labels in their original language
+- override this default only when the user explicitly asks for a different report language, such as "generate an English report"
+
+In multi-agent mode, pass the report language explicitly to every subagent.
+
+## Setup: Initialize Survey Workspace
+
+Before search and reading work:
 
 - run `python <skill-dir>/scripts/init_survey_workspace.py --topic "<topic>"`
 - confirm the survey workspace path
 - use the task-local template files under `templates/`
 - write all stage artifacts into this survey workspace
+- store deep-reading visuals, extracted paper figures, screenshots, and schematics under `assets/`
 
-The script should create the workspace root, materialize task-local templates, and create the report directories.
+The script should create the workspace root, materialize task-local templates, and create the report and asset directories.
+
+After initialization, mark `Workspace initialized` complete in `manifest.md`.
 
 ## Phase 1: Query Design
 
@@ -93,23 +130,13 @@ Prefer mixing these angles:
 - synonyms or adjacent terminology
 - recent or foundational framing when appropriate
 
-Carry forward time constraints from Phase 0. For example, "recent", "last six months", and "since 2024" should become explicit query constraints.
+Carry forward time constraints from setup. For example, "recent", "last six months", and "since 2024" should become explicit query constraints.
 
 The main agent owns query design.
 
 ## Phase 2: Broad Retrieval And Triage
 
-Assign one search subagent per query when parallelism helps.
-
-Each search subagent should receive:
-
-- the survey topic
-- one query
-- any scope boundaries or exclusion rules
-- the task-local `templates/search_report.md` path
-- an explicit output path
-
-Each search subagent should produce one Markdown artifact following the task-local `templates/search_report.md`.
+For each query, produce one `search_reports/search_<query_slug>.md` artifact using the task-local `templates/search_report.md`.
 
 The artifact should capture:
 
@@ -122,14 +149,25 @@ The artifact should capture:
 - keep / borderline / drop recommendations
 - claims that need verification during deep reading
 
-The main agent should then:
+Default single-agent mode:
+
+- the main agent runs broad retrieval and triage for each query
+- the main agent writes each search report artifact itself
+
+Explicit multi-agent mode:
+
+- assign one search subagent per query when parallelism helps
+- give each search subagent the survey topic, one query, constraints, the task-local template path, and one output path
+- require each search subagent to write one Markdown artifact following `templates/search_report.md`
+- close each search subagent once its artifact is complete
+
+After all search artifacts are complete, the main agent should:
 
 - read all search report artifacts
 - merge candidates across queries
 - deduplicate overlapping hits
 - cluster papers by method family or direction
-
-Search subagents should stop after writing their report artifact. Close them once the artifact is complete.
+- mark `Search reports written` complete in `manifest.md`
 
 ## Phase 3: Merge, Deduplicate, Cluster
 
@@ -156,41 +194,54 @@ Selection criteria:
 
 Avoid selecting five slight variants of the same idea.
 
-## Phase 4.5: Zotero Capture
+After selecting core papers, mark `Core papers selected` complete in `manifest.md`.
+
+## Zotero Capture
 
 Before deep reading, use [zotero-integration.md](zotero-integration.md) to dedupe and capture the selected core papers into Zotero.
 
 Default behavior:
 
-- check whether each selected core paper already exists in Zotero
-- avoid duplicate imports using DOI, arXiv ID, title, and stable URL signals
-- import missing core papers with PDF attachments when available
-- inspect imported child items
-- delete low-value arXiv import notes when they only contain acceptance, homepage, or venue metadata
-- remove all tags from newly imported items
-- choose the best existing target collection for the survey topic
-- place newly imported and already-existing core papers into that target collection
-- preserve useful user-created notes and annotations
+- **Dedupe:** check each selected core paper before import using DOI, arXiv ID, title, and stable URL signals.
+- **Import:** use verified local PDFs and `zotero_add_from_file`; follow [zotero-integration.md](zotero-integration.md) for the PDF completion gate.
+- **Clean:** inspect child items, delete only low-value import notes, and remove imported tags from newly imported items.
+- **Place:** choose the best existing collection and place both newly imported and already-existing core papers there.
+- **Preserve:** keep user-created notes, annotations, existing PDFs, and user-managed metadata intact.
 
 If Zotero MCP is unavailable, read $zotero-mcp-installation skill and help the user install, configure, or repair Zotero MCP. If capture still cannot be completed in the current run, record the unresolved capture status in the final report.
 
+After Zotero capture, mark `Zotero capture completed or explicitly marked unresolved` complete in `manifest.md`. If capture is unresolved, write the reason in `manifest.md` and carry it into the final report.
+
 ## Phase 5: Deep Reading
 
-Assign one deep-reading subagent per core paper.
+For each selected core paper, produce one `deep_read_reports/deep_read_<paper_slug>.md` artifact using the task-local `templates/deep_reading_report.md`.
 
 Use [reading-depth.md](reading-depth.md) for the skim, comparison-read, and deep-read criteria.
 
-Each deep-reading subagent should receive:
+Use [visual-assets.md](visual-assets.md) when a method figure, pipeline diagram, benchmark table, or schematic would make the deep-reading report clearer.
 
-- the survey topic
-- the target paper identity or source
-- the comparison dimensions to pay attention to
-- the task-local `templates/deep_reading_report.md` path
-- an explicit output path
+Deep-reading artifacts should:
 
-Each deep-reading subagent should produce one Markdown artifact following the task-local `templates/deep_reading_report.md`.
+- **Evidence discipline:** link each important strength and limitation to specific evidence, with PDF page, section, figure, table, appendix, or metric references when available.
+- **Visual decision:** include one `Visual Anchor` decision for every core paper.
+- **Visual default:** for architecture, system, tokenizer, training-pipeline, benchmark, or empirical model papers, produce at least one useful visual anchor unless the paper has no informative visual and a schematic would add no value.
+- **Asset location:** store extracted figures, screenshots, and schematics under `assets/`.
 
-The main agent should then:
+Prefer original paper figures or PDF crops for the visual anchor. If the paper has no useful figure, use a deterministic schematic such as Markdown, Mermaid, or SVG. Use `$imagegen` only when the user wants a generated explanatory visual or when a generated conceptual illustration adds value and can be verified against the paper; label it as generated, not copied from the paper.
+
+Default single-agent mode:
+
+- the main agent deep-reads each selected core paper
+- the main agent writes each deep-reading artifact itself
+
+Explicit multi-agent mode:
+
+- assign one deep-reading subagent per core paper
+- give each deep-reading subagent the survey topic, target paper identity or source, comparison dimensions, the task-local template path, and one output path
+- require each deep-reading subagent to write one Markdown artifact following `templates/deep_reading_report.md`
+- close each deep-reading subagent once its artifact is complete
+
+After all deep-reading artifacts are complete, the main agent should:
 
 - read the deep-reading artifacts
 - extract stable comparison dimensions
@@ -198,8 +249,8 @@ The main agent should then:
 - build a comparison matrix
 - identify missing evidence
 - mark which important claims still need cross-validation
-
-Deep-reading subagents should stop after writing their report artifact. Close them once the artifact is complete.
+- mark `Deep-reading reports written` complete in `manifest.md`
+- mark `Visual anchors considered for each core paper` complete in `manifest.md`
 
 ## Phase 6: Cross-Validation Gate
 
@@ -235,21 +286,47 @@ If an important comparison dimension is still unsupported, add `2-3` lightweight
 
 The main agent should write the root `final_report.md` in the survey workspace, using the task-local `templates/final_report.md` as the structure reference.
 
-It should be based on:
+The final report is reader-first. Put the survey conclusions and comparison content before process details.
+
+Top-level content should appear in this order:
+
+- `Executive Summary`
+- `Core Papers`
+- `Comparison Matrix`
+- `Key Claims And Evidence`
+- `Synthesis`
+- `Evidence Gaps And Uncertainties`
+- `Suggested Next Steps`
+
+Execution details should go in appendices:
+
+- `Appendix: Shortlist`
+- `Appendix: Search Strategy`
+- `Appendix: Evidence Standard`
+- `Appendix: Zotero Capture`
+- `Appendix: Run Metadata`
+
+If the execution details would dominate the final report, or if the user asks for a separate audit trail, write them to `run_report.md` and keep only a short appendix with a link to that file.
+
+The report should be based on:
 
 - the merged shortlist
 - the search report artifacts
 - the deep-reading artifacts
 - any gap-filling comparison reads
 
-The final report should include an evidence section that distinguishes:
+Required content:
 
-- well-supported claims
-- weakly supported claims
-- missing comparisons
-- points that require another source check
+- **Core Papers:** priority, paper title or short name, relative deep-read link, method family, why core, key strength/limitation, evidence basis, Zotero item key or status.
+- **Key Claims And Evidence:** separate well-supported claims, weak claims, missing comparisons, and claims requiring another source check.
+- **Zotero Appendix:** record collection path, collection key, placement rule, and one row per core paper with item key, collection path, collection key, PDF attachment status, and notes.
+- **Evidence Gaps:** include `Evidence Gaps And Uncertainties` even when no major gaps were found.
 
-The final report must include `Evidence Gaps And Uncertainties`, even when the section says no major gaps were found.
+After writing the final report, update `manifest.md`:
+
+- mark `Final report links deep-reading reports` complete only after checking the links are present
+- mark `Final report records Zotero collection path or unresolved status` complete only after checking the Zotero appendix
+- mark `Final report includes evidence gaps and uncertainties` complete only after checking the section exists
 
 ## Stopping Rule
 

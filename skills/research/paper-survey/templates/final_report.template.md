@@ -1,56 +1,20 @@
 # Final Report
 
-## Topic
+## Executive Summary
 
 - Topic:
 - Goal:
-- Input basis:
-- Seed inputs:
 - Time window:
-- Assumptions:
-
-## Executive Summary
-
 - Main takeaway:
 - Best-fit methods or directions:
 - Important caveats:
 - Evidence confidence:
 
-## Search Strategy
-
-- Queries used:
-- Scope boundaries:
-- Time constraints:
-- How papers were selected:
-
-## Evidence Standard
-
-- Evidence sources used:
-- Claims excluded or softened due to weak evidence:
-- Cross-validation rule used:
-- Papers needing verification:
-
-## Shortlist
-
-| Paper | Year | Method Family | Why It Made The Shortlist | Evidence Status |
-| --- | --- | --- | --- | --- |
-|  |  |  |  |  |
-
 ## Core Papers
 
-| Paper | Method Family | Key Strength | Key Limitation | Evidence Basis | Zotero Status |
-| --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  |  |
-
-## Zotero Capture
-
-- Core papers already in Zotero:
-- Core papers newly imported:
-- Core papers not imported and why:
-- Low-value import notes deleted:
-- Tags removed from newly imported items:
-- Collections used:
-- Collection placement unresolved:
+| Priority | Paper | Deep Read | Method Family | Why Core | Key Strength | Key Limitation | Evidence Basis | Zotero Item |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |  |  |
 
 ## Comparison Matrix
 
@@ -63,13 +27,6 @@
 | Claim | Supporting Paper(s) | Evidence Location(s) | Cross-Validation Status | Confidence | Notes |
 | --- | --- | --- | --- | --- | --- |
 |  |  |  |  |  |  |
-
-## Cross-Validation Summary
-
-- Cross-validated conclusions:
-- Single-source conclusions:
-- Indirect or inferred conclusions:
-- Unsupported claims excluded from synthesis:
 
 ## Synthesis
 
@@ -91,3 +48,53 @@
 - What to read next:
 - What to validate experimentally:
 - Zotero organization or cleanup needed:
+
+## Appendix: Shortlist
+
+| Paper | Year | Method Family | Why It Made The Shortlist | Evidence Status |
+| --- | --- | --- | --- | --- |
+|  |  |  |  |  |
+
+## Appendix: Search Strategy
+
+- Queries used:
+- Scope boundaries:
+- Time constraints:
+- How papers were selected:
+
+## Appendix: Evidence Standard
+
+- Evidence sources used:
+- Cross-validation rule used:
+- Claims excluded or softened due to weak evidence:
+- Papers needing verification:
+- Cross-validated conclusions:
+- Single-source conclusions:
+- Indirect or inferred conclusions:
+- Unsupported claims excluded from synthesis:
+
+## Appendix: Zotero Capture
+
+- Target collection path:
+- Target collection key:
+- Placement rule:
+- Core papers already in Zotero:
+- Core papers newly imported:
+- Core papers not imported and why:
+- Low-value import notes deleted:
+- Tags removed from newly imported items:
+- Collection placement unresolved:
+
+| Paper | Zotero Item Key | Status | Collection Path | Collection Key | PDF Attached | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |
+
+## Appendix: Run Metadata
+
+- Input basis:
+- Seed inputs:
+- Assumptions:
+- Survey workspace:
+- Search report artifacts:
+- Deep-reading report artifacts:
+- Asset artifacts:

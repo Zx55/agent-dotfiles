@@ -75,7 +75,49 @@ def write_manifest(path: Path, topic: str, survey_dir: Path) -> None:
             f"- Templates: {survey_dir / 'templates'}",
             f"- Search Reports: {survey_dir / 'search_reports'}",
             f"- Deep Read Reports: {survey_dir / 'deep_read_reports'}",
+            f"- Assets: {survey_dir / 'assets'}",
             f"- Final Report: {survey_dir / 'final_report.md'}",
+            "",
+            "## Focus Map",
+            "",
+            "| Phase | Focus | Main Artifact / Gate |",
+            "| --- | --- | --- |",
+            "| Setup | normalize topic, language, time window, workspace | Workspace initialized |",
+            "| Search | broad retrieval and triage by complementary query | search_reports/*.md |",
+            "| Merge | dedupe, cluster, and pick core papers | Core papers selected |",
+            "| Zotero | dedupe library, import verified PDFs, place collection | Zotero capture completed or explicitly marked unresolved |",
+            "| Deep Read | claim-level evidence for core papers | deep_read_reports/*.md |",
+            "| Visuals | one visual-anchor decision per core paper | assets/* or explicit none reason |",
+            "| Synthesis | comparison, claims, gaps, next steps | final_report.md |",
+            "",
+            "## Gates",
+            "",
+            "### Setup",
+            "",
+            "- [ ] Workspace initialized",
+            "",
+            "### Search",
+            "",
+            "- [ ] Search reports written",
+            "",
+            "### Merge",
+            "",
+            "- [ ] Core papers selected",
+            "",
+            "### Zotero",
+            "",
+            "- [ ] Zotero capture completed or explicitly marked unresolved",
+            "",
+            "### Deep Read",
+            "",
+            "- [ ] Deep-reading reports written",
+            "- [ ] Visual anchors considered for each core paper",
+            "",
+            "### Synthesis",
+            "",
+            "- [ ] Final report links deep-reading reports",
+            "- [ ] Final report records Zotero collection path or unresolved status",
+            "- [ ] Final report includes evidence gaps and uncertainties",
             "",
             "Use this workspace for all survey artifacts in this run.",
             "",
@@ -97,8 +139,9 @@ def main() -> int:
     templates_dir = survey_dir / "templates"
     search_reports_dir = survey_dir / "search_reports"
     deep_read_reports_dir = survey_dir / "deep_read_reports"
+    assets_dir = survey_dir / "assets"
 
-    for directory in (templates_dir, search_reports_dir, deep_read_reports_dir):
+    for directory in (templates_dir, search_reports_dir, deep_read_reports_dir, assets_dir):
         directory.mkdir(parents=True, exist_ok=True)
 
     source_templates_dir = skill_root() / "templates"
