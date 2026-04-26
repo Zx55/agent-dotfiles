@@ -1,4 +1,6 @@
 interface:
   display_name: "Zotero MCP Installation"
   short_description: "Install Zotero MCP, the local-file plugin, and Codex wrapper on macOS."
+  icon_small: "./assets/zotero-logo.png"
+  icon_large: "./assets/zotero-logo.png"
   default_prompt: "Use $zotero-mcp-installation to install or repair Zotero MCP for Codex, including the local-file plugin and PDF import smoke test."

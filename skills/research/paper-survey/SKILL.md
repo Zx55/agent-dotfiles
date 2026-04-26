@@ -113,11 +113,11 @@ Default final deliverable: Markdown. Use:
 
 - `search_reports/*.md` for query-level search and triage
 - `deep_read_reports/*.md` for one core paper each
-- `assets/*` for paper figure crops, screenshots, and visual anchors used by deep-reading reports
+- `assets/*` for paper figure crops, screenshots, generated images, and SVG image assets used by deep-reading reports
 - `final_report.md` for the reader-facing synthesis
 
 The final report should be reader-first: put core papers, comparison matrix, key claims, synthesis, and gaps before execution details. Move search strategy, evidence standard, shortlist, Zotero capture, and run metadata into appendices.
 
-In `final_report.md`, link each core paper to its corresponding `deep_read_reports/*.md` artifact and record the concrete Zotero collection path used for captured papers.
+In `final_report.md`, link each core paper to its corresponding `deep_read_reports/*.md` artifact using relative paths and record the concrete Zotero collection path used for captured papers.
 
 Generate slides only if the user explicitly wants a presentation or speaking deck.

@@ -14,7 +14,7 @@ Pass only the local task context the subagent needs. Do not copy the full conver
 
 Subagents should usually not read the full skill or the reference set. The main agent should translate the needed instructions into the subagent prompt and point the subagent to the task-local files inside the initialized survey workspace.
 
-Subagents should not read, edit, or update `manifest.md`. Required gates are main-agent orchestration state. Subagents only write their assigned report artifact and any explicitly requested asset files.
+Subagents should not read, edit, or update `manifest.md`. Required gates are main-agent orchestration state. Subagents only write their assigned report artifact and any explicitly requested image/media asset files.
 
 Every subagent prompt should have three blocks:
 
@@ -91,7 +91,8 @@ Task requirements:
 - ground important claims in section, page, figure, table, appendix, or metric references where available
 - pair each important strength and limitation/risk with evidence
 - make one explicit visual-anchor decision
-- for architecture, system, tokenizer, training-pipeline, benchmark, or empirical model papers, add one useful visual anchor by default, using an original crop when feasible or an agent-created deterministic schematic when cropping is not feasible
+- for architecture, system, tokenizer, training-pipeline, benchmark, or empirical model papers, add one useful visual anchor by default, using an original PDF crop when feasible; if using Mermaid or Markdown, put the schematic inline in the deep-reading report, not in `assets/`
+- use relative paths inside the report for the local PDF, image assets, and cross-links
 - flag claims that need cross-validation from another paper or source
 - stay focused on the survey question
 - avoid expanding into unrelated paper search
@@ -117,11 +118,11 @@ Report language:
 Use this template:
 <survey workspace>/templates/deep_reading_report.md
 
-Use this assets directory for optional visual anchors:
+Use this assets directory for optional image/media visual anchors:
 <survey workspace>/assets
 
 Write the completed report to:
 <output path>
 
-Read only as deeply as needed to complete the template well for this survey. Do not broaden into a new literature search. Read the task-local template, write in the requested report language, ground important claims in specific paper locations where available, pair strengths and limitations/risks with evidence, make one explicit visual-anchor decision, add an anchor by default for architecture/system papers unless there is a concrete reason not to, flag claims that need cross-validation, write the report artifact, then return a short note confirming completion and the output path.
+Read only as deeply as needed to complete the template well for this survey. Do not broaden into a new literature search. Read the task-local template, write in the requested report language, ground important claims in specific paper locations where available, pair strengths and limitations/risks with evidence, make one explicit visual-anchor decision, add an anchor by default for architecture/system papers unless there is a concrete reason not to, prefer a PDF crop when feasible, put Mermaid/Markdown schematics inline if used, use relative paths in the report, flag claims that need cross-validation, write the report artifact, then return a short note confirming completion and the output path.
 ```

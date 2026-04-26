@@ -3,4 +3,4 @@ interface:
   short_description: "Use Dayu for public-company research and return its answer directly."
   icon_small: "./assets/dayu-small.png"
   icon_large: "./assets/dayu.png"
-  default_prompt: "Use $dayu to research a listed company, return Dayu's answer directly in chat, download US filings when useful, and ask for uploads for A-share or Hong Kong materials."
+  default_prompt: "Use $dayu with prompt labels to research a listed company, return Dayu's answer directly in chat, download US filings when useful, and ask for uploads for A-share or Hong Kong materials."

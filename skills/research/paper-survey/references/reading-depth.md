@@ -58,7 +58,7 @@ For deep-reading reports:
 - if a claim is inferred rather than directly stated, label it as an inference and explain the basis
 - do not add low-value detail merely to make the report longer
 
-When a figure, table, or pipeline diagram is central to understanding the paper, include a visual anchor in the report and store the asset under the survey workspace's `assets/` directory.
+When a figure, table, or pipeline diagram is central to understanding the paper, include a visual anchor in the report. Store PDF crops, screenshots, generated images, and SVG image assets under the survey workspace's `assets/` directory. Put Mermaid or Markdown schematics inline in the deep-reading report.
 
 If needed, inspect appendices for implementation or evaluation details, but only when those details matter to the survey question.
 

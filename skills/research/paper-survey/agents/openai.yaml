@@ -1,0 +1,6 @@
+interface:
+  display_name: "Paper Survey"
+  short_description: "Run topic-driven literature surveys"
+  icon_small: "./assets/paper-survey.png"
+  icon_large: "./assets/paper-survey.png"
+  default_prompt: "Use $paper-survey to run an end-to-end literature survey on a research topic, capture core papers in Zotero, and produce a reader-first synthesis."

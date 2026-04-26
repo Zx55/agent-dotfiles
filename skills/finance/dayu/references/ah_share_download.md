@@ -7,7 +7,7 @@ This reference is for closing the loop before Dayu upload:
 1. identify the market
 2. download the report PDF from an official source
 3. upload it into Dayu
-4. continue with `prompt` or `interactive`
+4. continue with `prompt --label`
 
 ## Principle
 

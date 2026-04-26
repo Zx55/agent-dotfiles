@@ -95,6 +95,6 @@
 - Seed inputs:
 - Assumptions:
 - Survey workspace:
-- Search report artifacts:
-- Deep-reading report artifacts:
-- Asset artifacts:
+- Search report artifacts: <!-- use paths relative to final_report.md -->
+- Deep-reading report artifacts: <!-- use paths relative to final_report.md -->
+- Asset artifacts: <!-- use paths relative to final_report.md -->

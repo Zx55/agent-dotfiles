@@ -48,20 +48,20 @@ Pass it explicitly to Dayu commands with `--base ~/.dayu/workspace`.
 - do not paraphrase, summarize, translate, critique, or restructure it unless the user explicitly asks
 - do not generate reports unless the user explicitly asks for a report, draft, markdown, docx, html, or pdf
 
-### Session Continuity
+### Label Continuity
 
-- default to `dayu-cli prompt` for the first analytical question; do not default to `interactive`
-- do not assume a new `dayu-cli prompt` call remembers prior `prompt` turns
-- if the user asks one or two follow-up questions after a prior `prompt`, keep using `prompt` but include a short recap of the prior Dayu answer and the current question in the new prompt
-- only switch to `interactive` when the user clearly wants a sustained multi-turn Dayu-side thread or the follow-up chain is strongly dependent on prior answers
-- when the host starts `interactive`, prefer `dayu-cli interactive --base ~/.dayu/workspace --new-session --thinking` unless you are intentionally resuming a skill-owned interactive session from the same workflow
-- when switching from `prompt` to `interactive`, seed the first interactive message with a compact recap: ticker, materials used, prior conclusion, and the new question
-- remember that `interactive` is a terminal TTY workflow; it is not the default path for normal single-turn skill use
+- use `dayu-cli prompt --base ~/.dayu/workspace --label <LABEL>` for analytical questions
+- before creating a new label, run `dayu-cli conv --base ~/.dayu/workspace list` and check for an existing label with the same name
+- if the label already exists, reuse it only when the user is continuing that same research thread; otherwise choose a distinct label
+- use stable, descriptive labels such as `<ticker>-<topic>` or `<ticker>-<YYYYMMDD>-<topic>`; avoid vague names like `test` or `default`
+- use the same label for follow-up questions in the same thread so Dayu owns the continuity
+- use only labeled prompts for reusable conversation state
 
 ### Waiting and Failure
 
 - prefer explicit Dayu completion or failure signals over elapsed-time heuristics
-- for `dayu-cli prompt` and `dayu-cli interactive`, pass `--thinking` by default and treat reasoning/tool-visible output as the primary liveness clue; the detailed quiet-period fallback rules live in [references/routing.md](references/routing.md)
+- rely on Dayu's progress/status output as the primary liveness clue; do not enable reasoning-stream output by default
+- the detailed quiet-period fallback rules live in [references/routing.md](references/routing.md)
 - while a run remains active, do not cancel it, do not restart the same prompt, do not switch models, and do not add limiting flags such as `--max-iterations` unless the user explicitly asked for that tradeoff
 - for Hong Kong or A-share PDF conversion failures such as `Docling 转换失败`, follow the Markdown fallback in [references/materials.md](references/materials.md)
 
@@ -80,7 +80,6 @@ If any of that is missing or broken, use the sibling skill [dayu-installation](.
 - Read [references/routing.md](references/routing.md) for the single-turn path, waiting checks, and market routing.
 - Read [references/materials.md](references/materials.md) for upload commands, minimum metadata, and PDF-to-Markdown fallback.
 - Read [references/ah_share_download.md](references/ah_share_download.md) only when the target is A-share or Hong Kong and the official documents still need to be downloaded.
-- Read [references/interactive.md](references/interactive.md) when the user wants Dayu-side multi-turn continuity.
 - Read [references/reporting.md](references/reporting.md) only when the user explicitly asks for a report or export artifact.
 
 ## Output Expectations

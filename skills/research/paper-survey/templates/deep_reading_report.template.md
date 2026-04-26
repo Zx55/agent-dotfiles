@@ -7,7 +7,7 @@
 - Year:
 - Source / Venue:
 - Link / ID:
-- Local PDF:
+- Local PDF: <!-- use a path relative to this report, such as ../pdfs/<paper>.pdf -->
 - Zotero Item:
 - Depth:
 - Report language:
@@ -28,9 +28,9 @@
 
 ## Visual Anchor
 
-- Asset:
+- Asset: <!-- embed an image with a relative path, include an inline Mermaid/Markdown schematic, or write none -->
 - Source location:
-- Asset type: original paper figure / original paper crop / agent-created schematic / generated illustration / none
+- Asset type: original paper figure / original paper crop / inline agent-created schematic / generated illustration / none
 - What it shows:
 - Why it matters for this survey:
 - If no visual anchor is used, concrete reason:

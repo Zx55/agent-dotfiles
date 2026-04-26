@@ -112,7 +112,9 @@ Before search and reading work:
 - confirm the survey workspace path
 - use the task-local template files under `templates/`
 - write all stage artifacts into this survey workspace
-- store deep-reading visuals, extracted paper figures, screenshots, and schematics under `assets/`
+- store extracted paper figures, screenshots, generated images, and SVG image assets under `assets/`
+- use relative paths inside all Markdown artifacts; avoid absolute local workspace paths because the survey directory may move
+- put Mermaid or Markdown schematics inline in the deep-reading report instead of storing separate `.md` schematic files under `assets/`
 
 The script should create the workspace root, materialize task-local templates, and create the report and asset directories.
 
@@ -225,9 +227,10 @@ Deep-reading artifacts should:
 - **Evidence discipline:** link each important strength and limitation to specific evidence, with PDF page, section, figure, table, appendix, or metric references when available.
 - **Visual decision:** include one `Visual Anchor` decision for every core paper.
 - **Visual default:** for architecture, system, tokenizer, training-pipeline, benchmark, or empirical model papers, produce at least one useful visual anchor unless the paper has no informative visual and a schematic would add no value.
-- **Asset location:** store extracted figures, screenshots, and schematics under `assets/`.
+- **Path style:** use relative links and local paths inside Markdown reports.
+- **Asset location:** store extracted figures, screenshots, generated image files, and SVG image assets under `assets/`.
 
-Prefer original paper figures or PDF crops for the visual anchor. If the paper has no useful figure, use a deterministic schematic such as Markdown, Mermaid, or SVG. Use `$imagegen` only when the user wants a generated explanatory visual or when a generated conceptual illustration adds value and can be verified against the paper; label it as generated, not copied from the paper.
+Before deep reading, check whether PDF rendering is available and install PyMuPDF when package installation is acceptable; see [visual-assets.md](visual-assets.md). Prefer original paper figures or PDF crops for the visual anchor. If the paper has no useful figure or the original figure is too dense, use an inline deterministic schematic such as Mermaid or Markdown directly in the deep-reading report. Use SVG or `$imagegen` only when an actual image file adds value and can be verified against the paper; label it as generated, not copied from the paper.
 
 Default single-agent mode:
 
