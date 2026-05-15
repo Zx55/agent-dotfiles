@@ -35,8 +35,6 @@ Conditionally allowed tools:
 
 Do not use these tools by default:
 
-- `zotero_add_by_doi`
-- `zotero_add_by_url`
 - `zotero_merge_duplicates`
 - `zotero_batch_update_tags`
 - `zotero_update_note`
@@ -98,7 +96,6 @@ Use this as a staged checklist. Do not collapse the stages; the PDF gate is what
 - For missing items, download the source PDF locally first, preferably under the survey workspace.
 - Verify the local PDF with the `PDF Download Completion Gate` below.
 - Import only verified PDFs with `zotero_add_from_file`.
-- Do not use DOI or URL imports by default; `zotero_add_by_doi` and `zotero_add_by_url` may not be visible in the user's local Zotero setup.
 
 ### 4. Post-Import Inspection And Cleanup
 

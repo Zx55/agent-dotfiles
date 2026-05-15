@@ -1,0 +1,6 @@
+interface:
+  display_name: "Overleaf LaTeX"
+  short_description: "Work with Overleaf Git LaTeX projects"
+  icon_small: "./assets/overleaf-logo.png"
+  icon_large: "./assets/overleaf-logo.png"
+  default_prompt: "Use $overleaf-latex to initialize, edit, verify, pull, and push an Overleaf LaTeX project through its Git integration."

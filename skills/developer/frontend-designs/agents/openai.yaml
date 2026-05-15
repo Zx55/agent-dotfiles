@@ -1,6 +1,0 @@
-interface:
-  display_name: "Frontend Designs"
-  short_description: "Use DESIGN.md brand references to guide frontend UI work"
-  icon_small: "./assets/frontend-designs-small.png"
-  icon_large: "./assets/frontend-designs.png"
-  default_prompt: "Use $frontend-designs to choose or reuse a fitting DESIGN.md reference, turn it into an implementation brief, and guide this frontend task."
