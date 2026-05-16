@@ -1,0 +1,27 @@
+{
+  "canvas": {
+    "width_in": 52,
+    "height_in": 39,
+    "dpi": 300,
+    "orientation": "landscape"
+  },
+  "theme": {
+    "fonts": {
+      "title": "Aptos Display",
+      "body": "Aptos"
+    },
+    "colors": {
+      "background": "FFFFFF",
+      "ink": "111827",
+      "muted": "475569",
+      "section": "334155",
+      "sectionText": "FFFFFF",
+      "accent": "2563EB"
+    },
+    "section_style": {
+      "height": 1.05,
+      "fontSize": 30
+    }
+  },
+  "elements": []
+}

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Academic Poster"
+  short_description: "Build print-ready research posters"
+  brand_color: "#334155"
+  default_prompt: "Use $academic-poster to plan, draft, build, render, and QA an editable PPTX-first academic conference poster from a paper PDF."

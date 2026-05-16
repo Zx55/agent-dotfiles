@@ -24,11 +24,20 @@ Useful variants:
 
 ```bash
 ./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --overwrite-init
+./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --reset-init
 ./scripts/dayu_install_or_update.sh --workspace /path/to/dayu-workspace --skip-init
 ./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --version <tag>
 ```
 
 The script resolves the latest wheel dynamically when `--version latest` is used. If GitHub REST API release lookup is blocked or rate-limited, it falls back to `gh release view`; for explicit release tags it can also verify the conventional wheel URL directly.
+
+Init flags are intentionally explicit:
+
+- `--skip-init` leaves an existing workspace config untouched
+- `--overwrite-init` passes `dayu-cli init --overwrite`
+- `--reset-init` passes `dayu-cli init --reset`
+
+Use reset only when release notes require it or the user explicitly wants to rebuild generated init directories.
 
 Manual fallback for a known release tag:
 

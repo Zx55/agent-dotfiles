@@ -11,7 +11,7 @@ Common examples:
 
 ## When this matters
 
-`dayu-cli init` asks the user to choose a provider and will happily accept an existing `OPENAI_API_KEY`. That is enough only when the requests should really go to OpenAI.
+`dayu-cli init` asks the user to choose a provider and may accept an existing provider key from the environment. That is enough only when the generated `llm_models.json` entry points to the intended endpoint, model ID, and key variable.
 
 If the key actually belongs to a different OpenAI-compatible provider, Dayu may still need a post-init config change in `workspace/config/llm_models.json` and sometimes in `workspace/config/prompts/manifests/*.json`.
 
@@ -25,6 +25,7 @@ For the target model config in `llm_models.json`, confirm:
 - `endpoint_url`
 - `model`
 - `headers.Authorization`
+- the environment variable name used in `headers.Authorization`
 - temperature constraints or other provider-specific payload quirks
 
 Then make sure each relevant manifest's `model.default_name` and `model.allowed_names` reference the intended config name.
@@ -51,18 +52,19 @@ For Moonshot's OpenAI-compatible API:
 
 - endpoint base: `https://api.moonshot.cn`
 - chat completions endpoint: `https://api.moonshot.cn/v1/chat/completions`
+- key variable convention for this local setup: `DAYU_KIMI_API_KEY`
 
 Example checks:
 
 ```bash
 curl -sS https://api.moonshot.cn/v1/models \
-  -H "Authorization: Bearer $OPENAI_API_KEY"
+  -H "Authorization: Bearer $DAYU_KIMI_API_KEY"
 ```
 
 ```bash
 cat <<'JSON' >/tmp/moonshot_test_payload.json
 {
-  "model": "kimi-k2.5",
+  "model": "kimi-k2.6",
   "messages": [{"role": "user", "content": "Reply with OK only."}],
   "max_tokens": 8,
   "temperature": 1
@@ -70,7 +72,7 @@ cat <<'JSON' >/tmp/moonshot_test_payload.json
 JSON
 
 curl -sS https://api.moonshot.cn/v1/chat/completions \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Authorization: Bearer $DAYU_KIMI_API_KEY" \
   -H "Content-Type: application/json" \
   --data @/tmp/moonshot_test_payload.json
 ```

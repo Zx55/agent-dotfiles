@@ -7,7 +7,7 @@ description: Install, update, verify, and initialize the Dayu CLI with uv-manage
 
 Install and stabilize `dayu-cli` for local use through `uv`, then finish first-run setup with `dayu-cli init`.
 
-Do not use this skill for normal research work such as `download`, `prompt`, `interactive`, `write`, or `dayu-render` usage after setup is already complete. Those belong in the separate `dayu` skill.
+Do not use this skill for normal Dayu runtime work after setup is complete. Research prompts, label management, report-shaped answers, material upload, and render/export usage belong in the separate `dayu` skill.
 
 ## When To Use
 
@@ -45,7 +45,7 @@ Before changing anything, determine:
 
 - whether the user wants install, update, verify, or repair
 - which workspace path should be initialized
-- whether `dayu-cli init` should overwrite an existing workspace config
+- whether `dayu-cli init` should leave existing config alone, overwrite config files, or fully reset generated init directories
 
 If the workspace path is not specified, default to `~/.dayu/workspace`.
 
@@ -84,9 +84,13 @@ For this skill, `dayu-cli init` is part of installation completeness. A Dayu ins
 
 Because `init` is interactive, do not try to fake provider selection or API key input. Run the command in a TTY and let the user complete the prompts.
 
-If the workspace already has config and the user wants to rebuild it, rerun init with overwrite enabled.
+If the workspace already has config:
 
-For provider/config refreshes after an update, follow [references/update.md](references/update.md). Only use overwrite when the user wants that refresh.
+- use `--skip-init` for ordinary package updates when release notes do not require config refresh
+- use `--overwrite-init` only when the user wants config files overwritten in place
+- use `--reset-init` only when release notes require a reset or the user explicitly wants to rebuild generated `.dayu`, `config`, and `assets` directories
+
+For provider/config refreshes after an update, follow [references/update.md](references/update.md). Make destructive reset or overwrite behavior explicit before running it.
 
 ### 5. Verify the final state
 

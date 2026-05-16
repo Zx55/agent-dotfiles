@@ -12,13 +12,14 @@ usage() {
 Install or update Dayu CLI with uv-managed Python, then optionally run dayu-cli init.
 
 Usage:
-  dayu_install_or_update.sh [--workspace PATH] [--version latest|TAG] [--skip-init] [--overwrite-init]
+  dayu_install_or_update.sh [--workspace PATH] [--version latest|TAG] [--skip-init] [--overwrite-init] [--reset-init]
 
 Options:
   --workspace PATH   Workspace to initialize with dayu-cli init. Default: ~/.dayu/workspace
   --version VALUE    Release tag such as vX.Y.Z, or latest. Default: latest
   --skip-init        Install or update Dayu without running dayu-cli init
   --overwrite-init   Pass --overwrite to dayu-cli init
+  --reset-init       Pass --reset to dayu-cli init
   -h, --help         Show this help text
 EOF
 }
@@ -66,6 +67,7 @@ parse_args() {
   RELEASE_TAG="latest"
   SKIP_INIT=0
   OVERWRITE_INIT=0
+  RESET_INIT=0
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -87,6 +89,10 @@ parse_args() {
         OVERWRITE_INIT=1
         shift
         ;;
+      --reset-init)
+        RESET_INIT=1
+        shift
+        ;;
       -h|--help)
         usage
         exit 0
@@ -105,6 +111,10 @@ parse_args() {
       WORKSPACE="$HOME/${WORKSPACE#~/}"
       ;;
   esac
+
+  if [[ "$OVERWRITE_INIT" -eq 1 && "$RESET_INIT" -eq 1 ]]; then
+    die "--overwrite-init and --reset-init cannot be used together"
+  fi
 }
 
 detect_uv() {
@@ -278,7 +288,9 @@ run_init_if_requested() {
   mkdir -p "$WORKSPACE"
 
   local init_cmd=("$DAYU_CLI_BIN" init --base "$WORKSPACE")
-  if [[ "$OVERWRITE_INIT" -eq 1 ]]; then
+  if [[ "$RESET_INIT" -eq 1 ]]; then
+    init_cmd+=(--reset)
+  elif [[ "$OVERWRITE_INIT" -eq 1 ]]; then
     init_cmd+=(--overwrite)
   fi
 

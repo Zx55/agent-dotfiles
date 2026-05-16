@@ -95,7 +95,13 @@ If the workspace was initialized before and needs to be rebuilt, rerun init with
 ./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --overwrite-init
 ```
 
-For update-related provider refreshes, follow [update.md](update.md). Do not use overwrite casually; it replaces existing config files.
+If release notes require a full reset, use:
+
+```bash
+./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --reset-init
+```
+
+For update-related provider refreshes, follow [update.md](update.md). Do not use overwrite or reset casually. `--overwrite-init` replaces config files, and `--reset-init` rebuilds generated `.dayu`, `config`, and `assets` directories.
 
 ## Render checks fail
 

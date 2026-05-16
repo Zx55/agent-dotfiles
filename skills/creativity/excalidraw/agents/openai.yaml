@@ -1,7 +1,0 @@
-interface:
-  display_name: "Excalidraw"
-  short_description: "Create editable hand-drawn style diagrams"
-  icon_small: "./assets/excalidraw-icon-small.png"
-  icon_large: "./assets/excalidraw-icon.png"
-  brand_color: "#6965DB"
-  default_prompt: "Use $excalidraw to create an editable .excalidraw diagram for this workflow, system, or concept."

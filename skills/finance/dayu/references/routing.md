@@ -1,41 +1,75 @@
 # Routing Guide
 
-This reference maps user intent to Dayu behavior.
+This reference maps user intent to Dayu commands.
 
-## Default path
+## Canonical Command
 
-For analytical questions, use a labeled prompt:
+For listed-company research, use:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<question>"
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared question>"
 ```
 
-Then return Dayu's final answer directly in chat by default.
+This is the normal host-agent entrypoint for:
 
-Default posture:
+- first-turn research
+- follow-up questions
+- report-shaped answers
+- filing preparation requests for a listed company
 
-- use `prompt --label` for both the first question and follow-up turns
-- let the label carry Dayu-side continuity instead of reconstructing context in the host
-- rely on Dayu's progress/status output for liveness
+Do not pre-run `download` or `upload_filing` for normal research questions. With `--ticker`, Dayu owns filing discovery, download, and filing-tool behavior.
 
-Before creating a new label, check active labeled conversations:
+## Request Preparation
+
+Prepare terse user input into a clear Dayu prompt when useful.
+
+Good prompt preparation may add:
+
+- scope, such as risk, margin, cash flow, segment, valuation sensitivity, or governance
+- comparison period, such as latest quarter, year over year, or last annual report
+- materiality lens, such as what matters for investment judgment
+- uncertainty handling, such as call out missing filings or weak evidence
+- output shape, such as bullets, table, conservative/base/upside cases, or watchlist
+
+Do not add:
+
+- facts not provided by the user or Dayu
+- your own financial conclusion
+- valuation calls not requested by the user
+- evidence claims before Dayu has produced evidence
+- a changed company, ticker, time horizon, or risk appetite
+
+Ask a brief clarification when the ticker, company identity, time horizon, or decision frame is materially ambiguous.
+
+## Label Registry
+
+Before creating a label:
 
 ```bash
 dayu-cli conv --base ~/.dayu/workspace list
 ```
 
-If the desired label already exists, reuse it only when the user is continuing that same research thread. Otherwise choose a distinct descriptive label.
+Reuse an existing label only when the user is continuing the same company and the same analytical thread.
 
-## Core rule
+If a label name looks familiar but ownership is unclear:
 
-- the host prepares the request and relays the result
-- Dayu performs the substantive company analysis
-- if the first Dayu answer is not enough, ask Dayu a better follow-up instead of starting a separate analysis track
-- a narrow framing check is fine, but "cross-validation" must not turn into a second substantive analysis outside Dayu
+```bash
+dayu-cli conv --base ~/.dayu/workspace status --label <LABEL>
+```
 
-## Intent map
+Create a new label when:
 
-### Public-company analysis question
+- the company changes
+- the analytical topic changes materially
+- the prior label's ownership is unclear after inspection
+
+Retire a label only when the user asks:
+
+```bash
+dayu-cli conv --base ~/.dayu/workspace remove --label <LABEL>
+```
+
+## Default Research Flow
 
 Examples:
 
@@ -43,37 +77,19 @@ Examples:
 - "拼多多这季度利润率为什么变了"
 - "阿里值得继续深研吗"
 
-Default path:
+Steps:
 
-1. resolve ticker and market
-2. inspect whether local materials already exist under `~/.dayu/workspace/portfolio/<ticker>`
-3. if US-listed and local filings are missing, run `download`
-4. choose or create a non-conflicting label for this research thread
-5. let Dayu answer the analytical question
-6. relay Dayu's final answer directly unless the user explicitly asks for a summary or rewrite
+1. Resolve ticker and market.
+2. Prepare the user's question into a clear Dayu prompt.
+3. Check labels with `conv list`.
+4. Reuse or create a label.
+5. Run `dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared question>"`.
+6. Keep the original command open until Dayu completes or fails.
+7. Relay Dayu output directly, unless the user explicitly asked for a transformation.
 
-Do not append a second host-originated analysis stage after step 5.
+Do not append a second host-originated analysis stage after Dayu answers.
 
-### Label management
-
-Use labels as the skill-owned conversation handle.
-
-Label rules:
-
-- list existing labels before creating a new one
-- choose labels that identify the company and thread, for example `aapl-risk`, `nvda-margin`, or `1810hk-fy2025`
-- reuse an existing label only for the same company and same analytical thread
-- when the user starts a materially different topic, create a new label instead of overloading the old one
-- if a label needs to be retired, use `dayu-cli conv --base ~/.dayu/workspace remove --label <LABEL>` only when the user asks to release it
-
-Useful checks:
-
-```bash
-dayu-cli conv --base ~/.dayu/workspace list
-dayu-cli conv --base ~/.dayu/workspace status --label <LABEL>
-```
-
-### User asks a follow-up after a prior labeled prompt
+## Follow-Ups
 
 Examples:
 
@@ -81,121 +97,101 @@ Examples:
 - "基于刚才的结论，再展开说下现金流"
 - "继续追一下海外风险"
 
-Default path:
-
-1. keep using the same label when the follow-up belongs to the same thread
-2. pass the new question through `dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<question>"`
-3. let Dayu use the labeled conversation state; do not run a parallel host-side recap analysis
-4. if the follow-up starts a materially different topic, create a new checked label
-
-## Waiting rule
-
-For `dayu-cli prompt` in particular:
-
-### Waiting posture
-
-- do not treat a short silent period as proof of failure
-- do not use elapsed time by itself as the failure test
-- keep the original `dayu-cli prompt --label` session open and watch its progress/status output before starting side checks
-- prefer waiting on the original session over opening sidecar sleep commands or replacement runs
-- if progress/status output continues, treat the run as active and keep waiting
-- while `dayu-cli runs` still shows the run as active, do not cancel it, do not rerun the same question, do not switch models, and do not add `--max-iterations` unless the user explicitly asked for a shorter or faster tradeoff
-- treat `final_answer` plus stream or command completion as the success signal
-
-### Check sequence
-
-When output appears stuck, use this order:
-
-1. wait on the original Dayu command session and read newly arrived progress, status, or answer output first
-2. if the original session has been quiet for a materially long period, poll that same command session again before opening side checks
-3. if it is still quiet, check active runs:
+Use the same label when the follow-up belongs to the same analytical thread:
 
 ```bash
-dayu-cli runs --base ~/.dayu/workspace
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared follow-up>"
 ```
 
-4. if you need a broader host view, check:
+Create a new label if the follow-up starts a materially different topic.
 
-```bash
-dayu-cli host --base ~/.dayu/workspace status
-```
+If Dayu's first answer is incomplete, ask Dayu a narrower follow-up under the same label instead of starting a host-side analysis path.
 
-5. if Dayu still shows an active run, continue waiting on the original command output and keep status checks low-frequency
-6. only move to failure handling when the run no longer appears active and there is explicit failure evidence
-
-### Failure evidence
-
-Only treat the run as blocked when there is real failure evidence such as:
-
-- the process exits with an error
-- Dayu emits explicit error output
-- Dayu emits explicit cancelled output such as timeout cancellation
-- the run disappears from the active list and the command output confirms cancellation or failure
-
-Important exception for filing ingestion:
-
-- if `upload_filing` reports explicit PDF conversion failure such as `Docling 转换失败`, do not keep retrying the same PDF upload path
-- for Hong Kong or A-share filings, switch to the Markdown filing fallback in [materials.md](materials.md)
-- this is still a Dayu ingestion path, not host-side financial analysis
-
-### User asks to prepare documents
+## Document Preparation Requests
 
 Examples:
 
-- "把苹果财报拉下来"
-- "把这份港股财报导进去"
-- "把电话会纪要也放进去"
+- "把苹果财报准备好"
+- "把这家公司最新财报拉一下"
+- "先检查一下有没有可用财报"
 
-Path:
+For listed-company filings, still use `prompt --label --ticker` and ask Dayu to prepare or check the filings:
 
-- US listing -> `download`
-- A-share / HK / local PDF -> download guidance from [ah_share_download.md](ah_share_download.md), then upload flow from [materials.md](materials.md)
-- if a Hong Kong / A-share filing PDF fails in Dayu conversion, follow the Markdown fallback in [materials.md](materials.md) before trying broader workarounds
+```bash
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared filing-prep request>"
+```
 
-### User asks for continuing back-and-forth analysis
+If Dayu says filing access failed or the filing is unavailable, report that result directly. Do not build a separate host-side download path.
 
-Examples:
+If the user provides a local non-filing material, use [materials.md](materials.md).
 
-- "我们持续聊这家公司"
-- "接下来我会连着追问几个问题"
-
-Use the same `prompt --label` conversation for the whole thread. If Dayu's first answer is incomplete, continue the same analytical path by asking Dayu follow-up questions under the same label.
-
-### User asks for a report
+## Report Requests
 
 Examples:
 
 - "写一份买方分析报告"
 - "出个 markdown 草稿"
-- "导成 pdf"
+- "按投资备忘录格式输出"
 
-Read [reporting.md](reporting.md).
+Use `prompt --label --ticker` and put the requested report shape into the Dayu prompt. Read [reporting.md](reporting.md) for export boundaries.
 
-Do not default into report generation if the user only asked a research question.
+Do not switch to `write` as a host-agent entrypoint.
 
-## Market routing
+## Market And Ticker Routing
 
-### US-listed
+Use `prompt --label --ticker` for US, A-share, and Hong Kong analysis.
 
-Prefer Dayu native download first:
+Ticker examples:
+
+- US: `BABA`
+- Hong Kong: `9988.HK`
+- A-share: `688981`
+
+Use CSV aliases only when Dayu needs a canonical ticker plus known aliases:
 
 ```bash
-dayu-cli download --base ~/.dayu/workspace --ticker <TICKER>
+dayu-cli prompt --base ~/.dayu/workspace --ticker BABA,9988,9988.HK --label baba-hk-us "<prepared question>"
 ```
 
-### Hong Kong or A-share
+## Waiting Rule
 
-Prefer upload-first. Do not silently build a custom downloader in the skill.
+For `dayu-cli prompt`:
 
-If the user does not have documents ready:
+- Do not treat a short silent period as proof of failure.
+- Do not use elapsed time alone as the failure test.
+- Keep the original command session open and watch its progress, status, and answer output.
+- Prefer waiting on the original session over opening sidecar sleep commands or replacement runs.
+- If progress or status output continues, treat the run as active.
+- While `dayu-cli runs` shows the run as active, do not cancel it, rerun the same prompt, switch models, or add limiting flags unless the user explicitly asked for that tradeoff.
+- Treat `final_answer` plus stream or command completion as the success signal.
 
-- follow [ah_share_download.md](ah_share_download.md) to locate an official filing source
-- ask them to upload the filing PDF or supporting material
-- use [materials.md](materials.md) for the minimum useful set and upload flow
+When output appears stuck:
 
-Once the material is ready, return to Dayu for the actual analysis rather than analyzing the downloaded document directly outside Dayu.
+1. Wait on the original Dayu command session and read new output first.
+2. Poll that same command session again after a materially long quiet period.
+3. If it is still quiet, check active runs:
 
-## When not to use Dayu
+```bash
+dayu-cli runs --base ~/.dayu/workspace
+```
+
+4. If you need a broader host view, check:
+
+```bash
+dayu-cli host --base ~/.dayu/workspace status
+```
+
+5. Continue waiting if Dayu still shows an active run.
+6. Move to failure handling only when there is explicit failure evidence.
+
+Failure evidence includes:
+
+- the process exits with an error
+- Dayu emits explicit error output
+- Dayu emits explicit cancellation output
+- the run disappears from the active list and the command output confirms cancellation or failure
+
+## When Not To Use Dayu
 
 Skip Dayu when:
 

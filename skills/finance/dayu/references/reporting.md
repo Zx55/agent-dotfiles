@@ -1,57 +1,48 @@
-# Explicit Report Mode
+# Explicit Report Requests
 
-Use this reference only when the user explicitly asks for a report, draft, markdown, docx, html, or pdf output.
+Use this reference only when the user explicitly asks for report-shaped output or an export artifact.
 
-## Default rule
+## Default Boundary
 
-Do not generate reports by default. The normal mode for this skill is dialogue-first research.
-
-## Writing
-
-Dayu exposes report writing through `write`.
-
-Typical command:
+Do not generate reports by default. Normal Dayu usage is dialogue-first research through:
 
 ```bash
-dayu-cli write --base ~/.dayu/workspace --ticker <TICKER>
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared question>"
 ```
 
-Useful options:
+Do not switch to `write` as a host-agent entrypoint.
 
-- `--chapter <NAME>` for one chapter
-- `--resume` to continue previous output
-- `--fast` to skip audit and repair stages
-- `--summary` to inspect the last write pipeline result
-- `--infer` to run company facet inference without full writing
-- `--output <DIR>` to override the draft directory
+## Report-Shaped Prompt
 
-## How to use report mode from a host agent
+Put the requested report shape into the Dayu prompt:
 
-Even in explicit report mode, decide whether the user wants:
+```bash
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared report request>"
+```
 
-- the artifact itself
-- a summary or extracted answer based on the artifact
-- both
+Examples of report-shape constraints to include when the user asks:
 
-If the user asked for analysis and only loosely mentioned a report, it is acceptable to generate the draft internally, inspect it, and reply with the requested answer format.
+- buy-side memo
+- markdown draft
+- risk memo
+- thesis, key evidence, risks, and watchlist
+- conservative, base, and upside cases
 
-If the user clearly asks for the report output, give them the artifact path and do not silently replace that with only a paraphrase.
+Relay Dayu output directly. If the user asked for a different language, format, or extraction, put that requirement into the Dayu prompt whenever possible.
 
-## Rendering
+## Export Artifacts
 
-Use `dayu-render` only when the user explicitly wants export formatting.
+Use `dayu-render` only when the user explicitly wants export formatting such as HTML or PDF.
 
-Current install verification suggests the binary prints usage when invoked without arguments. Exact argument handling may vary by release, so verify with:
+Verify invocation shape before relying on it:
 
 ```bash
 dayu-render
 ```
 
-before relying on a specific invocation shape.
+Suggested flow:
 
-## Suggested workflow
-
-1. Make sure the relevant company materials already exist in `~/.dayu/workspace`.
-2. Run `dayu-cli write`.
-3. Inspect the produced markdown or summary.
-4. Only then decide whether to render or simply answer in chat.
+1. Choose or reuse the correct label.
+2. Run `dayu-cli prompt --label --ticker` with the report request.
+3. Relay Dayu output directly.
+4. Render only if the user explicitly asks for an export artifact.
