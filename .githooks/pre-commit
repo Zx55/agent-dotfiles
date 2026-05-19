@@ -39,9 +39,7 @@ if hooks_json_is_linked_to_repo; then
       --runtime-dir "$AUTOMATIONS_SOURCE" \
       --output-dir "$PORTABLE_AUTOMATIONS" \
       >/dev/null
-    if ! git diff --quiet -- "$PORTABLE_AUTOMATIONS"; then
-      git add "$PORTABLE_AUTOMATIONS"
-    fi
+    git add "$PORTABLE_AUTOMATIONS"
   else
     log "Skipping Codex automation sync because ~/.codex/automations is missing"
   fi

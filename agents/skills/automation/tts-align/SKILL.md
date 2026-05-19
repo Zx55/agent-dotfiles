@@ -29,6 +29,10 @@ Use this skill when a user needs timing for an existing narration audio file, es
    - If narration is longer than the clip, suggest shortening text or increasing speech rate only if provider controls support it.
    - If narration is shorter than the clip, suggest adding a pause, adding explanatory words, or delaying the visual transition.
    - For internal mismatch, redistribute words across subsegments instead of only matching total section duration.
+6. Optional subtitle post-processing.
+   - If the user asks for subtitles after alignment, use `references/subtitles.md` as the reference workflow.
+   - Keep alignment as the source of timing, and keep the final script as the source of subtitle text.
+   - If a video is provided, inspect frames first and place subtitles only in a consistently empty region. If no safe region exists, tell the user instead of forcing hard subtitles over important content.
 
 ## WhisperX Command
 
@@ -64,5 +68,5 @@ The script estimates marker timestamps from aligned words when available, and fa
 ## Boundaries
 
 - This skill aligns existing audio. It does not generate TTS audio. Use `$tts-gen` for synthesis.
-- This skill can inspect video duration and frames, but it does not edit video or build a final deck.
+- This skill can inspect video duration and frames. Subtitle generation and burn-in are optional post-processing references, not the primary responsibility of the skill.
 - Word-level timestamps are only as good as WhisperX alignment. For exact editorial timing, verify with the rendered audio/video preview.

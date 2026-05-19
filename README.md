@@ -19,7 +19,6 @@ agent-dotfiles/
       config.toml
       hooks.json
       hooks/
-      memories/
       rules/              # optional, when present
     skills/
     tools/
@@ -65,31 +64,35 @@ Codex-owned portable paths use `~/...`. MCP server paths go through
 env values literally.
 
 `agents/codex/hooks.json` registers a small Codex lifecycle hook that runs on
-session start, resume, clear, user prompt submit, and stop. One hook calls
+session start, resume, clear, user prompt submit, and stop. The hook calls
 `agents/codex/hooks/sync_config.py` to sync the live
 `~/.codex/config.toml` back to `agents/codex/config.toml`, remove local-only
 hook trust state, and rewrite portable machine-local home prefixes such as
 `/Users/<user>/...` back to `~/...`. A separate hook calls
-`agents/codex/hooks/sync_automations.py` to sync known
-`~/.codex/automations/<id>/automation.toml` files back to portable snapshots
-under `agents/codex/automations/`. The automation hook intentionally ignores
+`agents/codex/hooks/sync_automations.py` to sync every
+`~/.codex/automations/<id>/automation.toml` file back to a portable snapshot
+under `agents/codex/automations/`, and to remove portable snapshots whose live
+automation no longer exists. The automation hook intentionally ignores
 runtime files such as `memory.md` and `.run-jitter-salt`.
 
 `agents/skills/` and `agents/tools/` are agent-only assets. General purpose tools
 should live elsewhere if they appear later.
 
-`agents/skills/automation/codex-memory-maintenance/` defines an explicit-only
-Codex memory maintenance skill. It writes audit, plan, backup, and state files
-under `~/.codex-memory-maintenance` rather than inside `~/.codex`.
+`agents/codex/automations/` stores portable Codex App automation snapshots when
+there are active automations to manage. Bootstrap copies each `automation.toml`
+to `~/.codex/automations/<id>/` and expands `~/...` to the local home path
+during install, because the App currently reads local `automation.toml` files
+but the format is not documented as a stable public API. During link and after
+install, the Codex automation hook treats each live
+`~/.codex/automations/<id>/automation.toml` as managed state, snapshots it into
+the repository, and removes snapshots for live automations that were deleted.
+Runtime files such as automation `memory.md` and `.run-jitter-salt` are
+intentionally not migrated.
 
-`agents/codex/automations/` stores portable Codex App automation snapshots.
-Bootstrap copies each `automation.toml` to `~/.codex/automations/<id>/` and
-expands `~/...` to the local home path during install, because the App currently
-reads local `automation.toml` files but the format is not documented as a stable
-public API. After install, the Codex automation hook syncs local changes back to
-repo snapshots for automation IDs that already exist in the repository. Runtime
-files such as automation `memory.md` and `.run-jitter-salt` are intentionally
-not migrated.
+`~/.codex/memories` is not migrated or linked by this repository. Codex memories
+are local generated recall state that may be rewritten by the Codex memory
+pipeline. Stable cross-device instructions belong in `agents/AGENTS.md`, skills,
+or checked-in docs, not in generated memory files.
 
 ## Bootstrap
 
@@ -111,9 +114,7 @@ Only `codex` is supported for now.
 `bootstrap/scripts/install.sh` installs packages and local tools. It installs
 Homebrew if needed, then runs `Brewfile.core`. With `--with-large-app`, it starts
 `Brewfile.large-app` in the background after core packages finish. Large app
-logs go to `~/.dotfiles-bootstrap/logs/`. It also creates
-`~/.codex-memory-maintenance/{reports,plans,backups,state,tmp,locks}` with a
-private top-level directory mode.
+logs go to `~/.dotfiles-bootstrap/logs/`.
 
 `bootstrap/scripts/links.sh` creates symlinks from this repository into the home
 directory, except for Codex `config.toml`, which is copied as a local runtime
@@ -122,15 +123,15 @@ portable home paths. Existing targets are moved to
 `~/.dotfiles-backup/<timestamp>/` before replacement.
 
 `bootstrap/scripts/verify.sh` checks package files, local tool sources, Codex
-config loading, installed runtime tools, expected symlinks, and the Codex memory
-maintenance runtime directory.
+config loading, installed runtime tools, and expected symlinks.
 
 The repository uses `.githooks/pre-commit` through `git config core.hooksPath
 .githooks`. Before each commit, the hook syncs `~/.codex/config.toml` back to
 `agents/codex/config.toml` only when `~/.codex/hooks.json` points to this repo,
-syncs known `~/.codex/automations/*/automation.toml` files back to
-`agents/codex/automations/`, automatically stages the portable snapshots, and
-verifies that the portable Codex config loads.
+syncs every `~/.codex/automations/*/automation.toml` file back to
+`agents/codex/automations/`, removes snapshots for deleted live automations,
+automatically stages the portable snapshots, and verifies that the portable
+Codex config loads.
 
 ## Package Manifests
 
@@ -209,7 +210,6 @@ Migrated:
 - Codex portable config
 - Custom skills
 - Agent helper tools
-- Curated memories
 - Codex App automation definitions
 - Shell and git dotfiles
 - Homebrew, uv, npm, local binary, and Mac App Store package manifests
@@ -219,6 +219,7 @@ Not migrated:
 - API keys and tokens
 - Agent auth files
 - Runtime logs and SQLite state
+- Codex generated memories under `~/.codex/memories`
 - Codex App automation runtime memory and jitter state
 - Browser, app, or plugin cache
 - Generated images and temporary artifacts
@@ -230,21 +231,16 @@ Not migrated:
 Already linked on the current machine:
 
 - `~/.codex/AGENTS.md`
+- `~/.codex/config.toml` as a regular local file copied from the portable snapshot
 - `~/.codex/hooks.json`
+- `~/.codex/rules`
 - `~/.zshrc`
 - `~/.zprofile`
 - `~/.gitconfig`
 - `~/.gitignore_global`
 - `~/.secret`
 - most `~/.codex/skills/*` categories
-- `~/.codex/automations/weekly-codex-memory-review/automation.toml`
 
 Remaining work:
 
-- Replace the current `~/.codex/config.toml` symlink with a regular local copy
-  of `agents/codex/config.toml`.
-- Link `~/.codex/memories` to `agents/codex/memories`.
-- Decide whether `agents/codex/rules` should migrate from `~/.codex/rules`.
-- Install `mas` through the core Brewfile before Mac App Store automation works.
-- Run `bootstrap/scripts/verify.sh --agent codex` after the remaining Codex links
-  are finished.
+- Install or confirm Mac App Store apps through `mas` when setting up a new Mac.

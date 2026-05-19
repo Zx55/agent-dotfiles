@@ -17,7 +17,6 @@ LARGE_APP_PID=""
 LARGE_APP_LOG=""
 AGENT_PYTHON_VERSION="3.12"
 AGENT_PYTHON_VENV="$HOME/.local/share/agent-dotfiles/python"
-CODEX_MEMORY_MAINTENANCE_DIR="$HOME/.codex-memory-maintenance"
 
 usage() {
   cat <<'EOF'
@@ -291,16 +290,6 @@ install_mas_apps() {
   done < "$file"
 }
 
-setup_codex_memory_maintenance() {
-  local dir
-  log "Preparing Codex memory maintenance runtime directory: $CODEX_MEMORY_MAINTENANCE_DIR"
-  mkdir -p "$CODEX_MEMORY_MAINTENANCE_DIR"
-  chmod 0700 "$CODEX_MEMORY_MAINTENANCE_DIR"
-  for dir in reports plans backups state tmp locks; do
-    mkdir -p "$CODEX_MEMORY_MAINTENANCE_DIR/$dir"
-  done
-}
-
 trim() {
   local value="$1"
   value="${value#"${value%%[![:space:]]*}"}"
@@ -342,7 +331,6 @@ main() {
   install_agent_python
   install_npm_globals
   install_local_tools
-  setup_codex_memory_maintenance
   install_mas_apps
   report_large_app_status
 }

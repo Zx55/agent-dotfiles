@@ -205,7 +205,6 @@ link_codex() {
   link_path "$REPO_ROOT/agents/AGENTS.md" "$HOME/.codex/AGENTS.md"
   copy_path "$REPO_ROOT/agents/codex/config.toml" "$HOME/.codex/config.toml"
   link_path "$REPO_ROOT/agents/codex/hooks.json" "$HOME/.codex/hooks.json"
-  link_path "$REPO_ROOT/agents/codex/memories" "$HOME/.codex/memories"
   link_path "$REPO_ROOT/agents/codex/rules" "$HOME/.codex/rules" optional
 
   mkdir -p "$HOME/.codex/skills"
@@ -231,6 +230,30 @@ install_codex_automations() {
   done
 }
 
+sync_live_codex_automations() {
+  local runtime_dir="$HOME/.codex/automations"
+  local automations_dir="$REPO_ROOT/agents/codex/automations"
+  local syncer="$REPO_ROOT/agents/codex/hooks/sync_automations.py"
+
+  [[ -d "$runtime_dir" ]] || return 0
+
+  if [[ ! -f "$syncer" ]]; then
+    warn "Codex automation sync hook missing, skipping live snapshot: $syncer"
+    return 0
+  fi
+
+  if ! command -v python3 >/dev/null 2>&1; then
+    warn "python3 missing, skipping live Codex automation snapshot"
+    return 0
+  fi
+
+  log "Snapshotting live Codex automations from $runtime_dir"
+  python3 "$syncer" \
+    --runtime-dir "$runtime_dir" \
+    --output-dir "$automations_dir" \
+    >/dev/null
+}
+
 link_dotfiles() {
   link_path "$REPO_ROOT/dotfiles/zsh/zshrc" "$HOME/.zshrc" optional
   link_path "$REPO_ROOT/dotfiles/zsh/zprofile" "$HOME/.zprofile" optional
@@ -254,6 +277,7 @@ main() {
   validate_args
 
   link_codex
+  sync_live_codex_automations
   install_codex_automations
   link_dotfiles
   configure_git_hooks

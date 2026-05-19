@@ -82,6 +82,18 @@ def read_optional_text(path: Path) -> str | None:
         return None
 
 
+def remove_snapshot(target: Path) -> None:
+    if not target.exists():
+        return
+
+    snapshot_dir = target.parent
+    target.unlink()
+    try:
+        snapshot_dir.rmdir()
+    except OSError:
+        pass
+
+
 def known_automation_ids(output_dir: Path) -> list[str]:
     if not output_dir.exists():
         return []
@@ -113,7 +125,11 @@ def sync_automation(
     target = output_dir / automation_id / "automation.toml"
     text = read_optional_text(source)
     if text is None:
-        return False, None
+        if not target.exists():
+            return False, None
+        if not check:
+            remove_snapshot(target)
+        return True, None
 
     actual_id = parse_automation_id(text)
     if actual_id != automation_id:
@@ -132,14 +148,19 @@ def sync_automation(
     return changed, None
 
 
+def managed_automation_ids(runtime_dir: Path, output_dir: Path) -> list[str]:
+    return sorted(
+        set(runtime_automation_ids(runtime_dir)) | set(known_automation_ids(output_dir))
+    )
+
+
 def sync_automations(
     runtime_dir: Path,
     output_dir: Path,
     *,
-    include_new: bool,
     check: bool,
 ) -> tuple[int, list[str]]:
-    ids = runtime_automation_ids(runtime_dir) if include_new else known_automation_ids(output_dir)
+    ids = managed_automation_ids(runtime_dir, output_dir)
     changed_count = 0
     warnings: list[str] = []
 
@@ -195,14 +216,9 @@ def parse_args() -> argparse.Namespace:
         help="Portable automation snapshot directory.",
     )
     parser.add_argument(
-        "--include-new",
-        action="store_true",
-        help="Also create snapshots for runtime automations that do not already exist in the output directory.",
-    )
-    parser.add_argument(
         "--check",
         action="store_true",
-        help="Exit 1 when known automation snapshots would be changed or skipped.",
+        help="Exit 1 when automation snapshots would be created, changed, removed, or skipped.",
     )
     parser.add_argument(
         "--hook-output",
@@ -220,7 +236,6 @@ def main() -> int:
     changed_count, warnings = sync_automations(
         runtime_dir,
         output_dir,
-        include_new=args.include_new,
         check=args.check,
     )
 

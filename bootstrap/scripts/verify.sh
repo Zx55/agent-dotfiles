@@ -5,7 +5,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BOOTSTRAP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO_ROOT="$(cd "$BOOTSTRAP_DIR/.." && pwd)"
 PACKAGE_DIR="$BOOTSTRAP_DIR/packages"
-CODEX_MEMORY_MAINTENANCE_DIR="$HOME/.codex-memory-maintenance"
 AGENT="codex"
 ERRORS=0
 WARNINGS=0
@@ -268,7 +267,6 @@ check_codex_links() {
   check_symlink "$REPO_ROOT/agents/AGENTS.md" "$HOME/.codex/AGENTS.md"
   check_regular_file "$HOME/.codex/config.toml"
   check_symlink "$REPO_ROOT/agents/codex/hooks.json" "$HOME/.codex/hooks.json"
-  check_symlink "$REPO_ROOT/agents/codex/memories" "$HOME/.codex/memories"
   check_symlink "$REPO_ROOT/agents/codex/rules" "$HOME/.codex/rules" optional
 
   local skill_dir
@@ -280,8 +278,9 @@ check_codex_links() {
 
 check_codex_automations() {
   local automations_dir="$REPO_ROOT/agents/codex/automations"
+  local runtime_dir="$HOME/.codex/automations"
   local syncer="$REPO_ROOT/agents/codex/hooks/sync_automations.py"
-  local automation_dir source target expected_id actual_id
+  local automation_dir runtime_automation_dir source target expected_id actual_id runtime_source
   [[ -d "$automations_dir" ]] || {
     warn "optional Codex automations source missing: $automations_dir"
     return 0
@@ -302,6 +301,37 @@ check_codex_automations() {
     fi
   else
     fail "Codex automation sync hook missing: $syncer"
+  fi
+
+  if [[ -d "$runtime_dir" ]]; then
+    for runtime_automation_dir in "$runtime_dir"/*; do
+      [[ -d "$runtime_automation_dir" ]] || continue
+      runtime_source="$runtime_automation_dir/automation.toml"
+      [[ -f "$runtime_source" ]] || continue
+
+      expected_id="$(basename "$runtime_automation_dir")"
+      source="$automations_dir/$expected_id/automation.toml"
+
+      actual_id="$(awk -F '"' '/^id = / {print $2; exit}' "$runtime_source")"
+      if [[ "$actual_id" == "$expected_id" ]]; then
+        ok "installed Codex automation id matches directory: $expected_id"
+      else
+        fail "installed Codex automation id '$actual_id' does not match directory '$expected_id'"
+      fi
+
+      check_regular_file "$source"
+      [[ -f "$source" ]] || continue
+      check_text_absent "$source" "/Users/chenzeren" "portable Codex automation source"
+
+      actual_id="$(awk -F '"' '/^id = / {print $2; exit}' "$source")"
+      if [[ "$actual_id" == "$expected_id" ]]; then
+        ok "Codex automation snapshot id matches directory: $expected_id"
+      else
+        fail "Codex automation snapshot id '$actual_id' does not match directory '$expected_id'"
+      fi
+    done
+  else
+    warn "optional Codex automation runtime missing: $runtime_dir"
   fi
 
   for automation_dir in "$automations_dir"/*; do
@@ -390,12 +420,6 @@ check_codex_config() {
     fail "Codex config sync missing: $syncer"
   fi
 
-  if grep -Fq '"~/.codex-memory-maintenance"' "$config"; then
-    ok "Codex config allows writing memory maintenance state"
-  else
-    fail "Codex config missing ~/.codex-memory-maintenance writable root"
-  fi
-
   if command -v codex >/dev/null 2>&1; then
     if CODEX_HOME="$REPO_ROOT/agents/codex" codex features list >/dev/null 2>&1; then
       ok "portable Codex config loads"
@@ -405,32 +429,6 @@ check_codex_config() {
   else
     warn "codex command unavailable, skipping portable config load check"
   fi
-}
-
-check_codex_memory_maintenance_dir() {
-  local dir
-  if [[ -d "$CODEX_MEMORY_MAINTENANCE_DIR" ]]; then
-    ok "Codex memory maintenance directory exists: $CODEX_MEMORY_MAINTENANCE_DIR"
-  else
-    fail "Codex memory maintenance directory missing: $CODEX_MEMORY_MAINTENANCE_DIR"
-    return 0
-  fi
-
-  local mode
-  mode="$(stat -f '%Lp' "$CODEX_MEMORY_MAINTENANCE_DIR" 2>/dev/null || stat -c '%a' "$CODEX_MEMORY_MAINTENANCE_DIR" 2>/dev/null || true)"
-  if [[ "$mode" == "700" ]]; then
-    ok "Codex memory maintenance directory permissions: 700"
-  else
-    warn "Codex memory maintenance directory permissions are $mode, expected 700"
-  fi
-
-  for dir in reports plans backups state tmp locks; do
-    if [[ -d "$CODEX_MEMORY_MAINTENANCE_DIR/$dir" ]]; then
-      ok "Codex memory maintenance subdirectory exists: $dir"
-    else
-      fail "Codex memory maintenance subdirectory missing: $dir"
-    fi
-  done
 }
 
 check_git_hooks_path() {
@@ -513,7 +511,6 @@ main() {
   check_mas_file
   check_ml_models_file
   check_codex_config
-  check_codex_memory_maintenance_dir
   check_git_hooks_path
   check_runtime_tools
   check_codex_links

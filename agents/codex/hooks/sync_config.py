@@ -51,6 +51,7 @@ def normalize_text(text: str) -> str:
         normalized = line
         for prefix in dict.fromkeys(path_patterns()):
             normalized = re.sub(re.escape(prefix) + boundary, "~", normalized)
+        normalized = strip_trailing_whitespace(normalized)
         output.append(normalized)
 
     return drop_duplicate_project_tables(drop_duplicate_tables("".join(output)))
@@ -68,6 +69,12 @@ def is_hooks_state_header(line: str) -> bool:
 
 def is_local_state_header(line: str) -> bool:
     return is_hooks_state_header(line)
+
+
+def strip_trailing_whitespace(line: str) -> str:
+    newline = "\n" if line.endswith("\n") else ""
+    body = line[:-1] if newline else line
+    return body.rstrip(" \t") + newline
 
 
 def drop_duplicate_tables(text: str) -> str:
