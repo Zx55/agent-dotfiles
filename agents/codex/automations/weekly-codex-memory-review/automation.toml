@@ -1,0 +1,13 @@
+version = 1
+id = "weekly-codex-memory-review"
+kind = "cron"
+name = "Weekly Codex Memory Review"
+prompt = "Use [$codex-memory-maintenance](~/Documents/codex-workspace/agent-dotfiles/agents/skills/automation/codex-memory-maintenance/SKILL.md) plan to review my Codex memories. Use today's local date in Asia/Shanghai for generated audit and plan filenames.\n\nRun in plan mode only:\n- inspect ~/.codex/memories\n- write audit and plan artifacts under ~/.codex-memory-maintenance\n- do not modify ~/.codex/memories\n- do not run apply\n- do not copy secret values into reports, plans, or the final response\n\nFocus on:\n- stale or superseded memories\n- duplicated topics or repeated headings\n- oversized memory_summary.md or MEMORY.md\n- low-value debug or transient notes\n- secret-like content\n- machine-specific paths that may reduce portability\n\nIf there are no actionable issues, say so briefly.\nIf there are actionable issues, summarize the plan and tell me which files would be changed by a later explicit $codex-memory-maintenance apply run."
+status = "ACTIVE"
+rrule = "RRULE:FREQ=WEEKLY;BYHOUR=14;BYMINUTE=30;BYDAY=SU,MO,TU,WE,TH,FR,SA"
+model = "gpt-5.5"
+reasoning_effort = "high"
+execution_environment = "local"
+cwds = ["~/Documents/codex-workspace/agent-dotfiles"]
+created_at = 1779171782715
+updated_at = 1779171782715

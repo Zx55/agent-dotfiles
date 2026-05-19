@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+CONFIG_SOURCE="$HOME/.codex/config.toml"
+HOOKS_TARGET="$HOME/.codex/hooks.json"
+HOOKS_SOURCE="$REPO_ROOT/agents/codex/hooks.json"
+PORTABLE_CONFIG="$REPO_ROOT/agents/codex/config.toml"
+SYNC_SCRIPT="$REPO_ROOT/agents/codex/hooks/sync_config.py"
+AUTOMATIONS_SOURCE="$HOME/.codex/automations"
+PORTABLE_AUTOMATIONS="$REPO_ROOT/agents/codex/automations"
+AUTOMATIONS_SYNC_SCRIPT="$REPO_ROOT/agents/codex/hooks/sync_automations.py"
+
+log() {
+  printf '[pre-commit] %s\n' "$*" >&2
+}
+
+hooks_json_is_linked_to_repo() {
+  [[ -L "$HOOKS_TARGET" ]] || return 1
+  [[ "$(readlink "$HOOKS_TARGET")" == "$HOOKS_SOURCE" ]]
+}
+
+if hooks_json_is_linked_to_repo; then
+  if [[ -f "$CONFIG_SOURCE" ]]; then
+    log "Syncing portable Codex config from ~/.codex/config.toml"
+    python3 "$SYNC_SCRIPT" --config "$CONFIG_SOURCE" --output "$PORTABLE_CONFIG" >/dev/null
+    if ! git diff --quiet -- "$PORTABLE_CONFIG"; then
+      git add "$PORTABLE_CONFIG"
+    fi
+  else
+    log "Skipping Codex config sync because ~/.codex/config.toml is missing"
+  fi
+
+  if [[ -d "$AUTOMATIONS_SOURCE" ]]; then
+    log "Syncing portable Codex automations from ~/.codex/automations"
+    python3 "$AUTOMATIONS_SYNC_SCRIPT" \
+      --runtime-dir "$AUTOMATIONS_SOURCE" \
+      --output-dir "$PORTABLE_AUTOMATIONS" \
+      >/dev/null
+    if ! git diff --quiet -- "$PORTABLE_AUTOMATIONS"; then
+      git add "$PORTABLE_AUTOMATIONS"
+    fi
+  else
+    log "Skipping Codex automation sync because ~/.codex/automations is missing"
+  fi
+else
+  log "Skipping Codex config and automation sync because ~/.codex/hooks.json is not linked to this repo"
+fi
+
+if command -v codex >/dev/null 2>&1; then
+  CODEX_HOME="$REPO_ROOT/agents/codex" codex features list >/dev/null
+else
+  log "Skipping Codex config load check because codex is unavailable"
+fi

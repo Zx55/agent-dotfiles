@@ -1,0 +1,5 @@
+interface:
+  display_name: "Academic Poster Draft"
+  short_description: "Plan poster stories and visual draft directions"
+  brand_color: "#334155"
+  default_prompt: "Use $academic-poster-draft to plan an academic poster, generate imagegen layout/style drafts, and prepare human-editable guidance and helper assets."

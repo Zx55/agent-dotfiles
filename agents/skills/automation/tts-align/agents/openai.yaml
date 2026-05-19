@@ -1,0 +1,6 @@
+interface:
+  display_name: "TTS Align"
+  short_description: "Align narration audio to script timestamps"
+  icon_small: "./assets/tts-align-small.png"
+  icon_large: "./assets/tts-align.png"
+  default_prompt: "Use $tts-align to align this narration audio with its script and report section timing."

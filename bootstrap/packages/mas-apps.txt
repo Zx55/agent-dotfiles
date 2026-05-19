@@ -1,0 +1,19 @@
+1630034110 # Bob - 翻译和 OCR 工具
+457622435 # Yoink
+1265704574 # Bandizip: Archiver
+424389933 # Final Cut Pro
+1444383602 # Goodnotes
+361285480 # Keynote
+361304891 # Numbers
+361309726 # Pages
+899247664 # TestFlight
+1473785373 # MoneyTrack: Expense Tracker
+1592917505 # Noir - Dark Mode for Safari
+697942581 # Disk Graph
+6698876601 # Folder Preview
+462054704 # Microsoft Word
+462058435 # Microsoft Excel
+462062816 # Microsoft PowerPoint
+823766827 # OneDrive
+451108668 # QQ
+836500024 # WeChat

@@ -1,4 +1,20 @@
-.DS_STORE
+.DS_Store
+
+# Local secrets
+dotfiles/secrets/secret.local
+*.local
+
+# Local tool/cache artifacts
+.uv-bin/
+.uv-cache/
+.uv-tools/
+
+# Codex runtime artifacts
+agents/codex/automations/.run-jitter-salt
+agents/codex/automations/**/memory.md
+agents/codex/memories/.git/
+agents/codex/memories/phase2_workspace_diff.md
+
 # Python
 __pycache__/
 *.py[cod]

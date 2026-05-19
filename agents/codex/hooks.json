@@ -1,0 +1,59 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/env python3 \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/hooks/sync_config.py\" --config \"$HOME/.codex/config.toml\" --output \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/config.toml\" --hook-output",
+            "statusMessage": "Syncing portable Codex config",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "/usr/bin/env python3 \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/hooks/sync_automations.py\" --runtime-dir \"$HOME/.codex/automations\" --output-dir \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/automations\" --hook-output",
+            "statusMessage": "Syncing portable Codex automations",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/env python3 \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/hooks/sync_config.py\" --config \"$HOME/.codex/config.toml\" --output \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/config.toml\" --hook-output",
+            "statusMessage": "Syncing portable Codex config",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "/usr/bin/env python3 \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/hooks/sync_automations.py\" --runtime-dir \"$HOME/.codex/automations\" --output-dir \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/automations\" --hook-output",
+            "statusMessage": "Syncing portable Codex automations",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/env python3 \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/hooks/sync_config.py\" --config \"$HOME/.codex/config.toml\" --output \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/config.toml\" --hook-output",
+            "statusMessage": "Syncing portable Codex config",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "/usr/bin/env python3 \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/hooks/sync_automations.py\" --runtime-dir \"$HOME/.codex/automations\" --output-dir \"$HOME/Documents/codex-workspace/agent-dotfiles/agents/codex/automations\" --hook-output",
+            "statusMessage": "Syncing portable Codex automations",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+interface:
+  display_name: "URL QR Code"
+  short_description: "Generate and validate URL QR codes locally"
+  icon_small: "./assets/url-qr-code-small.png"
+  icon_large: "./assets/url-qr-code.png"
+  default_prompt: "Use $url-qr-code to generate a validated QR code for this URL."

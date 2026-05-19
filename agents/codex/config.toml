@@ -1,0 +1,153 @@
+model = "gpt-5.5"
+model_provider = "openai_http"
+model_reasoning_effort = "high"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+default_permissions = "secret_safe"
+personality = "pragmatic"
+
+notify = ["~/.codex/plugins/cache/openai-bundled/computer-use/1.0.758/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
+service_tier = "fast"
+approvals_reviewer = "user"
+
+[model_providers.openai_http]
+name = "OpenAI HTTP"
+wire_api = "responses"
+requires_openai_auth = true
+supports_websockets = false
+base_url = "https://chatgpt.com/backend-api/codex"
+
+[permissions.secret_safe.filesystem]
+":project_roots" = { "." = "write" }
+"~/.secret" = "none"
+"~/Documents/codex-workspace/agent-dotfiles/dotfiles/secrets/secret.local" = "none"
+
+[permissions.secret_safe.network]
+enabled = true
+
+[sandbox_workspace_write]
+exclude_slash_tmp = true
+exclude_tmpdir_env_var = true
+network_access = true
+writable_roots = [
+  "~/.codex/memories",
+  "~/.codex-memory-maintenance",
+  "~/Documents/codex-workspace/agent-dotfiles",
+]
+
+[projects]
+"~/Documents/codex-workspace" = { trust_level = "trusted" }
+"~/Documents/codex-workspace/agent-dotfiles" = { trust_level = "trusted" }
+"~/Documents/codex-workspace/papers" = { trust_level = "trusted" }
+"~/Documents/codex-workspace/TPAMI" = { trust_level = "trusted" }
+"~/Documents/codex-workspace/GCA-Poster" = { trust_level = "trusted" }
+
+[plugins]
+"github@openai-curated" = { enabled = true }
+"build-web-apps@openai-curated" = { enabled = true }
+"computer-use@openai-bundled" = { enabled = true }
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[marketplaces.openai-bundled]
+last_updated = "2026-05-19T06:26:19Z"
+source_type = "local"
+source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-05-19T07:27:56Z"
+source_type = "local"
+source = "~/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[features]
+memories = true
+
+[memories]
+disable_on_external_context = true
+
+[mcp_servers.zotero]
+command = "mcp-launcher"
+args = [
+    "--env-file", "~/.secret",
+    "--env", "ZOTERO_APP_PATH=/Applications/Zotero.app",
+    "--env", "ZOTERO_AUTO_LAUNCH=true",
+    "--env", "ZOTERO_EMBEDDING_MODEL=default",
+    "--env", "ZOTERO_LIBRARY_ID=14669519",
+    "--env", "ZOTERO_LOCAL=true",
+    "--env", "ZOTERO_LOCAL_HOST=127.0.0.1",
+    "--env", "ZOTERO_LOCAL_PORT=23119",
+    "--env", "ZOTERO_MCP_ARGS=serve",
+    "--env", "ZOTERO_MCP_BIN=~/.local/bin/zotero-mcp",
+    "--env", "ZOTERO_READY_STABLE_POLLS=1",
+    "--env", "ZOTERO_STARTUP_TIMEOUT_SEC=30",
+    "--", "~/.local/bin/zotero-mcp-wrapper",
+]
+enabled = true
+startup_timeout_sec = 20
+tool_timeout_sec = 120
+enabled_tools = [
+    "zotero_add_from_file",
+    "zotero_advanced_search",
+    "zotero_batch_update_tags",
+    "zotero_create_collection",
+    "zotero_delete_note",
+    "zotero_find_duplicates",
+    "zotero_get_annotations",
+    "zotero_get_collection_items",
+    "zotero_get_collections",
+    "zotero_get_item_children",
+    "zotero_get_item_fulltext",
+    "zotero_get_item_metadata",
+    "zotero_get_items_children",
+    "zotero_get_pdf_outline",
+    "zotero_get_recent",
+    "zotero_get_search_database_status",
+    "zotero_list_libraries",
+    "zotero_manage_collections",
+    "zotero_merge_duplicates",
+    "zotero_search_by_citation_key",
+    "zotero_search_collections",
+    "zotero_search_items",
+    "zotero_semantic_search",
+    "zotero_update_item",
+]
+
+[mcp_servers.zotero.tools]
+zotero_add_from_file = { approval_mode = "approve" }
+zotero_advanced_search = { approval_mode = "approve" }
+zotero_batch_update_tags = { approval_mode = "approve" }
+zotero_create_collection = { approval_mode = "approve" }
+zotero_delete_note = { approval_mode = "approve" }
+zotero_find_duplicates = { approval_mode = "approve" }
+zotero_get_annotations = { approval_mode = "approve" }
+zotero_get_collection_items = { approval_mode = "approve" }
+zotero_get_collections = { approval_mode = "approve" }
+zotero_get_item_children = { approval_mode = "approve" }
+zotero_get_item_fulltext = { approval_mode = "approve" }
+zotero_get_item_metadata = { approval_mode = "approve" }
+zotero_get_items_children = { approval_mode = "approve" }
+zotero_get_pdf_outline = { approval_mode = "approve" }
+zotero_get_recent = { approval_mode = "approve" }
+zotero_get_search_database_status = { approval_mode = "approve" }
+zotero_list_libraries = { approval_mode = "approve" }
+zotero_manage_collections = { approval_mode = "approve" }
+zotero_merge_duplicates = { approval_mode = "approve" }
+zotero_search_by_citation_key = { approval_mode = "approve" }
+zotero_search_collections = { approval_mode = "approve" }
+zotero_search_items = { approval_mode = "approve" }
+zotero_semantic_search = { approval_mode = "approve" }
+zotero_update_item = { approval_mode = "approve" }
+

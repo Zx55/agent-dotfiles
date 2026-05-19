@@ -1,0 +1,16 @@
+[project]
+name = "mcp-launcher"
+version = "0.1.0"
+description = "Launch MCP servers with portable path and environment expansion."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+mcp-launcher = "mcp_launcher.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

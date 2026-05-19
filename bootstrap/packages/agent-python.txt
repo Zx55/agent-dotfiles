@@ -1,0 +1,16 @@
+# Packages installed into the shared agent Python environment.
+#
+# Environment:
+#   ~/.local/share/agent-dotfiles/python
+#
+# Keep project-specific dependencies in the project environment instead.
+# Add only cross-agent or cross-skill Python packages here.
+matplotlib
+numpy
+openai
+pillow
+pymupdf
+pypdf
+pyfiglet
+requests
+segno

@@ -1,0 +1,8 @@
+interface:
+  display_name: "Codex Memory Maintenance"
+  short_description: "Review and safely maintain Codex memory files."
+  icon_small: "./assets/codex-memory-maintenance-small.png"
+  icon_large: "./assets/codex-memory-maintenance.png"
+  default_prompt: "Use $codex-memory-maintenance plan to audit Codex memories, check rollout evidence, and produce a safe maintenance plan."
+policy:
+  allow_implicit_invocation: false

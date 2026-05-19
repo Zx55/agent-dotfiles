@@ -1,0 +1,6 @@
+interface:
+  display_name: "TTS Gen"
+  short_description: "Refine text and synthesize TTS audio"
+  icon_small: "./assets/tts-gen-small.png"
+  icon_large: "./assets/tts-gen.png"
+  default_prompt: "Use $tts-gen to refine this text for narration and synthesize it into a WAV file."
