@@ -80,6 +80,7 @@
 ## Writing Style
 
 - When writing English LaTeX or Markdown, avoid colon-led explanatory phrasing unless it is the clearest structure for paired terms, labels, definitions, or field-like text.
+- When writing Markdown prose, do not insert hard line breaks just to fit a preferred line width. Let paragraphs wrap naturally unless the format requires line breaks.
 - Prefer natural prose or `\emph{i.e.}` when introducing a clarification that would otherwise be written after a colon.
 - Avoid semicolons in English prose. Split the thought into two sentences, or use an ordinary conjunction when the relationship should stay in one sentence.
 - Do not rewrite quoted text, code, data formats, citations, bibliographic metadata, or syntax examples just to satisfy this punctuation preference.

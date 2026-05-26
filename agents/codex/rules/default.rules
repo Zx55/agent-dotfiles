@@ -1,4 +1,4 @@
-# Safe git inspection
+# Inspection
 prefix_rule(pattern=["git", "status"], decision="allow")
 prefix_rule(pattern=["git", "diff"], decision="allow")
 prefix_rule(pattern=["git", "log"], decision="allow")
@@ -9,15 +9,15 @@ prefix_rule(pattern=["git", "rev-parse"], decision="allow")
 # Staging
 prefix_rule(pattern=["git", "add"], decision="allow")
 
-# Local history changes should still ask
-prefix_rule(pattern=["git", "commit"], decision="prompt")
+# Local history changes
+prefix_rule(pattern=["git", "commit"], decision="allow")
 
-# Network / remote mutation should ask
+# Network / remote mutation
 prefix_rule(pattern=["git", "fetch"], decision="prompt")
-prefix_rule(pattern=["git", "pull"], decision="prompt")
 prefix_rule(pattern=["git", "push"], decision="prompt")
+prefix_rule(pattern=["git", "pull"], decision="allow")
 
-# GitHub CLI uses credentials and network, so prompt
+# GitHub CLI
 prefix_rule(pattern=["gh", "pr", "view"], decision="prompt")
 prefix_rule(pattern=["gh", "pr", "diff"], decision="prompt")
 prefix_rule(pattern=["gh", "pr", "checks"], decision="prompt")

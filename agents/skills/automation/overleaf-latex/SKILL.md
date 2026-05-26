@@ -7,6 +7,8 @@ description: Work with Overleaf LaTeX projects through Overleaf Git clones. Use 
 
 Use this skill for Overleaf projects accessed through Overleaf Git integration. The primary artifact is a local Git clone of an Overleaf project. Browser automation is only a fallback for Overleaf UI state, compile verification, or project management that Git cannot represent.
 
+After every LaTeX source edit, if the relevant entrypoint is known and a local TeX toolchain is available, compile the changed artifact before handing work back and provide the generated PDF path as a companion-review artifact. Do this even when the user did not explicitly ask for compilation. If compilation cannot be run, state the exact blocker.
+
 ## Default Assumptions
 
 - Default compiler: `pdfLaTeX`.
@@ -47,5 +49,7 @@ If multiple entrypoints are plausible and the user did not specify which artifac
 ## Verification
 
 Use local compilation when TeX tools are installed and the relevant entrypoint is known. If local tools are unavailable, or if Overleaf and local output disagree, treat Overleaf compile as the final authority and use browser automation as needed.
+
+After modifying LaTeX source and when a local TeX toolchain is available, compile the relevant entrypoint to PDF before handing work back. Provide the generated PDF path in the response so the user can review the rendered result in the companion app. This PDF path is part of the required deliverable for LaTeX edits, not an optional extra. If compilation cannot be run, state the exact missing tool or blocker.
 
 Report exactly what was verified. Distinguish local checks from Overleaf browser checks.

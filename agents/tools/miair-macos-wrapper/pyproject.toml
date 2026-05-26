@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "miair-macos-wrapper"
+version = "0.1.0"
+description = "macOS-native launcher and AirPlay discovery wrapper for MiAir."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+miair-macos-wrapper = "miair_macos_wrapper.cli:main"
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["miair_macos_wrapper"]

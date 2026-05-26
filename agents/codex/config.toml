@@ -1,23 +1,18 @@
 model = "gpt-5.5"
-model_provider = "openai_http"
 model_reasoning_effort = "high"
-approval_policy = "on-request"
-sandbox_mode = "workspace-write"
-default_permissions = "secret_safe"
-personality = "pragmatic"
-approvals_reviewer = "user"
+service_tier = "fast"
 
 notify = [
-    "~/.codex/plugins/cache/openai-bundled/computer-use/1.0.758/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient",
+    "~/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient",
     "turn-ended"
 ]
 
-[model_providers.openai_http]
-name = "OpenAI HTTP"
-wire_api = "responses"
-requires_openai_auth = true
-supports_websockets = false
-base_url = "https://chatgpt.com/backend-api/codex"
+approval_policy = "on-request"
+approvals_reviewer = "user"
+
+sandbox_mode = "workspace-write"
+default_permissions = "secret_safe"
+personality = "pragmatic"
 
 [permissions.secret_safe.filesystem]
 ":project_roots" = { "." = "write" }
@@ -26,17 +21,6 @@ base_url = "https://chatgpt.com/backend-api/codex"
 
 [permissions.secret_safe.network]
 enabled = true
-
-[sandbox_workspace_write]
-exclude_slash_tmp = true
-exclude_tmpdir_env_var = true
-network_access = true
-writable_roots = [
-    "/tmp",
-    "/private/tmp",
-    "~/Documents/codex-workspace/agent-dotfiles",
-    "~/.codex/memories"
-]
 
 [projects]
 "~/Documents/codex-workspace" = { trust_level = "trusted" }
@@ -47,25 +31,38 @@ writable_roots = [
 [plugins]
 "github@openai-curated" = { enabled = true }
 "build-web-apps@openai-curated" = { enabled = true }
-"computer-use@openai-bundled" = { enabled = true }
-"browser@openai-bundled" = { enabled = true }
-"chrome@openai-bundled" = { enabled = true }
-"documents@openai-primary-runtime" = { enabled = true }
-"presentations@openai-primary-runtime" = { enabled = true }
-"spreadsheets@openai-primary-runtime" = { enabled = true }
+
+[plugins."presentations@openai-primary-runtime" ]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime" ]
+enabled = true
+
+[plugins."documents@openai-primary-runtime" ]
+enabled = true
+
+[plugins."computer-use@openai-bundled" ]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
 
 [marketplaces.openai-bundled]
-last_updated = "2026-05-19T16:36:47Z"
+last_updated = "2026-05-26T02:04:38Z"
 source_type = "local"
 source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-05-19T07:27:56Z"
+last_updated = "2026-05-22T04:27:24Z"
 source_type = "local"
 source = "~/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
 [features]
 memories = true
+js_repl = false
 
 [memories]
 disable_on_external_context = true
@@ -143,3 +140,60 @@ zotero_search_items = { approval_mode = "approve" }
 zotero_semantic_search = { approval_mode = "approve" }
 zotero_update_item = { approval_mode = "approve" }
 
+[mcp_servers.node_repl]
+args = []
+command = "/Applications/Codex.app/Contents/Resources/node_repl"
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+BROWSER_USE_MARKETPLACE_NAME = "openai-bundled"
+CODEX_CLI_PATH = "/Applications/Codex.app/Contents/Resources/codex"
+CODEX_HOME = "~/.codex"
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = ""
+NODE_REPL_NODE_PATH = "/Applications/Codex.app/Contents/Resources/node"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "167fdf579477181fba1773c1efb067b00c5a64fe85dafb50a2001bde198dc739"
+NODE_REPL_TRUSTED_CODE_PATHS = "~/.codex"
+NODE_REPL_UNTRUSTED_ENV_ALLOWLIST = "BROWSER_USE_MARKETPLACE_NAME"
+SKY_CUA_SERVICE_PATH = "~/.codex/.tmp/bundled-marketplaces/openai-bundled/plugins/computer-use/Codex Computer Use.app"
+
+[desktop]
+appearanceLightCodeThemeId = "codex"
+appearanceDarkCodeThemeId = "codex"
+sansFontSize = 15
+codeFontSize = 14
+usePointerCursors = true
+followUpQueueMode = "steer"
+reviewDelivery = "detached"
+preventSleepWhileRunning = true
+keepRemoteControlAwakeWhilePluggedIn = true
+git-show-sidebar-pr-icons = true
+git-commit-instructions = """
+### Commit Style
+
+- restrict commit subjects to the approved lowercase prefixes: `docs:`, `feat:`, `fix:`, `refactor:`, `test:`, `chore` and `release:`
+- keep the subject focused on the primary architectural or behavioral change instead of listing every touched area"""
+notifications-turn-mode = "always"
+selected-avatar-id = "custom:asuka-2"
+
+[desktop.appearanceLightChromeTheme]
+accent = "#0169cc"
+contrast = 45
+ink = "#0d0d0d"
+opaqueWindows = false
+surface = "#ffffff"
+fonts = { code = "monaco", ui = "Inter" }
+semanticColors = { diffAdded = "#00a240", diffRemoved = "#e02e2a", skill = "#751ed9" }
+
+[desktop.appearanceDarkChromeTheme]
+accent = "#0169cc"
+contrast = 60
+ink = "#fcfcfc"
+opaqueWindows = false
+surface = "#111111"
+fonts = { code = "monaco", ui = "Inter" }
+semanticColors = { diffAdded = "#00a240", diffRemoved = "#e02e2a", skill = "#b06dff" }
+
+[desktop.open-in-target-preferences]
+global = "vscode"
