@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.user.haos-mac-router</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/libexec/agent-dotfiles/haos-mac-router/haos-mac-router-launchd.sh</string>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>HAOS_IP</key>
+    <string>__HAOS_IP__</string>
+    <key>HAOS_PREFIX</key>
+    <string>__HAOS_PREFIX__</string>
+    <key>HAOS_INTERFACE</key>
+    <string>__HAOS_INTERFACE__</string>
+    <key>LAN_INTERFACE</key>
+    <string>__LAN_INTERFACE__</string>
+    <key>MAC_LAN_IP</key>
+    <string>__MAC_LAN_IP__</string>
+    <key>DNS_SERVER</key>
+    <string>__DNS_SERVER__</string>
+    <key>ROUTE_TARGET</key>
+    <string>__ROUTE_TARGET__</string>
+    <key>REQUIRE_UTUN</key>
+    <string>__REQUIRE_UTUN__</string>
+    <key>WAIT_SECONDS</key>
+    <string>__WAIT_SECONDS__</string>
+    <key>SLEEP_SECONDS</key>
+    <string>__SLEEP_SECONDS__</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+
+  <key>StandardOutPath</key>
+  <string>/var/log/haos-mac-router.log</string>
+  <key>StandardErrorPath</key>
+  <string>/var/log/haos-mac-router.err</string>
+</dict>
+</plist>

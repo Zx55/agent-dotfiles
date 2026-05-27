@@ -1,0 +1,18 @@
+# Home Assistant host package manifest.
+#
+brew "uv"
+brew "node"
+brew "git"
+brew "git-lfs"
+brew "gh"
+brew "ripgrep"
+brew "wget"
+brew "tree"
+brew "tmux"
+brew "htop"
+brew "pstree"
+
+cask "codex"
+cask "clash-verge-rev"
+cask "tailscale-app"
+cask "utm"

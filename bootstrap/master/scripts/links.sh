@@ -2,15 +2,15 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BOOTSTRAP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_ROOT="$(cd "$BOOTSTRAP_DIR/.." && pwd)"
+PROFILE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$PROFILE_DIR/../.." && pwd)"
 BACKUP_ROOT="${HOME}/.dotfiles-backup"
 BACKUP_DIR=""
 AGENT="codex"
 
 usage() {
   cat <<'EOF'
-Usage: bootstrap/scripts/links.sh [options]
+Usage: bootstrap/bootstrap.sh --profile master links [options]
 
 Options:
   --agent <name>         Agent to link. Currently only "codex" is supported.

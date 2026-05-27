@@ -1,0 +1,3 @@
+# uv tools needed by the HA host Codex environment.
+./agents/tools/mcp-launcher
+ruff

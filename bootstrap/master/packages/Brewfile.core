@@ -26,6 +26,7 @@ brew "pfetch"
 brew "docker"
 
 cask "codex"
+cask "tailscale-app"
 cask "google-chrome"
 cask "iterm2"
 cask "raycast"

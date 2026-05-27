@@ -2,16 +2,16 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BOOTSTRAP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_ROOT="$(cd "$BOOTSTRAP_DIR/.." && pwd)"
-PACKAGE_DIR="$BOOTSTRAP_DIR/packages"
+PROFILE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$PROFILE_DIR/../.." && pwd)"
+PACKAGE_DIR="$PROFILE_DIR/packages"
 AGENT="codex"
 ERRORS=0
 WARNINGS=0
 
 usage() {
   cat <<'EOF'
-Usage: bootstrap/scripts/verify.sh [options]
+Usage: bootstrap/bootstrap.sh --profile master verify [options]
 
 Options:
   --agent <name>         Agent to verify. Currently only "codex" is supported.

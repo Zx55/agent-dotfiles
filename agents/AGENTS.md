@@ -14,7 +14,7 @@
 - If the project has no Python environment, use the shared agent Python at `~/.local/share/agent-dotfiles/python/bin/python`.
 - Fall back to `python3` only when neither a project environment nor the shared agent Python is available.
 - Do not install dependencies into the system Python.
-- Project-specific dependencies belong in that project's own environment; cross-agent or cross-skill packages belong in `~/Documents/codex-workspace/agent-dotfiles/bootstrap/packages/agent-python.txt`.
+- Project-specific dependencies belong in that project's own environment; cross-agent or cross-skill packages belong in `~/Documents/codex-workspace/agent-dotfiles/bootstrap/master/packages/agent-python.txt`.
 
 ### Network / Proxy
 

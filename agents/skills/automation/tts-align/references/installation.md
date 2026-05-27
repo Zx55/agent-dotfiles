@@ -22,13 +22,13 @@ hf --help
 Use the bootstrap model warmer when this dotfiles repo is available:
 
 ```bash
-~/Documents/codex-workspace/agent-dotfiles/bootstrap/scripts/warm_ml_models.sh
+~/Documents/codex-workspace/agent-dotfiles/bootstrap/master/scripts/warm_ml_models.sh
 ```
 
 The model list lives at:
 
 ```text
-~/Documents/codex-workspace/agent-dotfiles/bootstrap/packages/ml-models.tsv
+~/Documents/codex-workspace/agent-dotfiles/bootstrap/master/packages/ml-models.tsv
 ```
 
 It separates model sources by backend:

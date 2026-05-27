@@ -1,0 +1,12 @@
+# Packages installed into the shared agent Python environment on a HA host.
+#
+# Environment:
+#   ~/.local/share/agent-dotfiles/python
+#
+# Keep this smaller than the master profile. Add only packages needed by common
+# Codex operations, lightweight document parsing, and API scripts.
+openai
+pillow
+pypdf
+requests
+segno

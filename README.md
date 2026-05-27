@@ -36,18 +36,31 @@ agent-dotfiles/
 
   bootstrap/
     bootstrap.sh
-    packages/
-      Brewfile.core
-      Brewfile.large-app
-      agent-python.txt
-      local-tools.txt
-      mas-apps.txt
-      npm-global.txt
-      uv-tools.txt
-    scripts/
-      install.sh
-      links.sh
-      verify.sh
+    master/
+      packages/
+        Brewfile.core
+        Brewfile.large-app
+        agent-python.txt
+        local-tools.txt
+        mas-apps.txt
+        npm-global.txt
+        uv-tools.txt
+      scripts/
+        all.sh
+        install.sh
+        links.sh
+        verify.sh
+        warm_ml_models.sh
+    ha_host/
+      packages/
+        Brewfile.core
+        agent-python.txt
+        uv-tools.txt
+      scripts/
+        audit.sh
+        install.sh
+        links.sh
+        verify.sh
   .githooks/
     pre-commit
 ```
@@ -102,28 +115,48 @@ can be assumed to exist.
 Common commands:
 
 ```sh
-./bootstrap/bootstrap.sh --agent codex --only install
-./bootstrap/bootstrap.sh --agent codex --only links
-./bootstrap/bootstrap.sh --agent codex --only verify
-./bootstrap/bootstrap.sh --agent codex --with-large-app
-./bootstrap/bootstrap.sh --agent codex --skip-agent-python
+./bootstrap/bootstrap.sh --profile master all --agent codex
+./bootstrap/bootstrap.sh --profile master install
+./bootstrap/bootstrap.sh --profile master links --agent codex
+./bootstrap/bootstrap.sh --profile master verify --agent codex
+./bootstrap/bootstrap.sh --profile master install --with-large-app
+./bootstrap/bootstrap.sh --profile master install --skip-agent-python
+./bootstrap/bootstrap.sh --profile ha_host audit
+./bootstrap/bootstrap.sh --profile ha_host verify
 ```
 
-Only `codex` is supported for now.
+`master` is the default profile and only `codex` is supported for now.
 
-`bootstrap/scripts/install.sh` installs packages and local tools. It installs
-Homebrew if needed, then runs `Brewfile.core`. With `--with-large-app`, it starts
-`Brewfile.large-app` in the background after core packages finish. Large app
-logs go to `~/.dotfiles-bootstrap/logs/`.
+`bootstrap/bootstrap.sh` is a thin profile dispatcher. It only parses
+`--profile <name>` and the requested step, then forwards all remaining arguments
+to `bootstrap/<profile>/scripts/<step>.sh`.
 
-`bootstrap/scripts/links.sh` creates symlinks from this repository into the home
-directory, except for Codex `config.toml`, which is copied as a local runtime
-file, and Codex App automation snapshots, which are copied after expanding
-portable home paths. Existing targets are moved to
+`bootstrap/master/scripts/all.sh` runs the master install, links, and verify
+steps in order. It owns the combined master-profile options that need to be
+split across those steps.
+
+`bootstrap/master/scripts/install.sh` installs packages and local tools. It
+installs Homebrew if needed, then runs `Brewfile.core`. With
+`--with-large-app`, it starts `Brewfile.large-app` in the background after core
+packages finish. Large app logs go to `~/.dotfiles-bootstrap/logs/`.
+
+`bootstrap/master/scripts/links.sh` creates symlinks from this repository into
+the home directory, except for Codex `config.toml`, which is copied as a local
+runtime file, and Codex App automation snapshots, which are copied after
+expanding portable home paths. Existing targets are moved to
 `~/.dotfiles-backup/<timestamp>/` before replacement.
 
-`bootstrap/scripts/verify.sh` checks package files, local tool sources, Codex
-config loading, installed runtime tools, and expected symlinks.
+`bootstrap/master/scripts/verify.sh` checks package files, local tool sources,
+Codex config loading, installed runtime tools, and expected symlinks.
+
+`bootstrap/ha_host` is a conservative Home Assistant host profile for macOS. Its
+install step ensures Homebrew exists and installs the minimal host package
+manifest for remote Codex access, Tailscale access, UTM virtualization, and a
+small uv-managed agent Python environment. Network exposure, sleep policy, VM
+creation, and Home Assistant OS setup remain explicit follow-up decisions.
+Its links step is copy-only and intentionally does not install Codex hooks, so
+the HA host receives config from this repository without syncing runtime config
+back.
 
 The repository uses `.githooks/pre-commit` through `git config core.hooksPath
 .githooks`. Before each commit, the hook syncs `~/.codex/config.toml` back to

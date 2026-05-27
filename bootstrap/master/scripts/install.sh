@@ -2,9 +2,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BOOTSTRAP_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_ROOT="$(cd "$BOOTSTRAP_DIR/.." && pwd)"
-PACKAGE_DIR="$BOOTSTRAP_DIR/packages"
+PROFILE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_ROOT="$(cd "$PROFILE_DIR/../.." && pwd)"
+PACKAGE_DIR="$PROFILE_DIR/packages"
 LOG_DIR="${HOME}/.dotfiles-bootstrap/logs"
 
 WITH_LARGE_APP=0
@@ -20,7 +20,7 @@ AGENT_PYTHON_VENV="$HOME/.local/share/agent-dotfiles/python"
 
 usage() {
   cat <<'EOF'
-Usage: bootstrap/scripts/install.sh [options]
+Usage: bootstrap/bootstrap.sh --profile master install [options]
 
 Options:
   --with-large-app       Install large GUI apps in the background after core brew packages.
@@ -164,7 +164,7 @@ install_uv_tools() {
 
 warm_ml_models() {
   [[ "$WARM_ML_MODELS" -eq 1 ]] || return 0
-  local script="$BOOTSTRAP_DIR/scripts/warm_ml_models.sh"
+  local script="$PROFILE_DIR/scripts/warm_ml_models.sh"
   [[ -x "$script" ]] || die "missing executable script: $script"
   log "Pre-downloading machine learning models from $PACKAGE_DIR/ml-models.tsv"
   "$script"
