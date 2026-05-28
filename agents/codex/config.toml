@@ -179,6 +179,7 @@ git-commit-instructions = """
 - keep the subject focused on the primary architectural or behavioral change instead of listing every touched area"""
 notifications-turn-mode = "always"
 selected-avatar-id = "custom:asuka-2"
+default-service-tier = "priority"
 
 [desktop.appearanceLightChromeTheme]
 accent = "#0169cc"
