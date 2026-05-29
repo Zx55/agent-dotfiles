@@ -54,7 +54,7 @@ enabled = true
 enabled = true
 
 [marketplaces.openai-bundled]
-last_updated = "2026-05-27T07:34:45Z"
+last_updated = "2026-05-29T01:52:24Z"
 source_type = "local"
 source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
@@ -179,7 +179,6 @@ git-commit-instructions = """
 - keep the subject focused on the primary architectural or behavioral change instead of listing every touched area"""
 notifications-turn-mode = "always"
 selected-avatar-id = "custom:asuka-2"
-default-service-tier = "priority"
 
 [desktop.appearanceLightChromeTheme]
 accent = "#0169cc"

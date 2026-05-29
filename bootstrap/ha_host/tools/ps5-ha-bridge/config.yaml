@@ -1,4 +1,4 @@
-version: "0.2.2"
+version: "0.2.10"
 slug: ps5_ha_bridge
 name: PS5 HA Bridge
 description: Expose PlayStation 5 scene-level power and status to Home Assistant over MQTT.
@@ -33,6 +33,9 @@ options:
   bridge:
     poll_interval_seconds: 30
     availability_failures: 3
+    command_transition_timeout_seconds: 60
+    command_transition_poll_seconds: 1
+    actual_state_confirmations: 3
     discovery_name: PS5
 schema:
   log_level: list(debug|info|warning|error)
@@ -47,4 +50,7 @@ schema:
   bridge:
     poll_interval_seconds: int
     availability_failures: int
+    command_transition_timeout_seconds: int
+    command_transition_poll_seconds: int
+    actual_state_confirmations: int
     discovery_name: str

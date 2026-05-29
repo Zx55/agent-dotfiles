@@ -14,6 +14,15 @@ Do not keep separate video notes by default. When a video teaches a reusable con
 - `https://inkss.cn/post/430ddf15/` - 米家中枢自动化极客版案例分享. Useful for practical patterns such as traditional-device integration, camera position correction, movie mode, washing machine completion, and air-conditioner door/window reminders.
 - `https://phuker.github.io/posts/xiaomi-central-gateway-thermostat.html` - 恒温控制 example. Useful for a larger system that mixes geek mode, virtual events, central gateway logic, and 米家 App controls.
 
+## Home Assistant Bridge References
+
+- `https://github.com/XiaoMi/ha_xiaomi_home` - Official Xiaomi Home Integration for Home Assistant. Useful for the current Xiaomi-supported HA integration, OAuth login, cloud/local messaging architecture, and limitations such as unsupported Bluetooth, infrared, and virtual devices.
+- `https://www.home-assistant.io/integrations/xiaomi_miio/` - Home Assistant built-in Xiaomi Home / miio integration docs. Useful for legacy Xiaomi gateway and device setup, Mi Home prerequisite, and subnet/VLAN caveats.
+- `https://www.home-assistant.io/docs/automation/trigger/#webhook-trigger` - HA webhook trigger docs. Useful when a verified Xiaomi-side action can call an HA local webhook.
+- `https://www.home-assistant.io/integrations/mqtt/` - HA MQTT integration docs. Useful when a bridge publishes events into HA through Mosquitto or another MQTT broker.
+- `https://www.home-assistant.io/integrations/rest_command/` - HA RESTful Command docs. Useful when HA needs to send HTTP requests outward from scripts or automations.
+- `https://www.home-assistant.io/integrations/matter/` - HA Matter docs. Useful for distinguishing HA as a Matter controller from third-party Matter bridge add-ons that may expose HA entities outward.
+
 ## Integrated Video Tutorials
 
 - `https://www.bilibili.com/video/BV1wM411k7g6/` -> setup requirements, App/geek-mode independence, device schedulability, graph layout and editing tips.
@@ -22,6 +31,10 @@ Do not keep separate video notes by default. When a video teaches a reusable con
 - `https://www.bilibili.com/video/BV1thiQBSE8Z/` -> virtual events as App/geek-mode bridge, text-matched event naming, App-only trigger categories, finer App scene control.
 - `https://www.bilibili.com/video/BV1oH4y1a7r6/` -> variable scope/type conventions, six variable card patterns, numeric operation, text concatenation, temperature-difference example.
 - `https://www.bilibili.com/video/BV1TSoYB7EXK/` -> 米家 App execution loops, finite versus always-loop modes, action order, and current local/cloud verification caution.
+- `https://www.bilibili.com/video/BV1fYruYiE26/` -> official `ha_xiaomi_home` bridge pattern: HA watches central-gateway virtual-service event-name changes to run HA scripts, and HA can emit central-gateway virtual events back into 米家/geek mode.
+- `https://www.bilibili.com/video/BV1NwNLexEqt/` -> state-machine caveat for HA-watched virtual events: repeated same event names may not retrigger because the observed event-name value did not change. Use alternating or reset values.
+- `https://www.bilibili.com/video/BV1gYKHepEoE/` -> HA-side acknowledgement/failure feedback pattern: HA emits success events after script completion, while geek mode uses variables and delays to announce timeout/failure.
+- `https://www.bilibili.com/video/BV1pXE9zHEvW/` -> four-month Xiaomi Home integration experience: official integration supports many Xiaomi entities, central-gateway local mode depends on gateway/software support, LAN control covers only IP devices, and HA HomeKit Bridge can selectively expose HA entities to Apple Home.
 
 ## Indexed But Not Yet Distilled
 
@@ -34,6 +47,8 @@ Do not keep separate video notes by default. When a video teaches a reusable con
 - Dedicated log-reading tutorial content has not been separately distilled. The current log guidance is inferred from graph-review practice and available tutorials.
 - Device cards, time cards, flow cards, and logic cards are covered at the concept level, but not as a complete card-by-card catalog.
 - The GreasyFork helper script is indexed but not yet turned into a workflow for inspecting device, variable, and automation references.
+- 米家 -> HA and HA -> 米家 bridge behavior has been documented at the architecture-pattern level. The official Xiaomi Home central-gateway virtual-event path is now represented as a verified tutorial pattern, but exact HA entity/action names must still be checked in the user's live HA instance.
+- No current official/public source in this index confirms a generic 米家 App or geek-mode HTTP/MQTT outbound action. Keep direct HTTP/MQTT from Xiaomi as a live-UI verification item rather than a default assumption.
 
 ## Helper And Capability References
 

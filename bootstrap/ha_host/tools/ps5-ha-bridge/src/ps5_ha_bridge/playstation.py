@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -9,6 +10,9 @@ from playdirector import find, scan, standby, wake
 from playdirector.credentials import JsonCredentialStorage
 from playdirector.discovery import DeviceStatus, DeviceType, DiscoveredDevice
 from playdirector.pairing import pair_ps5
+
+
+LOG = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -80,30 +84,93 @@ class PlayStationClient:
         host: str,
         device_id: str | None = None,
         *,
+        attempts: int = 3,
         wait_seconds: float = 30.0,
     ) -> DeviceSnapshot:
         device = await find(host, timeout=5.0)
         credential = self._require_credential(device_id or (str(device.device_id) if device else None))
-        if device is None:
-            device = _wake_target(host, credential.device_id)
-        await wake(device, credential)
+        if device is not None and device.status == DeviceStatus.AWAKE:
+            return _snapshot(device)
 
-        deadline = asyncio.get_running_loop().time() + wait_seconds
-        last_snapshot = _snapshot(device)
-        while asyncio.get_running_loop().time() < deadline:
+        last_snapshot = _snapshot(device or _wake_target(host, credential.device_id))
+        last_error: Exception | None = None
+        per_attempt_wait = max(5.0, wait_seconds / max(attempts, 1))
+        for attempt in range(1, attempts + 1):
+            if device is None:
+                device = _wake_target(host, credential.device_id)
+            try:
+                await wake(device, credential)
+                last_snapshot = await self._wait_for_status(
+                    host,
+                    DeviceStatus.AWAKE,
+                    wait_seconds=per_attempt_wait,
+                    fallback=device,
+                )
+                if last_snapshot.status == DeviceStatus.AWAKE.value:
+                    return last_snapshot
+            except Exception as exc:
+                last_error = exc
+                snapshot = await self.status(host, timeout=5.0)
+                if snapshot is not None and snapshot.status == DeviceStatus.AWAKE.value:
+                    return snapshot
+
+            if attempt >= attempts:
+                break
+            LOG.warning("wake attempt %s/%s did not reach awake; retrying", attempt, attempts)
             await asyncio.sleep(2)
-            refreshed = await find(host, timeout=3.0)
-            if refreshed is None:
-                continue
-            last_snapshot = _snapshot(refreshed)
-            if refreshed.status == DeviceStatus.AWAKE:
-                return last_snapshot
+            device = await find(host, timeout=5.0)
+            if device is not None and device.status == DeviceStatus.AWAKE:
+                return _snapshot(device)
+
+        if last_error is not None and last_snapshot.status != DeviceStatus.AWAKE.value:
+            raise last_error
         return last_snapshot
 
-    async def standby(self, host: str, device_id: str | None = None) -> DeviceSnapshot:
+    async def standby(
+        self,
+        host: str,
+        device_id: str | None = None,
+        *,
+        attempts: int = 3,
+        wait_seconds: float = 30.0,
+    ) -> DeviceSnapshot:
         device = await self._require_device(host, device_id)
         credential = self._require_credential(device_id or str(device.device_id))
-        await standby(device, credential)
+        if device.status == DeviceStatus.STANDBY:
+            return _snapshot(device)
+
+        last_error: Exception | None = None
+        for attempt in range(1, attempts + 1):
+            try:
+                await standby(device, credential)
+                return await self._wait_for_status(
+                    host,
+                    DeviceStatus.STANDBY,
+                    wait_seconds=wait_seconds,
+                    fallback=device,
+                )
+            except Exception as exc:
+                last_error = exc
+                snapshot = await self.status(host, timeout=5.0)
+                if snapshot is not None and snapshot.status == DeviceStatus.STANDBY.value:
+                    return snapshot
+                if attempt >= attempts:
+                    break
+                LOG.warning(
+                    "standby attempt %s/%s failed: %s; retrying",
+                    attempt,
+                    attempts,
+                    exc,
+                )
+                await asyncio.sleep(2 * attempt)
+                refreshed = await find(host, timeout=5.0)
+                if refreshed is not None:
+                    if refreshed.status == DeviceStatus.STANDBY:
+                        return _snapshot(refreshed)
+                    device = refreshed
+
+        if last_error is not None:
+            raise last_error
         return _snapshot(device)
 
     def has_credential(self, device_id: str) -> bool:
@@ -151,6 +218,27 @@ class PlayStationClient:
             target = device_id or host
             raise RuntimeError(f"PlayStation not found: {target}")
         return device
+
+    async def _wait_for_status(
+        self,
+        host: str,
+        expected: DeviceStatus,
+        *,
+        wait_seconds: float,
+        fallback: Any,
+    ) -> DeviceSnapshot:
+        deadline = asyncio.get_running_loop().time() + wait_seconds
+        last_snapshot = _snapshot(fallback)
+        while asyncio.get_running_loop().time() < deadline:
+            await asyncio.sleep(2)
+            refreshed = await find(host, timeout=5.0)
+            if refreshed is None:
+                continue
+            last_snapshot = _snapshot(refreshed)
+            if refreshed.status == expected:
+                return last_snapshot
+        return last_snapshot
+
 
 def _snapshot(device: Any) -> DeviceSnapshot:
     return DeviceSnapshot(

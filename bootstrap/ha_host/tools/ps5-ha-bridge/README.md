@@ -2,9 +2,12 @@
 
 `ps5-ha-bridge` is a Home Assistant OS add-on for exposing scene-level PlayStation 5 power control to Home Assistant through MQTT. It exists to cover the power-control path that can be unreliable with `ps5-mqtt`/`playactor`, while activity details can stay with Home Assistant's PlayStation integration.
 
-The add-on exposes one Home Assistant MQTT switch:
+The add-on exposes one Home Assistant MQTT switch and one diagnostic binary sensor:
 
 - `switch.ps5_power`: `ON` wakes the PS5, `OFF` puts it into rest mode, and the state reflects the latest discovered PS5 power status.
+- `binary_sensor.ps5_actual_power`: actual PS5 power state from discovery only. Use this for automations and Mi Home/geek status events.
+
+Power commands use a transition window: the bridge publishes the requested switch state immediately, then polls more frequently until the PS5 reports the target state or the window expires. This avoids Home Assistant briefly flipping the switch back to stale state while the console is still waking or entering rest mode.
 
 ## Ownership Boundary
 
@@ -82,9 +85,25 @@ Current runtime topics:
 ```text
 ps5-ha-bridge/ps5/power/set
 ps5-ha-bridge/ps5/power/state
+ps5-ha-bridge/ps5/power/actual_state
 ps5-ha-bridge/ps5/availability
 ps5-ha-bridge/ps5/attributes/state
 ```
+
+Relevant add-on options:
+
+```yaml
+bridge:
+  poll_interval_seconds: 30
+  availability_failures: 3
+  command_transition_timeout_seconds: 60
+  command_transition_poll_seconds: 1
+  actual_state_confirmations: 3
+```
+
+`command_transition_timeout_seconds` is the maximum time the bridge will hold the requested switch state while waiting for PS5 discovery to catch up. During that window `attributes/state` includes `command_pending: true`. `power/actual_state` and `binary_sensor.ps5_actual_power` publish only confirmed discovered PS5 state; `actual_state_confirmations` controls how many consecutive readings are required before the diagnostic binary sensor changes.
+
+After any power command, the bridge keeps using `command_transition_poll_seconds` until the transition timeout expires, even if the Remote Play command itself fails. Power commands run in the background so status polling continues during the command attempt. This lets Home Assistant correct the actual power state quickly without lowering the normal background poll interval.
 
 Older retained discovery topics from earlier builds are cleared by the bridge:
 

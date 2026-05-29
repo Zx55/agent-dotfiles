@@ -14,6 +14,7 @@ Never preserve login codes, home IPs, room names, device names, account identifi
 - Basic setup, gateway entry, browser requirements, and login-code flow: read [references/setup-and-login.md](references/setup-and-login.md).
 - Card semantics, graph-reading, triggers, states, query cards, execution cards, logs, and common modeling mistakes: read [references/card-model.md](references/card-model.md).
 - Virtual events, 米家 App <-> geek-mode bridging, virtual states, manual-control handoff patterns, and function-like graph split points: read [references/virtual-events.md](references/virtual-events.md).
+- Home Assistant bridge direction, Xiaomi Home integration boundaries, webhook/MQTT entry points, and HA-backed devices such as TVs or PS5: read [references/ha-bridge.md](references/ha-bridge.md).
 - Variables, loops, polling, dynamic delay, custom states, reusable modes, automation locks, override locks, unsupported triggers, and advanced patterns: read [references/advanced-patterns.md](references/advanced-patterns.md).
 - Reviewing a user-provided automation screenshot or live page: read [references/review-checklist.md](references/review-checklist.md).
 - Source links and what each source is useful for: read [references/source-map.md](references/source-map.md).

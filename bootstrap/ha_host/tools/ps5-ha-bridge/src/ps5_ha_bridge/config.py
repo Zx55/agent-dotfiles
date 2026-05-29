@@ -35,6 +35,9 @@ class MqttConfig:
 class BridgeConfig:
     poll_interval_seconds: int = 30
     availability_failures: int = 3
+    command_transition_timeout_seconds: int = 60
+    command_transition_poll_seconds: int = 1
+    actual_state_confirmations: int = 3
     discovery_name: str = "PS5"
     credential_storage_dir: Path = DEFAULT_CREDENTIAL_DIR
     state_path: Path | None = None
@@ -73,6 +76,13 @@ def load_config(path: Path | None) -> AppConfig:
         bridge=BridgeConfig(
             poll_interval_seconds=int(raw.get("bridge", {}).get("poll_interval_seconds", 30)),
             availability_failures=int(raw.get("bridge", {}).get("availability_failures", 3)),
+            command_transition_timeout_seconds=int(
+                raw.get("bridge", {}).get("command_transition_timeout_seconds", 60)
+            ),
+            command_transition_poll_seconds=int(
+                raw.get("bridge", {}).get("command_transition_poll_seconds", 1)
+            ),
+            actual_state_confirmations=int(raw.get("bridge", {}).get("actual_state_confirmations", 3)),
             discovery_name=str(raw.get("bridge", {}).get("discovery_name", "PS5")),
             credential_storage_dir=Path(
                 str(raw.get("bridge", {}).get("credential_storage_dir", DEFAULT_CREDENTIAL_DIR))
@@ -111,6 +121,9 @@ mqtt:
 bridge:
   poll_interval_seconds: 30
   availability_failures: 3
+  command_transition_timeout_seconds: 60
+  command_transition_poll_seconds: 1
+  actual_state_confirmations: 3
   discovery_name: PS5
   credential_storage_dir: ~/.config/ps5-ha-bridge/credentials
   state_path: ~/.config/ps5-ha-bridge/state.json

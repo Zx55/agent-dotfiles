@@ -257,6 +257,13 @@ def _build_config(options: dict[str, Any], snapshot: DeviceSnapshot) -> AppConfi
         bridge=BridgeConfig(
             poll_interval_seconds=int(bridge_options.get("poll_interval_seconds") or 30),
             availability_failures=int(bridge_options.get("availability_failures") or 3),
+            command_transition_timeout_seconds=int(
+                bridge_options.get("command_transition_timeout_seconds") or 60
+            ),
+            command_transition_poll_seconds=int(
+                bridge_options.get("command_transition_poll_seconds") or 1
+            ),
+            actual_state_confirmations=int(bridge_options.get("actual_state_confirmations") or 3),
             discovery_name=str(bridge_options.get("discovery_name") or "PS5"),
             credential_storage_dir=CREDENTIAL_DIR,
             state_path=STATE_PATH,
