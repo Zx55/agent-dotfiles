@@ -1,6 +1,8 @@
 interface:
   display_name: "HAOS macOS Installation"
   short_description: "Setup-only HAOS on a Mac host"
+  icon_small: "./assets/icon-small.png"
+  icon_large: "./assets/icon.png"
   default_prompt: "Use $haos-macos-installation to install, restore, route, and verify HAOS on a macOS UTM host."
 policy:
   allow_implicit_invocation: false

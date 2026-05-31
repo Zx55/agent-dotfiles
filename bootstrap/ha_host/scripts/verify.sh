@@ -109,6 +109,13 @@ check_agent_python() {
   else
     fail "shared agent Python missing: $python"
   fi
+
+  local root_service_python="/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python"
+  if [[ -x "$root_service_python" ]]; then
+    ok "root-owned HA host service Python available: $root_service_python"
+  else
+    fail "HA host service Python missing: $root_service_python"
+  fi
 }
 
 check_copied_file() {
@@ -171,6 +178,21 @@ check_codex_copy_state() {
   done
 }
 
+check_orchestrator_doctor() {
+  local doctor="$PROFILE_DIR/tools/orchestrator/scripts/doctor.sh"
+  if [[ ! -x "$doctor" ]]; then
+    warn "orchestrator doctor missing or not executable: $doctor"
+    return 0
+  fi
+
+  ok "running orchestrator doctor: $doctor"
+  if "$doctor"; then
+    ok "orchestrator doctor passed"
+  else
+    fail "orchestrator doctor failed"
+  fi
+}
+
 main() {
   case "${1:-}" in
     -h|--help)
@@ -204,9 +226,10 @@ main() {
   check_app_required "/Applications/Tailscale.app"
   check_agent_python
   check_codex_copy_state
+  check_orchestrator_doctor
 
   warn "If the tailscale command is missing after installing Tailscale.app, enable CLI integration from Tailscale settings."
-  warn "Remote Login, public SSH exposure, sleep policy, and HA OS VM settings are not automated yet."
+  warn "Remote Login, public SSH exposure, sleep policy, and HAOS VM creation are not automated yet."
 
   if [[ "$ERRORS" -gt 0 ]]; then
     printf '[ha_host:verify] failed with %s error(s) and %s warning(s)\n' "$ERRORS" "$WARNINGS" >&2

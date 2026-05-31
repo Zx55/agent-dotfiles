@@ -1,0 +1,8 @@
+interface:
+  display_name: "HAOS Add-ons"
+  short_description: "Install HAOS add-ons after SSH is ready"
+  icon_small: "./assets/icon-small.png"
+  icon_large: "./assets/icon.png"
+  default_prompt: "Use $haos-addons to install and verify HAOS add-ons over ssh haos."
+policy:
+  allow_implicit_invocation: false

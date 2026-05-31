@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.user.ha-host-watch</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/libexec/agent-dotfiles/orchestrator/ha-host-watch-launchd.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>ORCHESTRATOR_SRC</key>
+    <string>/usr/local/libexec/agent-dotfiles/orchestrator/src</string>
+    <key>PYTHON</key>
+    <string>__PYTHON_BIN__</string>
+    <key>HA_HOST_DIR</key>
+    <string>__HA_HOST_DIR__</string>
+    <key>MAC_ROUTER_REGISTRY</key>
+    <string>__REGISTRY_PATH__</string>
+    <key>ROUTE_TARGET</key>
+    <string>__ROUTE_TARGET__</string>
+    <key>WAIT_SECONDS</key>
+    <string>__WATCH_WAIT_SECONDS__</string>
+    <key>SLEEP_SECONDS</key>
+    <string>__SLEEP_SECONDS__</string>
+    <key>SCAN</key>
+    <string>__SCAN__</string>
+    <key>NO_REQUIRE_UTUN</key>
+    <string>__NO_REQUIRE_UTUN__</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StartInterval</key>
+  <integer>__WATCH_INTERVAL__</integer>
+  <key>StandardOutPath</key>
+  <string>__HA_HOST_DIR__/host-watch.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HA_HOST_DIR__/host-watch.err</string>
+</dict>
+</plist>

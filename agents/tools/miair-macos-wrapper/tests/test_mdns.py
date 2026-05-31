@@ -18,37 +18,37 @@ from miair_macos_wrapper.mdns import (
 class MdnsHelperTests(unittest.TestCase):
     def test_configured_hostname_reads_space_separated_arg(self) -> None:
         self.assertEqual(
-            configured_hostname(["--conf-path", "/tmp/miair", "--hostname", "192.168.71.70"]),
-            "192.168.71.70",
+            configured_hostname(["--conf-path", "/tmp/miair", "--hostname", "192.0.2.10"]),
+            "192.0.2.10",
         )
 
     def test_configured_hostname_reads_equals_arg(self) -> None:
         self.assertEqual(
-            configured_hostname(["--hostname=192.168.71.70"]),
-            "192.168.71.70",
+            configured_hostname(["--hostname=192.0.2.10"]),
+            "192.0.2.10",
         )
 
     def test_export_hostname_env_sets_ipv4_hostname(self) -> None:
         with patch.dict("os.environ", {}, clear=True):
-            export_hostname_env(["--hostname", "192.168.71.70"])
-            self.assertEqual(os.environ["MIAIR_HOSTNAME"], "192.168.71.70")
+            export_hostname_env(["--hostname", "192.0.2.10"])
+            self.assertEqual(os.environ["MIAIR_HOSTNAME"], "192.0.2.10")
 
     def test_is_ipv4_address(self) -> None:
-        self.assertTrue(is_ipv4_address("192.168.71.70"))
-        self.assertFalse(is_ipv4_address("192.168.71.70.local"))
+        self.assertTrue(is_ipv4_address("192.0.2.10"))
+        self.assertFalse(is_ipv4_address("192.0.2.10.local"))
         self.assertFalse(is_ipv4_address("not-an-ip"))
-        self.assertFalse(is_ipv4_address("999.168.71.70"))
+        self.assertFalse(is_ipv4_address("999.0.2.10"))
 
     def test_preferred_ip_uses_configured_ipv4(self) -> None:
         self.assertEqual(
-            preferred_ip("192.168.71.70", lambda: "198.18.0.1"),
-            "192.168.71.70",
+            preferred_ip("192.0.2.10", lambda: "198.18.0.1"),
+            "192.0.2.10",
         )
 
     def test_preferred_ip_falls_back_for_non_ip_hostname(self) -> None:
         self.assertEqual(
-            preferred_ip("macbook.local", lambda: "192.168.71.70"),
-            "192.168.71.70",
+            preferred_ip("macbook.local", lambda: "192.0.2.10"),
+            "192.0.2.10",
         )
 
     def test_dns_sd_command_contains_raop_registration(self) -> None:

@@ -37,48 +37,48 @@ Keep LaTeX, large media tooling, and other master-only apps out of `ha_host` unl
 
 Use UTM shared networking/NAT for the initial HAOS boot. The first boot downloads Home Assistant Core and app store data, and there is no reliable command-line path yet because Terminal & SSH is not installed or configured.
 
-Do not start in bridged Mac-gateway mode for a fresh VM. The Mac-side soft router only becomes useful after HAOS has Terminal & SSH, a reachable HA UI, and a known network interface.
+Do not start in bridged Mac-gateway mode for a fresh VM. The Mac-side route only becomes useful after HAOS has Terminal & SSH, a reachable HA UI, and a known network interface.
 
 After setup:
 
 1. Expand the HAOS disk before installing more apps. A 6 GB qcow2 image can fill up immediately after Core is installed. Use at least 32 GB, preferably 64 GB.
 2. Finish HA onboarding in the web UI.
 3. Install `Terminal & SSH` from the HA app store in the UI.
-4. Configure `Terminal & SSH` in the UI with an SSH public key or temporary password.
+4. Configure `Terminal & SSH` in the UI with an SSH public key. Use a temporary password only as a break-glass path and do not preserve it in the repo or final answer.
 5. Start `Terminal & SSH`, enable start-on-boot, and verify web terminal access.
-6. Add a local `~/.ssh/config` alias such as `Host haos` and verify `ssh haos`.
-7. Install `File editor`.
-8. Install `Samba share`.
-9. Create a full backup and copy it off HAOS through Samba.
+6. Add a local `~/.ssh/config` alias such as `Host haos`, point it at the HAOS LAN IP and configured SSH key, then verify `ssh haos`.
+7. Verify `ssh haos 'ha supervisor info'`, `ssh haos 'ha network info'`, and `ssh haos 'ha resolution info'`.
+8. Create a full backup before bridge or gateway changes.
 
-After `ssh haos` works, later add-ons can be installed through CLI, for example:
+After `ssh haos` works, later add-ons and custom integrations are out of scope for this skill. Their current staging docs and scripts live outside this skill under:
 
 ```sh
-ssh haos 'ha apps install core_mosquitto'
+./agents/skills/iot/haos-addons/
 ```
 
-This does not remove the need to install and configure Terminal & SSH through the UI during the initial NAT phase.
+Do not start add-on installation until `ssh haos 'ha supervisor info'` succeeds.
 
 ## Switch To Bridged Mac Gateway
 
-Only switch to bridged mode after the NAT baseline is complete:
+Only switch to bridged mode after the NAT baseline is complete. The normal path is now the HA host orchestrator, not manual UTM and HAOS gateway edits:
 
-1. Stop HAOS.
-2. Change UTM networking from shared networking/NAT to bridged advanced on the Mac LAN interface.
-3. Start HAOS and find the bridged LAN IP from HA UI, router ARP, or `ha network info`.
-4. Run `haos-mac-router.sh plan` and `apply` on the Mac.
-5. Use `ssh haos` or the web terminal to set HAOS static IPv4 with the Mac LAN IP as gateway, public DNS, and IPv6 disabled.
-6. Reboot HAOS and wait several minutes for Core to return.
-7. Verify Docker registry reachability and install a small add-on before creating the launchd service.
+1. Ensure HAOS is registered in `~/.router/device.json` if it should be routed through the Mac.
+2. Install or repair the orchestrator from `bootstrap/ha_host/tools/orchestrator/`.
+3. Load the four launchd jobs and let `haos-watch` reconcile UTM bridged networking and the HAOS default route.
+4. Verify `~/.ha_host/state.json`, the UTM bridge interface, `ssh haos 'ha network info'`, `ssh haos 'ha supervisor info'`, Docker registry reachability, and the four launchd jobs.
 
-## Baseline HA Apps
+Do not use SSH as the bridge or gateway repair mechanism. `haos-watch` uses `utmctl exec` through the guest agent for repair, because a stale gateway can make `ssh haos` unreachable. SSH is the final health check after repair.
 
-Recommended baseline:
+## Automation Boundary
 
-- `Terminal & SSH`: start on boot, watchdog on, sidebar on, SSH public key configured.
-- `File editor`: sidebar on, use only for light config edits.
-- `Samba share`: expose only needed shares when possible, keep Apple compatibility mode on, keep legacy compatibility off.
-- `Mosquitto broker`: install after bridged routing is proven if MQTT devices or integrations are planned. It can be installed from CLI once `ssh haos` works.
+Required baseline:
+
+- `Terminal & SSH`: install manually first, start on boot, watchdog on, sidebar on, SSH public key configured, and local `ssh haos` alias verified.
+- `ssh haos 'ha supervisor info'` must succeed before this skill is considered complete.
+- `ssh haos 'ha network info'` must show the expected IPv4 address, gateway, DNS servers, and IPv6 policy.
+- `ssh haos 'ha resolution info'` should not show blocking health issues.
+
+Other HA add-ons, custom integrations, and device bridges are intentionally not part of this host-bootstrap skill.
 
 ## Backups
 
@@ -88,7 +88,7 @@ Suggested names:
 
 ```text
 haos-baseline-YYYY-MM-DD
-haos-bridged-mac-router-YYYY-MM-DD
+haos-bridged-mac-gateway-YYYY-MM-DD
 ```
 
-Copy backups from the Samba `backup` share to the Mac. Do not rely only on HAOS local backup storage.
+Copy backups off HAOS when a file-transfer path is available. Do not rely only on HAOS local backup storage for major bridge or gateway changes.

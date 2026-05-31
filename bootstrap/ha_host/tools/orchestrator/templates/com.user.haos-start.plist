@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.user.haos-start</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/libexec/agent-dotfiles/orchestrator/haos-start-launchd.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>ORCHESTRATOR_SRC</key>
+    <string>/usr/local/libexec/agent-dotfiles/orchestrator/src</string>
+    <key>PYTHON</key>
+    <string>__PYTHON_BIN__</string>
+    <key>HA_HOST_DIR</key>
+    <string>__HA_HOST_DIR__</string>
+    <key>VM_NAME</key>
+    <string>__VM_NAME__</string>
+    <key>WAIT_SECONDS</key>
+    <string>__USER_WAIT_SECONDS__</string>
+    <key>SLEEP_SECONDS</key>
+    <string>__SLEEP_SECONDS__</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <dict>
+    <key>SuccessfulExit</key>
+    <false/>
+  </dict>
+  <key>ThrottleInterval</key>
+  <integer>30</integer>
+  <key>StandardOutPath</key>
+  <string>__HA_HOST_DIR__/haos-start.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HA_HOST_DIR__/haos-start.err</string>
+</dict>
+</plist>

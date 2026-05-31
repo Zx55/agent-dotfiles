@@ -1,6 +1,6 @@
 # Recovery And Rollback
 
-Use this when HAOS becomes unreachable or app installation fails after network changes.
+Use this when HAOS becomes unreachable or store/Docker connectivity fails after network changes.
 
 ## If HA UI Is Slow After Reboot
 
@@ -29,8 +29,9 @@ Common causes:
 
 - IPv6 still enabled and Docker chooses an unreachable IPv6 route.
 - DNS points to the home router and Supervisor marks it failed.
-- Mac-side router rules are not loaded after Mac reboot.
+- Host orchestrator router rules are not loaded after Mac reboot.
 - Clash/TUN is not running or `utunN` changed.
+- The Mac selected a different LAN gateway, such as Wi-Fi after wired disappeared, and HAOS still points at the previous Mac LAN IP.
 
 ## Restore HAOS DHCP
 
@@ -43,17 +44,17 @@ ha host reboot
 
 Then temporarily switch UTM back to shared networking/NAT if needed.
 
-## Stop Mac Router
+## Stop Host Router
 
 ```sh
 cd ~/Documents/codex-workspace/agent-dotfiles
-sudo ./bootstrap/ha_host/tools/haos-mac-router/haos-mac-router.sh stop
+sudo ./bootstrap/ha_host/tools/orchestrator/src/ha_host_orchestrator/mac_router/mac-router.sh stop
 ```
 
 If other tooling uses IPv4 forwarding:
 
 ```sh
-sudo ./bootstrap/ha_host/tools/haos-mac-router/haos-mac-router.sh stop --keep-forwarding
+sudo ./bootstrap/ha_host/tools/orchestrator/src/ha_host_orchestrator/mac_router/mac-router.sh stop --keep-forwarding
 ```
 
 ## Switch Back To UTM Shared Networking
@@ -73,6 +74,6 @@ If configuration changes cause a bad state:
 1. Boot HAOS.
 2. Open `Settings -> System -> Backups`.
 3. Restore the most recent known-good full backup.
-4. Re-check SSH, Samba, and network after restore.
+4. Re-check SSH and network after restore.
 
-Keep at least one backup copied off HAOS through Samba before major network or app changes.
+Keep at least one backup copied off HAOS through an available file-transfer path before major network changes.

@@ -6,9 +6,10 @@ The first version is intentionally conservative:
 
 - `audit` collects read-only host facts for planning.
 - `verify` checks whether the host looks ready.
-- `install` ensures Homebrew exists, installs the minimal host package manifest, installs required uv tools, and creates the shared agent Python environment.
+- `install` ensures Homebrew exists, installs the minimal host package manifest, installs required uv tools, creates the shared agent Python environment, and copies it into a dedicated root-owned HA host service Python at `/usr/local/libexec/agent-dotfiles/ha-host-python`.
 - `links` copies Codex runtime files into `~/.codex` and intentionally keeps hooks disabled.
-- `tools/haos-mac-router` contains an opt-in macOS IPv4 forwarding helper for a bridged HAOS VM.
+- `tools/orchestrator` contains the host-side orchestration runtime for registered LAN clients, Mac `pf` forwarding, launchd startup/watch jobs, and UTM HAOS startup/watch checks.
+- `tools/ps5-ha-bridge` contains an opt-in PS5 to Home Assistant MQTT bridge. It keeps runtime config and Remote Play credentials outside this repository.
 
 Do not automate public SSH exposure, router port forwarding, sleep prevention, VM creation, or Home Assistant OS image setup here until those boundaries are explicitly decided.
 
@@ -21,27 +22,45 @@ Common commands:
 ./bootstrap/bootstrap.sh --profile ha_host links --dry-run
 ```
 
-Optional HAOS bridged-router helper:
+Host orchestrator source checks:
 
 ```sh
-./bootstrap/ha_host/tools/haos-mac-router/haos-mac-router.sh status
-./bootstrap/ha_host/tools/haos-mac-router/haos-mac-router.sh plan --haos-ip 192.168.71.89 --lan-interface en0 --dns 1.1.1.1
-sudo ./bootstrap/ha_host/tools/haos-mac-router/haos-mac-router.sh apply --haos-ip 192.168.71.89 --lan-interface en0 --dns 1.1.1.1
-sudo ./bootstrap/ha_host/tools/haos-mac-router/haos-mac-router.sh stop
+PYTHONPATH=bootstrap/ha_host/tools/orchestrator/src \
+  python3 -m ha_host_orchestrator.entrypoints.host_startup --check-only --no-require-utun
+PYTHONPATH=bootstrap/ha_host/tools/orchestrator/src \
+  python3 -m ha_host_orchestrator.entrypoints.host_watch --check-only --no-require-utun
+PYTHONPATH=bootstrap/ha_host/tools/orchestrator/src \
+  python3 -m ha_host_orchestrator.entrypoints.haos_start --help
+PYTHONPATH=bootstrap/ha_host/tools/orchestrator/src \
+  python3 -m ha_host_orchestrator.entrypoints.haos_watch --help
 ```
 
-Optional launchd service for the helper:
+Launchd installer for the orchestrator:
 
 ```sh
-./agents/skills/iot/haos-macos-installation/scripts/install-haos-mac-router-service.sh
-./agents/skills/iot/haos-macos-installation/scripts/uninstall-haos-mac-router-service.sh
+./bootstrap/ha_host/tools/orchestrator/scripts/install-launchd.sh --dry-run
+./bootstrap/ha_host/tools/orchestrator/scripts/install-launchd.sh --vm-name HAOS-17.3 --load-now
+./bootstrap/ha_host/tools/orchestrator/scripts/uninstall-launchd.sh
 ```
 
-The installer queries `ssh haos 'ha network info'` by default and renders the launchd plist with concrete HAOS network values. Pass explicit installer arguments if the `haos` SSH alias is not available or the detected values are wrong.
+The orchestrator reads registered devices from `~/.router/device.json`, writes host state and logs under `~/.ha_host/`, runs from a root/user runtime copy under `/usr/local/libexec/agent-dotfiles/orchestrator/`, and uses the HA host service Python at `/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python`. Re-run the installer after changing the orchestrator launchd scripts or plist templates.
 
-Re-run the installer after changing the router tool, wrapper, plist template, or HAOS network identity. The service executes a root-owned runtime copy under `/usr/local/libexec/agent-dotfiles/haos-mac-router/`.
+Read `bootstrap/ha_host/tools/orchestrator/README.md` before changing registered targets or launchd jobs. The root host jobs own dynamic LAN selection, egress checks, and Mac `pf` routing. The user HAOS jobs own UTM startup and HAOS-side network drift detection.
 
-Read `bootstrap/ha_host/tools/haos-mac-router/README.md` before using `apply`. The helper touches macOS `pf` and IPv4 forwarding, and it intentionally leaves HAOS network changes as a separate manual step.
+Optional PS5 Home Assistant bridge:
+
+```sh
+cd bootstrap/ha_host/tools/ps5-ha-bridge
+uv venv --seed .venv
+uv pip install --python .venv/bin/python -e .
+.venv/bin/ps5-ha-bridge status --host <ps5-ip>
+```
+
+Read `bootstrap/ha_host/tools/ps5-ha-bridge/README.md` before pairing. The bridge stores local test credentials under `~/.config/ps5-ha-bridge/credentials` and the future HAOS add-on stores its own credentials under `/config/ps5-ha-bridge/credentials`.
+
+Optional MiAir bridge:
+
+MiAir can run on the same Mac as an AirPlay or DLNA bridge to Xiaomi AI speakers, but it is not part of the HA host bootstrap or orchestrator. Install, update, or repair it only by explicitly using the setup skill at `agents/skills/iot/miair-installation/`.
 
 For the full HAOS-on-macOS workflow after a Mac reinstall, including UTM setup, backup restore, bridged-network verification, DNS pitfalls, and launchd service setup, use the setup skill at `agents/skills/iot/haos-macos-installation/`.
 

@@ -29,6 +29,7 @@ class MqttBridge:
         self._pending_command: str | None = None
         self._pending_until = 0.0
         self._fast_poll_until = 0.0
+        self._ps5_host = config.ps5.host
         self._confirmed_actual_power_state: str | None = None
         self._actual_candidate_state: str | None = None
         self._actual_candidate_count = 0
@@ -120,16 +121,18 @@ class MqttBridge:
         try:
             normalized = command.strip().upper()
             if normalized in {"WAKE", "ON"}:
+                await self._refresh_host_for_command()
                 self._start_pending("ON", normalized)
                 snapshot = await self._ps.wake(
-                    self._config.ps5.host or "",
+                    self._ps5_host or "",
                     self._config.ps5.device_id,
                     wait_seconds=self._config.bridge.command_transition_timeout_seconds,
                 )
             elif normalized in {"STANDBY", "OFF"}:
+                await self._refresh_host_for_command()
                 self._start_pending("OFF", normalized)
                 snapshot = await self._ps.standby(
-                    self._config.ps5.host or "",
+                    self._ps5_host or "",
                     self._config.ps5.device_id,
                     wait_seconds=self._config.bridge.command_transition_timeout_seconds,
                 )
@@ -167,14 +170,59 @@ class MqttBridge:
         if self._config.ps5.device_id:
             snapshot = await self._ps.status_by_device_id(
                 self._config.ps5.device_id,
-                fallback_host=self._config.ps5.host,
+                fallback_host=self._ps5_host,
             )
         else:
-            snapshot = await self._ps.status(self._config.ps5.host or "")
+            snapshot = await self._ps.status(self._ps5_host or "")
         if snapshot is None:
-            target = self._config.ps5.device_id or self._config.ps5.host
+            target = self._config.ps5.device_id or self._ps5_host
             raise RuntimeError(f"PlayStation not found: {target}")
+        self._remember_snapshot(snapshot)
         return snapshot
+
+    async def _refresh_host_for_command(self) -> None:
+        if not self._config.ps5.device_id:
+            return
+        try:
+            await self._status()
+        except Exception as exc:
+            LOG.debug("could not refresh PS5 host before command: %s", exc)
+
+    def _remember_snapshot(self, snapshot: DeviceSnapshot) -> None:
+        if snapshot.ip == self._ps5_host:
+            return
+        old_host = self._ps5_host
+        self._ps5_host = snapshot.ip
+        LOG.info("PS5 host changed from %s to %s; using discovered address.", old_host, snapshot.ip)
+        self._persist_snapshot(snapshot)
+
+    def _persist_snapshot(self, snapshot: DeviceSnapshot) -> None:
+        path = self._config.bridge.state_path
+        if path is None:
+            return
+        data: dict[str, Any] = {}
+        if path.exists():
+            try:
+                loaded = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as exc:
+                LOG.warning("could not read PS5 state before updating host: %s", exc)
+            else:
+                if isinstance(loaded, dict):
+                    data = loaded
+        data.update(
+            {
+                "host": snapshot.ip,
+                "device_id": snapshot.device_id,
+                "name": snapshot.name,
+                "device_type": snapshot.device_type,
+                "status": snapshot.status,
+            }
+        )
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        except OSError as exc:
+            LOG.warning("could not update PS5 state host to %s: %s", snapshot.ip, exc)
 
     def _on_connect(
         self,

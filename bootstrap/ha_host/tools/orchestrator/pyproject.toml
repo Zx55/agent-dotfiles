@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "ha-host-orchestrator"
+version = "0.1.0"
+description = "macOS HA host startup and watch orchestration."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+ha-host-startup = "ha_host_orchestrator.entrypoints.host_startup:main"
+ha-host-watch = "ha_host_orchestrator.entrypoints.host_watch:main"
+haos-start = "ha_host_orchestrator.entrypoints.haos_start:main"
+haos-watch = "ha_host_orchestrator.entrypoints.haos_watch:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ha_host_orchestrator"]

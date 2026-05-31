@@ -1,4 +1,4 @@
-version: "0.2.10"
+version: "0.2.11"
 slug: ps5_ha_bridge
 name: PS5 HA Bridge
 description: Expose PlayStation 5 scene-level power and status to Home Assistant over MQTT.

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.user.haos-watch</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/libexec/agent-dotfiles/orchestrator/haos-watch-launchd.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>ORCHESTRATOR_SRC</key>
+    <string>/usr/local/libexec/agent-dotfiles/orchestrator/src</string>
+    <key>PYTHON</key>
+    <string>__PYTHON_BIN__</string>
+    <key>HA_HOST_DIR</key>
+    <string>__HA_HOST_DIR__</string>
+    <key>VM_NAME</key>
+    <string>__VM_NAME__</string>
+    <key>HAOS_HOST_ALIAS</key>
+    <string>__HAOS_HOST_ALIAS__</string>
+    <key>HAOS_INTERFACE</key>
+    <string>__HAOS_INTERFACE__</string>
+    <key>GUEST_DEVICE</key>
+    <string>__GUEST_DEVICE__</string>
+    <key>APPLY_GATEWAY</key>
+    <string>__APPLY_GATEWAY__</string>
+    <key>APPLY_BRIDGE</key>
+    <string>__APPLY_BRIDGE__</string>
+    <key>FORCE_BRIDGE_RESTART</key>
+    <string>__FORCE_BRIDGE_RESTART__</string>
+    <key>UTM_CONFIG_PATH</key>
+    <string>__UTM_CONFIG_PATH__</string>
+    <key>WAIT_SECONDS</key>
+    <string>__WATCH_WAIT_SECONDS__</string>
+    <key>SLEEP_SECONDS</key>
+    <string>__SLEEP_SECONDS__</string>
+  </dict>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StartInterval</key>
+  <integer>__WATCH_INTERVAL__</integer>
+  <key>StandardOutPath</key>
+  <string>__HA_HOST_DIR__/haos-watch.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HA_HOST_DIR__/haos-watch.err</string>
+</dict>
+</plist>

@@ -6,7 +6,8 @@ MiAir should advertise a stable LAN IP. Use the router's DHCP reservation or sta
 
 Bind the network interface that runs MiAir:
 
-- For macOS native, bind the Mac Wi-Fi MAC address when the Mac uses Wi-Fi at home.
+- For macOS native, prefer binding the wired Ethernet adapter when the Mac usually has Ethernet at home.
+- For macOS native Wi-Fi fallback, bind the Wi-Fi adapter.
 - For a wired Linux/NAS host, bind the Ethernet MAC address.
 - Do not bind a Tailscale, Docker, Thunderbolt bridge, VPN, or VM adapter address.
 
@@ -26,22 +27,24 @@ After saving, reconnect the host to Wi-Fi or renew DHCP. Verify the host receive
 
 ## macOS Checks
 
-Find current Wi-Fi IP:
+Find current wired and Wi-Fi IPs:
 
 ```bash
-ipconfig getifaddr en0
+networksetup -listallhardwareports
+ipconfig getifaddr <device>
 ```
 
-Find Wi-Fi MAC address:
+Find hardware port names and MAC addresses:
 
 ```bash
+networksetup -listallhardwareports
 networksetup -getmacaddress Wi-Fi
 ```
 
 Renew DHCP:
 
 ```bash
-sudo ipconfig set en0 DHCP
+sudo ipconfig set <device> DHCP
 ```
 
 ## Acceptance Criteria

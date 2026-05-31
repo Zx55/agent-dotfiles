@@ -1,6 +1,6 @@
 [project]
 name = "ps5-ha-bridge"
-version = "0.2.10"
+version = "0.2.11"
 description = "Small Home Assistant MQTT bridge for PlayStation 5 power/status control."
 requires-python = ">=3.11"
 dependencies = [

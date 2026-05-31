@@ -29,7 +29,7 @@ The MiAir installation skill installs this project into MiAir's own venv:
 launchd runs the stable launcher path:
 
 ```text
-~/.local/share/miair/bin/MiAir
+~/.local/share/miair/bin/miair-core
 ```
 
 which execs the venv console script.

@@ -27,7 +27,7 @@ Manual UTM settings that worked for Apple Silicon:
 - Storage: import the HAOS qcow2 as a VirtIO disk.
 - Disk size after setup: at least 32 GB, preferably 64 GB.
 - Network for first boot: shared networking/NAT.
-- Network for final topology: bridged advanced, Wi-Fi `en0`, `virtio-net-pci`.
+- Network for final topology: bridged advanced on the Mac LAN interface, `virtio-net-pci`.
 
 Delete any tiny default placeholder disk before importing the HAOS qcow2. A 196 KB generated disk is not the HAOS system disk.
 
@@ -48,7 +48,7 @@ Switch to bridged networking only after:
 
 ## Expansion
 
-If app installation fails with `not enough free space`, stop HAOS and expand the VirtIO disk in UTM. HAOS usually grows the data partition automatically after reboot. Verify with:
+If Core updates, backups, or later add-on installs fail with `not enough free space`, stop HAOS and expand the VirtIO disk in UTM. HAOS usually grows the data partition automatically after reboot. Verify with:
 
 ```sh
 ssh haos 'df -h /config'
@@ -60,7 +60,7 @@ Expected after 64 GB expansion: roughly 62 GB total and plenty of free space.
 
 For a fresh VM, use the HA onboarding restore flow if a backup is available. If already inside HA:
 
-1. Copy the backup `.tar` to the Samba `backup` share or upload it through the UI.
+1. Upload the backup `.tar` through the UI or copy it through an already configured file-transfer path.
 2. Open `Settings -> System -> Backups`.
 3. Restore the desired full backup.
-4. Re-check SSH, Samba, network, and app states after the restore.
+4. Re-check SSH, network, and host health after the restore.
