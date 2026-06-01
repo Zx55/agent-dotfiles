@@ -1,0 +1,4 @@
+# uv tools needed by the HA host Codex environment.
+# Add profile-local tools here when needed.
+
+ruff

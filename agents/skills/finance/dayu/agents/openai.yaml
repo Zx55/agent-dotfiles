@@ -1,6 +1,0 @@
-interface:
-  display_name: "Dayu Research"
-  short_description: "Run Dayu prompt labels for listed-company research."
-  icon_small: "./assets/dayu-small.png"
-  icon_large: "./assets/dayu.png"
-  default_prompt: "Use $dayu with dayu-cli prompt --label and --ticker for listed-company research. Prepare terse user questions into clearer financial-analysis prompts, manage labels with conv list/status when needed, and relay Dayu CLI output without rewriting unless the user explicitly asks."

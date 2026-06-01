@@ -1,0 +1,28 @@
+# Inspection
+prefix_rule(pattern=["git", "status"], decision="allow")
+prefix_rule(pattern=["git", "diff"], decision="allow")
+prefix_rule(pattern=["git", "log"], decision="allow")
+prefix_rule(pattern=["git", "show"], decision="allow")
+prefix_rule(pattern=["git", "branch", "--show-current"], decision="allow")
+prefix_rule(pattern=["git", "rev-parse"], decision="allow")
+
+# Staging
+prefix_rule(pattern=["git", "add"], decision="allow")
+
+# Local history changes
+prefix_rule(pattern=["git", "commit"], decision="allow")
+
+# Network / remote mutation
+prefix_rule(pattern=["git", "fetch"], decision="prompt")
+prefix_rule(pattern=["git", "push"], decision="prompt")
+prefix_rule(pattern=["git", "pull"], decision="allow")
+
+# GitHub CLI
+prefix_rule(pattern=["gh", "pr", "view"], decision="prompt")
+prefix_rule(pattern=["gh", "pr", "diff"], decision="prompt")
+prefix_rule(pattern=["gh", "pr", "checks"], decision="prompt")
+prefix_rule(pattern=["gh", "run", "view"], decision="prompt")
+
+# Destructive git operations
+prefix_rule(pattern=["git", "reset", "--hard"], decision="forbidden")
+prefix_rule(pattern=["git", "clean"], decision="forbidden")

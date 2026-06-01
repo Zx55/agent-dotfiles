@@ -1,6 +1,0 @@
-interface:
-  display_name: "MiHome Geek Docs"
-  short_description: "Mi Home Geek automation guidance"
-  icon_small: "./assets/mihome-geek-docs-small.png"
-  icon_large: "./assets/mihome-geek-docs.png"
-  default_prompt: "Use $mihome-geek-docs to review a Mi Home automation geek-mode flow from screenshots or explain how to build a virtual-event workflow."

@@ -1,7 +1,0 @@
-dayu-agent
-huggingface-hub
-ipython
-./agents/tools/mcp-launcher
-ruff
-whisperx
-zotero-mcp-server

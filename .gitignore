@@ -1,7 +1,8 @@
 .DS_Store
 
 # Local secrets
-dotfiles/secrets/secret.local
+master/dotfiles/secrets/secret.local
+ha-host/dotfiles/secrets/secret.local
 *.local
 
 # Local tool/cache artifacts
@@ -10,10 +11,13 @@ dotfiles/secrets/secret.local
 .uv-tools/
 
 # Codex runtime artifacts
-agents/codex/automations/.run-jitter-salt
-agents/codex/automations/**/memory.md
-agents/codex/memories/.git/
-agents/codex/memories/phase2_workspace_diff.md
+master/agent/codex/automations/.run-jitter-salt
+master/agent/codex/automations/**/memory.md
+ha-host/agent/codex/automations/.run-jitter-salt
+ha-host/agent/codex/automations/**/memory.md
+
+# Local virtual environments
+.venv/
 
 # Python
 __pycache__/

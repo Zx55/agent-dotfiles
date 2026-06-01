@@ -1,2 +1,0 @@
-# source path | destination path
-agents/skills/research/zotero-mcp-installation/assets/bin/macos/zotero-mcp-wrapper | ~/.local/bin/zotero-mcp-wrapper

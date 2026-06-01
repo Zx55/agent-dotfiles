@@ -1,8 +1,0 @@
-interface:
-  display_name: "MiAir Installation"
-  short_description: "Setup-only MiAir install and repair"
-  icon_small: "./assets/miair-installation-small.png"
-  icon_large: "./assets/miair-installation.png"
-  default_prompt: "Use $miair-installation only for explicit MiAir setup, update, repair, verification, launchd or Docker deployment, macOS IP watcher diagnosis, Xiaomi cookie setup, or router DHCP binding tasks. Do not use it for ordinary AirPlay listening, speaker control, or general Xiaomi smart-home questions."
-policy:
-  allow_implicit_invocation: false
