@@ -11,7 +11,7 @@ Use this when the user wants HACS available for community integrations after `ss
 ## Install
 
 ```sh
-./ha-host/agent/skills/iot/haos-addons/scripts/install-hacs.sh
+./scripts/install-hacs.sh
 ```
 
 Equivalent HAOS commands:

@@ -52,11 +52,7 @@ After setup:
 7. Verify `ssh haos 'ha supervisor info'`, `ssh haos 'ha network info'`, and `ssh haos 'ha resolution info'`.
 8. Create a full backup before bridge or gateway changes.
 
-After `ssh haos` works, later add-ons and custom integrations are out of scope for this skill. Their current staging docs and scripts live outside this skill under:
-
-```sh
-./ha-host/agent/skills/iot/haos-addons/
-```
+After `ssh haos` works, later add-ons and custom integrations are out of scope for this skill. Use the `haos-addons` skill for those docs and scripts.
 
 Do not start add-on installation until `ssh haos 'ha supervisor info'` succeeds.
 

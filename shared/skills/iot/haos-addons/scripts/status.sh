@@ -19,6 +19,9 @@ for slug in core_samba core_mosquitto local_ps5_ha_bridge; do
 done
 echo "== HACS =="
 test -f /config/custom_components/hacs/manifest.json && grep -n "domain\\|name" /config/custom_components/hacs/manifest.json || true
+echo "== Pyscript =="
+test -f /config/custom_components/pyscript/manifest.json && grep -n "domain\\|name\\|version" /config/custom_components/pyscript/manifest.json || true
+grep -n "^pyscript:" /config/configuration.yaml || true
 echo "== Xiaomi Home =="
 test -f /config/custom_components/xiaomi_home/manifest.json && grep -n "domain\\|name\\|version" /config/custom_components/xiaomi_home/manifest.json || true
 '

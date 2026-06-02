@@ -27,7 +27,7 @@ git ls-remote --tags --refs https://github.com/XiaoMi/ha_xiaomi_home.git |
 ## Install Or Update
 
 ```sh
-./ha-host/agent/skills/iot/haos-addons/scripts/install-xiaomi-home.sh
+./scripts/install-xiaomi-home.sh
 ```
 
 The script runs the upstream `./install.sh /config` and restarts HA Core.

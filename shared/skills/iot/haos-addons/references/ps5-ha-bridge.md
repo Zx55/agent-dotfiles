@@ -33,13 +33,13 @@ Do not copy NPSSO tokens, Remote Play credentials, or files from that runtime di
 Install Mosquitto first:
 
 ```sh
-./ha-host/agent/skills/iot/haos-addons/scripts/install-mosquitto.sh
+./scripts/install-mosquitto.sh
 ```
 
 Then install the local add-on:
 
 ```sh
-./ha-host/agent/skills/iot/haos-addons/scripts/install-ps5-ha-bridge.sh
+./scripts/install-ps5-ha-bridge.sh
 ```
 
 The script copies the source directory to `/addons/ps5_ha_bridge`, excluding local development artifacts such as `.venv`, then asks Supervisor to reload local add-ons and start `local_ps5_ha_bridge`.

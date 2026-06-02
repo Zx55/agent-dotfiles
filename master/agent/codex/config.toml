@@ -2,7 +2,6 @@ model = "gpt-5.5"
 model_reasoning_effort = "high"
 service_tier = "fast"
 
-
 approval_policy = "on-request"
 approvals_reviewer = "user"
 
@@ -12,17 +11,13 @@ personality = "pragmatic"
 
 
 
-
-
-
-
-
 notify = ["~/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 
 [permissions.secret_safe.filesystem]
 ":project_roots" = { "." = "write" }
 "~/.secret" = "none"
 "~/Documents/codex-workspace/agent-dotfiles/master/dotfiles/secrets/secret.local" = "none"
+"~/Documents/codex-workspace/agent-dotfiles/ha-host/dotfiles/secrets/secret.local" = "none"
 
 [permissions.secret_safe.network]
 enabled = true
@@ -31,10 +26,7 @@ enabled = true
 "~/Documents/codex-workspace" = { trust_level = "trusted" }
 "~/Documents/codex-workspace/agent-dotfiles" = { trust_level = "trusted" }
 "~/Documents/codex-workspace/papers" = { trust_level = "trusted" }
-"~/Documents/codex-workspace/TPAMI" = { trust_level = "trusted" }
-
-[projects."~/Documents/codex-workspace/mihome-geek"]
-trust_level = "trusted"
+"~/Documents/codex-workspace/mihome-geek" = { trust_level = "trusted" }
 
 [projects."~/Documents/codex-workspace/材料"]
 trust_level = "trusted"
@@ -62,12 +54,12 @@ enabled = true
 enabled = true
 
 [marketplaces.openai-bundled]
-last_updated = "2026-06-01T03:04:00Z"
+last_updated = "2026-06-02T04:40:56Z"
 source_type = "local"
 source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-05-22T04:27:24Z"
+last_updated = "2026-06-01T18:26:56Z"
 source_type = "local"
 source = "~/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
@@ -209,3 +201,4 @@ semanticColors = { diffAdded = "#00a240", diffRemoved = "#e02e2a", skill = "#b06
 
 [desktop.open-in-target-preferences]
 global = "vscode"
+

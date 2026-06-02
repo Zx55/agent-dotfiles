@@ -11,7 +11,7 @@ Use this when MQTT-backed integrations or local add-ons need the official HAOS M
 ## Install
 
 ```sh
-./ha-host/agent/skills/iot/haos-addons/scripts/install-mosquitto.sh
+./scripts/install-mosquitto.sh
 ```
 
 Equivalent HAOS command:

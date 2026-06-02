@@ -11,7 +11,7 @@ Use this when the user wants HAOS file access from macOS Finder or wants a file-
 ## Install
 
 ```sh
-./ha-host/agent/skills/iot/haos-addons/scripts/install-samba.sh
+./scripts/install-samba.sh
 ```
 
 Equivalent HAOS command:
