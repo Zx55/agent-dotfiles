@@ -13,10 +13,10 @@ ssh haos 'ha supervisor info'
 Filter carefully:
 
 ```sh
-ssh haos 'ha core logs | grep -i "automation\\|pyscript\\|xiaomi\\|mqtt" | tail -n 120'
+ssh haos 'ha core logs | grep -i "automation\\|pyscript\\|mqtt\\|<integration_name>" | tail -n 120'
 ```
 
-Do not paste secrets from logs into the final answer.
+Do not paste secrets from logs into reports.
 
 ## Entity State
 

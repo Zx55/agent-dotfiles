@@ -1,8 +1,8 @@
 # HA Bridge
 
-Use this for Home Assistant automations that exchange events, commands, or state mirrors with another system such as Mi Home, a local device bridge, MQTT, webhook, or a voice-control surface.
+Use this for Home Assistant automations that exchange events, commands, or state mirrors with another system such as a vendor app, local device bridge, MQTT, webhook, or voice-control surface.
 
-Keep this reference generic. Device names in examples are illustrative only.
+Keep this reference generic. Use placeholders for device classes, entity ids, service domains, and external systems.
 
 ## Ownership Model
 
@@ -64,6 +64,6 @@ HA starts
 - Is failure or silent continuation an intentional choice?
 - Do logs prove each hop: inbound event, HA action, target state, outbound event?
 
-## Examples
+## Genericity
 
-Examples may mention a TV, console, climate device, light scene, or MQTT device, but the bridge should be written around generic event maps and HA service calls. Avoid hard-coding one device family into the skill instructions.
+Write bridge guidance around event maps, entity ids, HA service calls, and ownership boundaries. Avoid hard-coding one vendor, device family, household layout, or external platform into the skill instructions.

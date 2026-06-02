@@ -23,8 +23,6 @@ ssh haos 'ha backups new --name pre-haos-docs-YYYY-MM-DD --no-progress'
 ssh haos 'ha backups list'
 ```
 
-Use `./scripts/backup-config.sh` only as a short-lived file checkpoint for trivial edits, or when the user explicitly asks for file-level copies. Clean up temporary file backups after an official HA backup exists.
-
 Keep the backup name and slug in the report.
 
 ## Editing
@@ -55,6 +53,6 @@ Restart HA Core only when the changed surface requires it or a reload fails.
 If `ha core check` fails after an edit:
 
 1. Do not restart HA Core.
-2. Restore from the official HA backup, or from a temporary file checkpoint if one was intentionally used for a trivial edit.
+2. Restore from the official HA backup, or from an explicitly requested file checkpoint if one exists.
 3. Run `ha core check` again.
 4. Report the failed check and restored backup source.

@@ -28,7 +28,7 @@ Keep secrets out of the repo and final answer. This includes Samba passwords, MQ
 1. Verify the management boundary.
    - Run `scripts/status.sh` or `ssh haos 'ha supervisor info'`.
    - Confirm `host_internet` and `supervisor_internet` before installing from the network.
-   - Create or identify a recent backup before changing `/config/custom_components` or local add-on source.
+   - Create or identify a recent official HA backup before changing `/config/custom_components` or local add-on source.
 2. Read only the reference for the requested component.
    - Shared prechecks: [references/prechecks.md](references/prechecks.md)
    - Samba share: [references/samba.md](references/samba.md)
@@ -68,7 +68,7 @@ Keep secrets out of the repo and final answer. This includes Samba passwords, MQ
 Report concrete evidence:
 
 - `ssh haos 'ha supervisor info'` succeeded before add-on work started.
-- Backup status before custom integration or local add-on changes.
+- Official HA backup status before custom integration or local add-on changes.
 - For each requested component, whether it is installed, enabled or configured, restart or reload status, and boot policy when the component is a HAOS add-on.
 - Any UI-only setup that remains for the user.
 - Any restart performed or still needed.

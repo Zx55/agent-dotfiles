@@ -13,16 +13,6 @@ ssh haos 'ha backups list'
 
 Keep the backup name and slug in the report.
 
-## File Backup Exception
-
-Use ad hoc file copies only for trivial, explicitly temporary edits where a full HA backup would be disproportionate, or as a short-lived working checkpoint before an official HA backup exists:
-
-```sh
-./scripts/backup-config.sh configuration.yaml automations.yaml scripts.yaml
-```
-
-Clean up temporary file backups after an official HA backup is created and verified.
-
 ## Full Backup Required
 
 Use an official HA backup before:
@@ -45,7 +35,7 @@ If the check fails, do not restart. Restore or fix first.
 
 ## Secret Handling
 
-Never store these in skill files, repo docs, or final answers:
+Never store these in skill files, local docs, or reports:
 
 - HA long-lived tokens
 - webhook IDs

@@ -13,15 +13,15 @@ ssh haos 'ha supervisor info'
 
 If that command fails, stop and use `haos-macos-installation`. If an add-on or custom integration is missing or needs installation, use `haos-addons`.
 
-Keep secrets out of the repo and final answer. This includes Home Assistant tokens, Samba passwords, MQTT passwords, Xiaomi account data, webhook IDs, OAuth tokens, and device pairing credentials.
+Keep secrets out of local files and reports. This includes Home Assistant tokens, Samba passwords, MQTT passwords, vendor account data, webhook IDs, OAuth tokens, and device pairing credentials.
 
 ## Source Of Truth
 
 - HA runtime config: `/homeassistant` or `/config` on HAOS. `/config` is often a symlink to `/homeassistant`.
 - HA UI state and logs are authoritative for what is currently loaded.
-- Local repo files are drafts, documentation, or backups unless explicitly synced to HAOS.
+- Local working files are drafts, documentation, or backups unless explicitly synced to HAOS.
 - Do not edit `.storage` unless the task explicitly requires it and a backup exists.
-- Mi Home / geek-mode graph semantics belong to `mihome-geek-docs`.
+- External app, vendor automation, and bridge-specific graph semantics belong to their dedicated domain skill or project docs.
 - Add-on installation and custom integration installation belong to `haos-addons`.
 
 ## Task Router
@@ -50,7 +50,7 @@ Load only the reference needed for the current task. If the task spans multiple 
    - If `pyscript:` is configured or `/config/pyscript` exists, read `references/pyscript.md` and inspect `/config/pyscript/*.py`.
 4. Back up before edits.
    - Prefer an official HA backup through `ha backups new` or the HA UI backup page.
-   - Use ad hoc file copies only for trivial, explicitly temporary edits, and clean them up after an official HA backup exists.
+   - Do not create ad hoc file copies unless the user explicitly asks for file-level checkpoints.
 5. Make the smallest change.
    - Keep UI-owned automations and file-owned automations distinct.
    - Do not migrate YAML to Pyscript or Pyscript to YAML unless the user asks or clearly approves.
@@ -60,7 +60,7 @@ Load only the reference needed for the current task. If the task spans multiple 
    - Reload the smallest surface that applies: automation, script, Pyscript, or HA Core.
    - Inspect logs after reload or restart.
 7. Report evidence.
-   - Mention config check result, changed files, backup path, reload/restart performed, and remaining UI-only steps.
+   - Mention config check result, changed files, official backup name and slug, reload/restart performed, and remaining UI-only steps.
 
 ## Common Commands
 
@@ -79,7 +79,7 @@ Report concrete evidence:
 
 - `ssh haos 'ha supervisor info'` succeeded before HA config work started.
 - The source files inspected, including Pyscript files when configured.
-- Backup path or explicit reason no backup was needed.
+- Official backup name and slug, or explicit reason no backup was needed.
 - `ha core check` result before any restart.
 - Reload or restart action performed, or why it was not needed.
 - Logs, entity states, automation traces, or service-call results that verify the requested behavior.

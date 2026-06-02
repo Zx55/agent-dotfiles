@@ -28,14 +28,14 @@ Check `/config` capacity:
 ssh haos 'df -h /config'
 ```
 
-Create a full backup before touching `/config/custom_components`, local add-on source under `/addons`, or add-on options:
+Create an official HA backup before touching `/config/custom_components`, local add-on source under `/addons`, or add-on options:
 
 ```sh
 ssh haos 'ha backups new --name pre-haos-addons-YYYY-MM-DD --no-progress'
 ssh haos 'ha backups list'
 ```
 
-Keep the backup slug in the report. Do not include secrets.
+Keep the backup name and slug in the report. Do not include secrets.
 
 ## Network Endpoints
 

@@ -12,7 +12,7 @@ Use this only to verify or repair the current HAOS-on-UTM network path. The norm
 - Forced bridge restart is enabled by default. If UTM does not stop gracefully before a bridge-interface change, `haos-watch` can force-stop the VM, apply the UTM config change, and start it again. Disable that with `--no-force-bridge-restart` during orchestrator install if manual control is required.
 - DNS should use public resolvers such as `1.1.1.1`; avoid depending on the home router DNS when HAOS routes through the Mac.
 
-Fresh HAOS first boot is still safer through UTM shared networking/NAT until onboarding, Terminal & SSH, and a baseline backup are complete. After `ssh haos` works, bridged mode plus the host orchestrator can be verified.
+Fresh HAOS first boot is still safer through UTM shared networking/NAT until onboarding, Terminal & SSH, and a baseline official HA backup are complete. After `ssh haos` works, bridged mode plus the host orchestrator can be verified.
 
 ## Checks
 

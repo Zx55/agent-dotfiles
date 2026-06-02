@@ -21,7 +21,7 @@ Common HAOS path mapping:
 /config -> /homeassistant
 ```
 
-Treat the HAOS runtime config directory as source of truth. The local repository is not authoritative unless the user explicitly says a local file is the desired source to sync.
+Treat the HAOS runtime config directory as source of truth. A local working copy is not authoritative unless the user explicitly says a local file is the desired source to sync.
 
 ## Samba
 
@@ -33,7 +33,7 @@ Use Samba when the user wants Finder/editor access or when bulk file transfer is
 ssh haos 'ha core check'
 ```
 
-Do not put Samba passwords in repo files or final answers.
+Do not put Samba passwords in local files or reports.
 
 ## Do Not Edit
 

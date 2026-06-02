@@ -50,7 +50,7 @@ After setup:
 5. Start `Terminal & SSH`, enable start-on-boot, and verify web terminal access.
 6. Add a local `~/.ssh/config` alias such as `Host haos`, point it at the HAOS LAN IP and configured SSH key, then verify `ssh haos`.
 7. Verify `ssh haos 'ha supervisor info'`, `ssh haos 'ha network info'`, and `ssh haos 'ha resolution info'`.
-8. Create a full backup before bridge or gateway changes.
+8. Create an official HA backup before bridge or gateway changes.
 
 After `ssh haos` works, later add-ons and custom integrations are out of scope for this skill. Use the `haos-addons` skill for those docs and scripts.
 
@@ -80,7 +80,7 @@ Other HA add-ons, custom integrations, and device bridges are intentionally not 
 
 ## Backups
 
-Create one backup after clean initial setup and another after bridged Mac routing is proven.
+Create one official HA backup after clean initial setup and another after bridged Mac routing is proven.
 
 Suggested names:
 
@@ -89,4 +89,11 @@ haos-baseline-YYYY-MM-DD
 haos-bridged-mac-gateway-YYYY-MM-DD
 ```
 
-Copy backups off HAOS when a file-transfer path is available. Do not rely only on HAOS local backup storage for major bridge or gateway changes.
+Use the HA UI backup page or HA CLI:
+
+```sh
+ssh haos 'ha backups new --name haos-baseline-YYYY-MM-DD --no-progress'
+ssh haos 'ha backups list'
+```
+
+Report the backup name and slug. Copy official backup tar files off HAOS when a file-transfer path is available. Do not rely only on HAOS local backup storage for major bridge or gateway changes.

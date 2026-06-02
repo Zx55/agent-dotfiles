@@ -44,7 +44,7 @@ Switch to bridged networking only after:
 - The HA dashboard is reachable in NAT mode.
 - Terminal & SSH is installed, starts successfully, and is configured for public-key or temporary password access.
 - The Mac has a working local SSH alias such as `Host haos`.
-- A baseline HA backup exists.
+- A baseline official HA backup exists.
 
 ## Expansion
 
@@ -56,11 +56,11 @@ ssh haos 'df -h /config'
 
 Expected after 64 GB expansion: roughly 62 GB total and plenty of free space.
 
-## Restore From Backup
+## Restore From Official HA Backup
 
 For a fresh VM, use the HA onboarding restore flow if a backup is available. If already inside HA:
 
-1. Upload the backup `.tar` through the UI or copy it through an already configured file-transfer path.
+1. Upload the official HA backup `.tar` through the UI or copy it through an already configured file-transfer path.
 2. Open `Settings -> System -> Backups`.
-3. Restore the desired full backup.
+3. Restore the desired official HA backup.
 4. Re-check SSH, network, and host health after the restore.

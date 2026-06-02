@@ -32,11 +32,11 @@ Keep secrets out of the repo and the final answer. This includes Home Assistant 
    - Launchd jobs for the host orchestrator: [references/launchd-service.md](references/launchd-service.md)
    - Recovery and rollback: [references/recovery.md](references/recovery.md)
 3. Prefer safe sequencing.
-   - Make a full HA backup before network changes.
+   - Make or identify an official HA backup before network changes.
    - Use UTM shared networking/NAT for first boot, Home Assistant Core download, initial UI onboarding, and Terminal & SSH installation.
    - Treat `Terminal & SSH` as the automation boundary: install it manually from the HA app store, configure an SSH public key, enable start-on-boot, and add a local `Host haos` entry in `~/.ssh/config`.
    - Do not rely on the Mac gateway or any scripted HAOS setup before Terminal & SSH is installed and a local `ssh haos` alias works.
-   - Switch to bridged only after SSH access and a baseline backup exist, or when local discovery matters and the final home-lab topology is being tested.
+   - Switch to bridged only after SSH access and a baseline official HA backup exist, or when local discovery matters and the final home-lab topology is being tested.
    - In the normal restored host state, the orchestrator launchd jobs own dynamic Mac-side LAN selection, router apply, HAOS VM startup, and drift checks. Do not install separate router scripts from this skill.
 4. Verify each layer separately.
    - Mac package/tool readiness.
@@ -68,6 +68,7 @@ HAOS through SSH:
 ssh haos 'ha network info'
 ssh haos 'ha supervisor info'
 ssh haos 'ha resolution info'
+ssh haos 'ha backups list'
 ssh haos 'curl -I --connect-timeout 8 https://registry-1.docker.io/v2/'
 ```
 
@@ -82,7 +83,7 @@ Report the final state with concrete evidence:
 - UTM network mode and HAOS URL
 - HAOS IPv4 address, gateway, DNS servers, and IPv6 status
 - `host_internet` and `supervisor_internet`
-- backup status
+- official HA backup name and slug
 - whether Terminal & SSH is installed, starts on boot, and `ssh haos ...` works from the Mac
 - whether first boot/onboarding was completed through UTM shared networking/NAT before switching to bridged mode
 - whether the four host orchestrator launchd jobs are installed and last exited successfully

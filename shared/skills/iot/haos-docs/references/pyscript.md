@@ -75,6 +75,56 @@ Use Pyscript APIs for HA work:
 - For bridge code, separate inbound command handling from outbound observed-state sync.
 - For logic that should run when Pyscript loads or reloads, use `@time_trigger("startup")`. Do not directly translate a YAML Home Assistant start trigger into an `@event_trigger` unless the actual HA event timing has been verified.
 
+## Runtime Enable Controls
+
+Pyscript functions are not HA `automation` entities, so they do not naturally appear as individually toggleable automations in the HA automation UI. If the user needs runtime enable/disable controls, create HA helper entities and let Pyscript read them as gates.
+
+Use `input_boolean` helpers for stable, user-visible switches:
+
+```yaml
+input_boolean:
+  bridge_enabled:
+    name: Bridge
+    icon: mdi:connection
+
+  bridge_system_a_to_system_b_sync_enabled:
+    name: System A to System B sync
+    icon: mdi:sync
+
+  bridge_system_b_to_system_a_control_enabled:
+    name: System B to System A control
+    icon: mdi:remote
+```
+
+Then check the helpers at trigger time:
+
+```python
+def helper_is_on(entity_id: str) -> bool:
+    return state.get(entity_id) == "on"
+
+
+def bridge_enabled() -> bool:
+    return helper_is_on("input_boolean.bridge_enabled")
+
+
+def sync_enabled(rule_name: str) -> bool:
+    return (
+        bridge_enabled()
+        and helper_is_on("input_boolean.bridge_system_a_to_system_b_sync_enabled")
+        and ENABLED.get(rule_name, False) is True
+    )
+```
+
+Prefer directional names such as `<source>_to_<target>_sync` and `<source>_to_<target>_control` instead of vague group names. This keeps room for additional bridges later.
+
+Log both sides of the gate during testing:
+
+- log when a rule runs, such as `run <rule_name>`
+- log when a rule is skipped, such as `skip <rule_name>: bridge is off`
+- include whether the total switch, direction switch, or static rule disabled the path
+
+For UI grouping, use Dashboard cards, sections, or subviews. Do not rely on Pyscript or helper entities to create a nested automation-management UI. If a single top-level switch should be shown with more detailed controls "inside", model that in the Dashboard and keep Pyscript logic based on explicit helper entity ids.
+
 ## Import Guidance
 
 Pyscript has its own importer and security model, so do not assume ordinary CPython package behavior.

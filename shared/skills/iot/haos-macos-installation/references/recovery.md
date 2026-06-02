@@ -67,13 +67,13 @@ sudo ./ha-host/tools/orchestrator/src/ha_host_orchestrator/mac_router/mac-router
 
 This is a safe recovery mode for updates and repairs, but it may not provide the same LAN discovery behavior as bridged mode.
 
-## Backup Restore
+## Official HA Backup Restore
 
 If configuration changes cause a bad state:
 
 1. Boot HAOS.
 2. Open `Settings -> System -> Backups`.
-3. Restore the most recent known-good full backup.
+3. Restore the most recent known-good official HA backup.
 4. Re-check SSH and network after restore.
 
-Keep at least one backup copied off HAOS through an available file-transfer path before major network changes.
+Keep at least one official HA backup copied off HAOS through an available file-transfer path before major network changes.
