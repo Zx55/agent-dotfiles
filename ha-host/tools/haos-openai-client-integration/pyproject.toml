@@ -1,0 +1,26 @@
+[project]
+name = "haos-openai-client-integration"
+version = "0.1.0"
+description = "OpenAI-compatible client package intended for Home Assistant OS AI task adapters."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "openai==2.21.0",
+]
+
+[project.scripts]
+haos-openai-client = "haos_openai_client.client.cli:main"
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "haos_openai_client" = "src" }
+packages = ["haos_openai_client", "haos_openai_client.client"]
+
+[tool.setuptools.package-data]
+haos_openai_client = ["manifest.json", "strings.json"]
+
+[tool.uv]
+package = true

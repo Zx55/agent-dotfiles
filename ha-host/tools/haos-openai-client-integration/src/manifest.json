@@ -1,0 +1,13 @@
+{
+  "domain": "haos_openai_client",
+  "name": "HAOS OpenAI Client",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": ["ai_task", "persistent_notification"],
+  "documentation": "https://github.com/local/haos-openai-client-integration",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "loggers": ["custom_components.haos_openai_client"],
+  "requirements": ["openai==2.21.0"],
+  "version": "0.1.0"
+}

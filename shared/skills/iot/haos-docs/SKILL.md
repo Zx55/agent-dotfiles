@@ -31,6 +31,7 @@ Keep secrets out of local files and reports. This includes Home Assistant tokens
 - YAML automations, scripts, UI-managed automations, and automation inventory: read [references/automations.md](references/automations.md).
 - If `configuration.yaml` contains `pyscript:`, `/config/pyscript` exists, or the task involves writing or migrating Python automations, read [references/pyscript.md](references/pyscript.md) and include `/config/pyscript/*.py` in the automation inventory.
 - HA-side bridge patterns between HA and another system: read [references/ha-bridge.md](references/ha-bridge.md).
+- HomeKit Bridge exposure, Apple Home pairing and verification, entity filtering, linked battery services, and HomeKit-specific wrapper decisions: read [references/homekit-bridge.md](references/homekit-bridge.md).
 - Logs, traces, entity state checks, service-call testing, and debugging: read [references/logs-and-debugging.md](references/logs-and-debugging.md).
 - Backups, rollback, and safety boundaries: read [references/safety-and-backups.md](references/safety-and-backups.md).
 

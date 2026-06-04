@@ -1,0 +1,36 @@
+{
+  "title": "HAOS OpenAI Client",
+  "config": {
+    "abort": {
+      "already_configured": "This HAOS OpenAI Client entry is already configured.",
+      "reauth_successful": "Reauthentication was successful."
+    },
+    "step": {
+      "connection_test": {
+        "title": "Connection test",
+        "description": "Test status: {test_status}\n\n{test_detail}\n\nSubmit to save this configuration."
+      },
+      "reauth_confirm": {
+        "title": "Reauthenticate HAOS OpenAI Client",
+        "description": "Enter the updated API key.",
+        "data": {
+          "api_key": "API key"
+        }
+      },
+      "user": {
+        "title": "HAOS OpenAI Client",
+        "description": "Configure an OpenAI-compatible AI Task provider. The endpoint is not validated during setup so local or proxy providers can be used.",
+        "data": {
+          "name": "Name",
+          "api_key": "API key",
+          "base_url": "Base URL",
+          "model": "Model",
+          "api_mode": "API mode",
+          "timeout_seconds": "Timeout seconds",
+          "temperature": "Temperature",
+          "max_tokens": "Maximum tokens"
+        }
+      }
+    }
+  }
+}
