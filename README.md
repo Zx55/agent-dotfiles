@@ -10,6 +10,7 @@ agent-dotfiles/
     bootstrap/
     agent/
       codex/
+      cursor/
       skills/
     dotfiles/
     tools/
@@ -23,7 +24,6 @@ agent-dotfiles/
     tools/
 
   shared/
-    AGENTS.md
     hooks/
     skills/
 
@@ -34,9 +34,11 @@ agent-dotfiles/
 
 `ha-host/` is the dedicated Home Assistant host profile. It owns HAOS/MiAir operational skills, the HA host orchestrator, MiAir wrapper, PS5 HA bridge, and a smaller Codex runtime.
 
-`shared/AGENTS.md` contains agent-neutral global instructions. Profile link scripts symlink it into the active agent runtime config directory.
+Each Codex profile keeps its own `agent/codex/AGENTS.md`, and profile link scripts symlink that file into the active Codex runtime config directory.
 
-`shared/hooks/` contains hook implementation scripts only. Each profile keeps its own `agent/codex/hooks.json`, and that file decides which profile receives synced config and automation snapshots.
+`shared/hooks/` contains hook implementation scripts only. Profiles expose those scripts through `*/agent/*/hooks/` symlinks, and each profile's hook config calls its own profile-local hook paths.
+
+`master/agent/cursor/` contains the master Cursor profile: global MCP config, user-level hooks, sandbox config, a repo-managed source for Cursor User Rules, and a portable snapshot of Cursor app settings.
 
 `shared/skills/` contains the canonical skill sources. Profile directories under `*/agent/skills/` contain only symlinks to the shared skill directories, so profile skill selection is managed by filesystem links instead of bootstrap script lists.
 
@@ -49,6 +51,8 @@ Run the profile entrypoint directly. There is no root-level profile dispatcher.
 ./master/bootstrap/bootstrap.sh install
 ./master/bootstrap/bootstrap.sh links --agent codex
 ./master/bootstrap/bootstrap.sh verify --agent codex
+./master/bootstrap/bootstrap.sh links --agent cursor
+./master/bootstrap/bootstrap.sh verify --agent cursor
 
 ./ha-host/bootstrap/bootstrap.sh audit
 ./ha-host/bootstrap/bootstrap.sh install
@@ -56,13 +60,14 @@ Run the profile entrypoint directly. There is no root-level profile dispatcher.
 ./ha-host/bootstrap/bootstrap.sh verify --agent codex
 ```
 
-Both profiles use symlinks for shared global instructions, profile-managed Codex files, skills, and dotfiles. Existing targets are backed up under `~/.dotfiles-backup/<timestamp>/` before replacement.
+Both profiles use symlinks for agent-specific instructions, profile-managed Codex files, skills, and dotfiles. Existing targets are backed up under `~/.dotfiles-backup/<timestamp>/` before replacement.
 
 ## Profiles
 
 Master includes the broad daily skill set and tools:
 
 - symlinks under `master/agent/skills/` for the current broad daily skill set
+- `master/agent/cursor/` for Cursor MCP, hooks, User Rules source, and settings snapshots
 - `master/tools/mcp-launcher`
 - `master/tools/zotero-mcp-wrapper`
 - `master/tools/zotero-add-local-file-plugin`

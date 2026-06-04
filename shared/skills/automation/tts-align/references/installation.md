@@ -4,17 +4,16 @@ Use this reference only when `whisperx` is unavailable, broken, or missing model
 
 ## Tool Install
 
-Prefer a global uv tool install:
+Prefer the shared agent Python environment:
 
 ```bash
-uv tool install whisperx
+~/.local/share/agent-dotfiles/python/bin/python -m pip install whisperx huggingface-hub
 ```
 
-Install the Hugging Face CLI through uv as well. The current command is `hf`, not the deprecated `huggingface-cli` entrypoint:
+The Hugging Face CLI entrypoint is `hf`, not the deprecated `huggingface-cli` entrypoint:
 
 ```bash
-uv tool install huggingface-hub
-hf --help
+~/.local/share/agent-dotfiles/python/bin/hf --help
 ```
 
 ## Model Cache Prewarm
@@ -22,13 +21,13 @@ hf --help
 Use the bootstrap model warmer when this dotfiles repo is available:
 
 ```bash
-~/Documents/codex-workspace/agent-dotfiles/master/bootstrap/scripts/warm_ml_models.sh
+~/Documents/agent-dotfiles/master/bootstrap/scripts/warm_ml_models.sh
 ```
 
 The model list lives at:
 
 ```text
-~/Documents/codex-workspace/agent-dotfiles/master/bootstrap/packages/ml-models.tsv
+~/Documents/agent-dotfiles/master/bootstrap/packages/ml-models.tsv
 ```
 
 It separates model sources by backend:
@@ -44,13 +43,13 @@ If the bootstrap warmer is unavailable, prewarm the current WhisperX defaults ma
 Download the faster-whisper tiny ASR model:
 
 ```bash
-hf download Systran/faster-whisper-tiny
+~/.local/share/agent-dotfiles/python/bin/hf download Systran/faster-whisper-tiny
 ```
 
-Warm Silero VAD through the WhisperX uv tool Python when available:
+Warm Silero VAD through the shared agent Python when available:
 
 ```bash
-~/.local/share/uv/tools/whisperx/bin/python -c \
+~/.local/share/agent-dotfiles/python/bin/python -c \
   'import torch; torch.hub.load(repo_or_dir="snakers4/silero-vad", model="silero_vad", trust_repo=True)'
 ```
 
@@ -68,8 +67,8 @@ curl -L \
 Check the CLI and run a small alignment job:
 
 ```bash
-whisperx --help
-whisperx narration.wav \
+~/.local/share/agent-dotfiles/python/bin/whisperx --help
+~/.local/share/agent-dotfiles/python/bin/whisperx narration.wav \
   --model tiny \
   --language en \
   --device cpu \

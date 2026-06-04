@@ -19,7 +19,7 @@ usage() {
 Usage: master/bootstrap/bootstrap.sh all [options]
 
 Options:
-  --agent <name>         Agent to link and verify. Currently only "codex" is supported.
+  --agent <name>         Agent to link and verify. Supported values: codex, cursor.
   --with-large-app       Install large GUI apps in the background during install.
   --skip-uv-tools        Skip uv tool installation.
   --skip-agent-python    Skip shared agent Python venv installation.
@@ -84,7 +84,7 @@ parse_args() {
 
 validate_args() {
   case "$AGENT" in
-    codex)
+    codex|cursor)
       ;;
     *)
       die "unsupported agent: $AGENT"

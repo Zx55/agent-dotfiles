@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "zotero": {
+      "type": "stdio",
+      "command": "${userHome}/.local/bin/mcp-launcher",
+      "args": [
+        "--env-file",
+        "~/.secret",
+        "--env",
+        "ZOTERO_APP_PATH=/Applications/Zotero.app",
+        "--env",
+        "ZOTERO_AUTO_LAUNCH=true",
+        "--env",
+        "ZOTERO_EMBEDDING_MODEL=default",
+        "--env",
+        "ZOTERO_LOCAL=true",
+        "--env",
+        "ZOTERO_LOCAL_HOST=127.0.0.1",
+        "--env",
+        "ZOTERO_LOCAL_PORT=23119",
+        "--env",
+        "ZOTERO_MCP_ARGS=serve",
+        "--env",
+        "ZOTERO_MCP_BIN=~/.local/bin/zotero-mcp",
+        "--env",
+        "ZOTERO_READY_STABLE_POLLS=1",
+        "--env",
+        "ZOTERO_STARTUP_TIMEOUT_SEC=30",
+        "--",
+        "~/.local/bin/zotero-mcp-wrapper"
+      ]
+    }
+  }
+}

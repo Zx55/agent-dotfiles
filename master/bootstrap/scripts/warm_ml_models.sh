@@ -45,8 +45,11 @@ expand_path() {
 }
 
 python_for_torch_hub() {
+  local agent_python="$HOME/.local/share/agent-dotfiles/python/bin/python"
   local uv_tool_python="$HOME/.local/share/uv/tools/whisperx/bin/python"
-  if [[ -x "$uv_tool_python" ]]; then
+  if [[ -x "$agent_python" ]]; then
+    printf '%s\n' "$agent_python"
+  elif [[ -x "$uv_tool_python" ]]; then
     printf '%s\n' "$uv_tool_python"
   elif command -v python3 >/dev/null 2>&1; then
     command -v python3
@@ -55,17 +58,29 @@ python_for_torch_hub() {
   fi
 }
 
+hf_command() {
+  local agent_hf="$HOME/.local/share/agent-dotfiles/python/bin/hf"
+  if [[ -x "$agent_hf" ]]; then
+    printf '%s\n' "$agent_hf"
+  elif command -v hf >/dev/null 2>&1; then
+    command -v hf
+  else
+    die "hf command missing. Install huggingface-hub into the shared agent Python environment."
+  fi
+}
+
 warm_hf() {
   local repo_id="$1"
   local target="$2"
-  command -v hf >/dev/null 2>&1 || die "hf command missing. Install huggingface-hub with uv tool install huggingface-hub."
+  local hf_bin
+  hf_bin="$(hf_command)"
   if [[ -z "$target" || "$target" == "default" ]]; then
     log "Downloading Hugging Face model: $repo_id"
-    hf download "$repo_id"
+    "$hf_bin" download "$repo_id"
   else
     target="$(expand_path "$target")"
     log "Downloading Hugging Face model: $repo_id -> $target"
-    hf download "$repo_id" --local-dir "$target"
+    "$hf_bin" download "$repo_id" --local-dir "$target"
   fi
 }
 

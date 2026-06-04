@@ -19,8 +19,9 @@ Options:
   --dry-run             Print planned link operations without changing files.
   -h, --help            Show this help.
 
-The HA host profile installs profile-managed Codex config, skills, hooks, and
-dotfiles as symlinks. Hook implementation scripts live in shared/hooks.
+The HA host profile installs profile-managed Codex config, skills, hook config,
+and dotfiles as symlinks. Hook implementation scripts are exposed through
+profile-local symlinks to shared/hooks.
 EOF
 }
 
@@ -242,7 +243,7 @@ link_codex() {
   command -v codex >/dev/null 2>&1 || warn "codex command not found. Install step should run before linking Codex files."
 
   mkdir -p "$HOME/.codex"
-  link_path "$REPO_ROOT/shared/AGENTS.md" "$HOME/.codex/AGENTS.md"
+  link_path "$PROFILE_ROOT/agent/codex/AGENTS.md" "$HOME/.codex/AGENTS.md"
   link_path "$PROFILE_ROOT/agent/codex/config.toml" "$HOME/.codex/config.toml"
   link_path "$PROFILE_ROOT/agent/codex/hooks.json" "$HOME/.codex/hooks.json"
   link_path "$PROFILE_ROOT/agent/codex/rules" "$HOME/.codex/rules" optional

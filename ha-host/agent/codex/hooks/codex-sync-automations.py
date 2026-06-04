@@ -1,0 +1,1 @@
+../../../../shared/hooks/codex-sync-automations.py

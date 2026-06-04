@@ -327,8 +327,8 @@ main() {
   fi
 
   install_uv_tools
-  warm_ml_models
   install_agent_python
+  warm_ml_models
   install_npm_globals
   install_local_tools
   install_mas_apps
