@@ -17,22 +17,18 @@ personality = "pragmatic"
 [permissions.secret_safe.filesystem]
 ":project_roots" = { "." = "write" }
 "~/.secret" = "none"
-"~/Documents/codex-workspace/agent-dotfiles/ha-host/dotfiles/secrets/secret.local" = "none"
+"~/Documents/agent-dotfiles/master/dotfiles/secrets/secret.local" = "none"
+"~/Documents/agent-dotfiles/ha-host/dotfiles/secrets/secret.local" = "none"
 
 [permissions.secret_safe.network]
 enabled = true
 
 [projects]
+"~/Documents/agent-dotfiles" = { trust_level = "trusted" }
 "~/Documents/codex-workspace" = { trust_level = "trusted" }
-"~/Documents/codex-workspace/agent-dotfiles" = { trust_level = "trusted" }
 "~/Documents/codex-workspace/papers" = { trust_level = "trusted" }
 "~/Documents/codex-workspace/TPAMI" = { trust_level = "trusted" }
-
-[projects."~/Documents/codex-workspace/mihome-geek"]
-trust_level = "trusted"
-
-[projects."~/Documents/codex-workspace/材料"]
-trust_level = "trusted"
+"~/Documents/codex-workspace/mihome-geek" = { trust_level = "trusted" }
 
 [plugins]
 "github@openai-curated" = { enabled = true }

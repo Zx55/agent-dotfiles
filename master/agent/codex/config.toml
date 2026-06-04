@@ -10,8 +10,6 @@ default_permissions = "secret_safe"
 personality = "pragmatic"
 
 
-
-
 notify = ["~/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 
 [permissions.secret_safe.filesystem]
@@ -50,7 +48,7 @@ enabled = true
 enabled = true
 
 [marketplaces.openai-bundled]
-last_updated = "2026-06-04T00:58:07Z"
+last_updated = "2026-06-04T15:59:20Z"
 source_type = "local"
 source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
