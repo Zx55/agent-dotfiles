@@ -15,7 +15,7 @@ usage() {
 Usage: master/bootstrap/bootstrap.sh verify [options]
 
 Options:
-  --agent <name>         Agent to verify. Currently only "codex" is supported.
+  --agent <name>         Agent to verify. Supported values: codex, cursor.
   -h, --help             Show this help.
 EOF
 }
@@ -60,7 +60,7 @@ parse_args() {
 
 validate_args() {
   case "$AGENT" in
-    codex)
+    codex|cursor)
       ;;
     *)
       fail "unsupported agent: $AGENT"
@@ -134,6 +134,27 @@ resolve_link_target() {
   esac
 }
 
+check_resolved_symlink() {
+  local source="$1"
+  local target="$2"
+
+  if [[ ! -e "$source" ]]; then
+    fail "source missing: $source"
+    return 0
+  fi
+
+  if [[ ! -L "$target" ]]; then
+    fail "target is not a symlink: $target"
+    return 0
+  fi
+
+  if [[ "$(resolve_link_target "$target")" == "$source" ]]; then
+    ok "symlink: $target"
+  else
+    fail "symlink target mismatch: $target -> $(resolve_link_target "$target"), expected $source"
+  fi
+}
+
 check_file() {
   local path="$1"
   if [[ -f "$path" ]]; then
@@ -151,6 +172,20 @@ check_regular_file() {
     fail "target should be a regular local file, not a symlink: $path"
   else
     fail "file missing: $path"
+  fi
+}
+
+check_json_file() {
+  local path="$1"
+  if [[ ! -f "$path" ]]; then
+    fail "JSON file missing: $path"
+    return 0
+  fi
+
+  if python3 -m json.tool "$path" >/dev/null 2>&1; then
+    ok "valid JSON: $path"
+  else
+    fail "invalid JSON: $path"
   fi
 }
 
@@ -283,11 +318,13 @@ check_mas_file() {
 }
 
 check_codex_links() {
-  check_symlink "$REPO_ROOT/shared/AGENTS.md" "$HOME/.codex/AGENTS.md"
+  check_symlink "$PROFILE_ROOT/agent/codex/AGENTS.md" "$HOME/.codex/AGENTS.md"
   check_symlink "$PROFILE_ROOT/agent/codex/config.toml" "$HOME/.codex/config.toml"
   check_symlink "$PROFILE_ROOT/agent/codex/hooks.json" "$HOME/.codex/hooks.json"
   check_symlink "$PROFILE_ROOT/agent/codex/rules" "$HOME/.codex/rules" optional
   check_symlink "$PROFILE_ROOT/agent/codex/automations" "$HOME/.codex/automations" optional
+  check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-config.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-config.py"
+  check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-automations.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-automations.py"
 
   local skills_root="$PROFILE_ROOT/agent/skills"
   local skill_path
@@ -475,6 +512,37 @@ check_codex_config() {
   fi
 }
 
+check_cursor_links() {
+  check_symlink "$PROFILE_ROOT/agent/cursor/mcp.json" "$HOME/.cursor/mcp.json"
+  check_symlink "$PROFILE_ROOT/agent/cursor/hooks.json" "$HOME/.cursor/hooks.json"
+}
+
+check_cursor_config() {
+  local cursor_dir="$PROFILE_ROOT/agent/cursor"
+  local settings="$HOME/Library/Application Support/Cursor/User/settings.json"
+  local syncer="$REPO_ROOT/shared/hooks/cursor-sync-settings.py"
+
+  check_json_file "$cursor_dir/mcp.json"
+  check_json_file "$cursor_dir/hooks.json"
+  check_json_file "$cursor_dir/settings.json"
+  check_file "$cursor_dir/user-rules.md"
+  check_resolved_symlink "$syncer" "$cursor_dir/hooks/cursor-sync-settings.py"
+  warn "Cursor User Rules cannot be verified from a stable file path. Manually compare Cursor Settings > Rules with $cursor_dir/user-rules.md."
+
+  if [[ ! -f "$syncer" ]]; then
+    fail "Cursor settings sync hook missing: $syncer"
+  elif ! command -v python3 >/dev/null 2>&1; then
+    fail "python3 missing for Cursor settings sync hook"
+  elif python3 "$syncer" \
+    --settings "$settings" \
+    --output "$cursor_dir/settings.json" \
+    --check >/dev/null 2>&1; then
+    ok "Cursor settings snapshot is synced"
+  else
+    fail "Cursor settings snapshot is out of sync with app settings"
+  fi
+}
+
 check_git_hooks_path() {
   local hooks_path
   hooks_path="$(git -C "$REPO_ROOT" config --get core.hooksPath || true)"
@@ -554,11 +622,21 @@ main() {
   check_uv_tools_sources
   check_mas_file
   check_ml_models_file
-  check_codex_config
   check_git_hooks_path
   check_runtime_tools
-  check_codex_links
-  check_codex_automations
+
+  case "$AGENT" in
+    codex)
+      check_codex_config
+      check_codex_links
+      check_codex_automations
+      ;;
+    cursor)
+      check_cursor_config
+      check_cursor_links
+      ;;
+  esac
+
   check_dotfile_links
 
   if [[ "$ERRORS" -gt 0 ]]; then

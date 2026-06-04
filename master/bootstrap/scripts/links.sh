@@ -14,7 +14,7 @@ usage() {
 Usage: master/bootstrap/bootstrap.sh links [options]
 
 Options:
-  --agent <name>         Agent to link. Currently only "codex" is supported.
+  --agent <name>         Agent to link. Supported values: codex, cursor.
   -h, --help             Show this help.
 EOF
 }
@@ -54,7 +54,7 @@ parse_args() {
 
 validate_args() {
   case "$AGENT" in
-    codex)
+    codex|cursor)
       ;;
     *)
       die "unsupported agent: $AGENT"
@@ -186,7 +186,7 @@ link_codex() {
   command -v codex >/dev/null 2>&1 || warn "codex command not found. Install step should run before linking Codex files."
 
   mkdir -p "$HOME/.codex"
-  link_path "$REPO_ROOT/shared/AGENTS.md" "$HOME/.codex/AGENTS.md"
+  link_path "$PROFILE_ROOT/agent/codex/AGENTS.md" "$HOME/.codex/AGENTS.md"
   link_path "$PROFILE_ROOT/agent/codex/config.toml" "$HOME/.codex/config.toml"
   link_path "$PROFILE_ROOT/agent/codex/hooks.json" "$HOME/.codex/hooks.json"
   link_path "$PROFILE_ROOT/agent/codex/rules" "$HOME/.codex/rules" optional
@@ -194,6 +194,38 @@ link_codex() {
 
   mkdir -p "$HOME/.codex/skills"
   link_profile_skills
+}
+
+sync_live_cursor_settings() {
+  local settings="$HOME/Library/Application Support/Cursor/User/settings.json"
+  local output="$PROFILE_ROOT/agent/cursor/settings.json"
+  local syncer="$REPO_ROOT/shared/hooks/cursor-sync-settings.py"
+
+  [[ -f "$settings" ]] || return 0
+
+  if [[ ! -f "$syncer" ]]; then
+    warn "Cursor settings sync hook missing, skipping live snapshot: $syncer"
+    return 0
+  fi
+
+  if ! command -v python3 >/dev/null 2>&1; then
+    warn "python3 missing, skipping live Cursor settings snapshot"
+    return 0
+  fi
+
+  log "Snapshotting live Cursor settings from $settings"
+  python3 "$syncer" \
+    --settings "$settings" \
+    --output "$output" \
+    >/dev/null
+}
+
+link_cursor() {
+  mkdir -p "$HOME/.cursor"
+
+  link_path "$PROFILE_ROOT/agent/cursor/mcp.json" "$HOME/.cursor/mcp.json"
+  link_path "$PROFILE_ROOT/agent/cursor/hooks.json" "$HOME/.cursor/hooks.json"
+  warn "Cursor User Rules cannot be linked automatically. Manually copy $PROFILE_ROOT/agent/cursor/user-rules.md into Cursor Settings > Rules."
 }
 
 sync_live_codex_automations() {
@@ -242,8 +274,17 @@ main() {
   parse_args "$@"
   validate_args
 
-  sync_live_codex_automations
-  link_codex
+  case "$AGENT" in
+    codex)
+      sync_live_codex_automations
+      link_codex
+      ;;
+    cursor)
+      sync_live_cursor_settings
+      link_cursor
+      ;;
+  esac
+
   link_dotfiles
   configure_git_hooks
 

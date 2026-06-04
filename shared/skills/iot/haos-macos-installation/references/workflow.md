@@ -20,7 +20,7 @@ cd ~/Documents/codex-workspace/agent-dotfiles
 ./ha-host/bootstrap/bootstrap.sh links --agent codex --dry-run
 ```
 
-Only run `links` for real when the Mac should become the dedicated HA host. The HA host profile installs active agent runtime config by symlinking shared instructions from `shared/AGENTS.md` plus profile-managed runtime config, hooks, skills, and dotfiles.
+Only run `links` for real when the Mac should become the dedicated HA host. The HA host profile installs active agent runtime config by symlinking Codex instructions from `ha-host/agent/codex/AGENTS.md` plus profile-managed runtime config, hooks, skills, and dotfiles.
 
 ## Required Host Apps
 

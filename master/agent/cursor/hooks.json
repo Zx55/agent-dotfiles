@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "/usr/bin/env python3 \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-sync-settings.py\" --output \"$HOME/Documents/agent-dotfiles/master/agent/cursor/settings.json\" --hook-output",
+        "timeout": 10
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "/usr/bin/env python3 \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-sync-settings.py\" --output \"$HOME/Documents/agent-dotfiles/master/agent/cursor/settings.json\" --hook-output",
+        "timeout": 10
+      }
+    ]
+  }
+}

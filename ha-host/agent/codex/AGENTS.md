@@ -1,24 +1,31 @@
 # Global User Preferences
 
+## Runtime Scope
+
+- Local agent runtime rules apply only when the agent is running on the user's local Mac, not in SSH, remote container, or cloud-agent environments.
+- In SSH, remote, or cloud environments, do not assume `~/Documents/agent-dotfiles`, local runtime config mirrors, shared agent Python, local proxy helpers, or macOS app config paths exist.
+- When outside the local Mac, prefer the current project's own environment and documented setup over personal `agent-dotfiles` resources.
+
 ## Config Source
 
-- `~/Documents/codex-workspace/agent-dotfiles` is the source of truth for personal agent configuration.
+- `~/Documents/agent-dotfiles` is the source of truth for personal agent configuration.
 - Agent runtime config directories may contain files copied, symlinked, or mirrored from that directory.
-- Treat `~/Documents/codex-workspace/agent-dotfiles/...` and active agent runtime config paths as the same configuration source when both appear.
+- Treat `~/Documents/agent-dotfiles/...` and active agent runtime config paths as the same configuration source when both appear.
 
 ## Runtime Environment
 
 ### Python Environment
 
 - Prefer the current project's Python environment when it exists, for example `<project>/.venv/bin/python`.
-- If the project has no Python environment, use the shared agent Python at `~/.local/share/agent-dotfiles/python/bin/python`.
+- On the local Mac only, if the project has no Python environment, use the shared agent Python at `~/.local/share/agent-dotfiles/python/bin/python`.
 - Fall back to `python3` only when neither a project environment nor the shared agent Python is available.
 - Do not install dependencies into the system Python.
-- Project-specific dependencies belong in that project's own environment; cross-agent or cross-skill packages belong in `~/Documents/codex-workspace/agent-dotfiles/master/bootstrap/packages/agent-python.txt`.
+- Project-specific dependencies belong in that project's own environment.
+- On the local Mac only, cross-agent or cross-skill packages belong in `~/Documents/agent-dotfiles/master/bootstrap/packages/agent-python.txt`.
 
 ### Network / Proxy
 
-- For terminal-based network operations, if a command appears stuck, times out, or fails due to connectivity issues, retry with the user's proxy enabled.
+- On the local Mac only, for terminal-based network operations, if a command appears stuck, times out, or fails due to connectivity issues, retry with the user's proxy enabled.
 - Do not assume shell aliases are available in non-interactive commands.
 - Prefer invoking zsh explicitly with aliases loaded when using shell proxy helpers:
   - `zsh -lc 'proxy_on && <command>; proxy_off'`

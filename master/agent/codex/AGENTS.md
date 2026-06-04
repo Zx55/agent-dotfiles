@@ -1,0 +1,101 @@
+# Global User Preferences
+
+## Runtime Scope
+
+- Local agent runtime rules apply only when the agent is running on the user's local Mac, not in SSH, remote container, or cloud-agent environments.
+- In SSH, remote, or cloud environments, do not assume `~/Documents/agent-dotfiles`, local runtime config mirrors, shared agent Python, local proxy helpers, or macOS app config paths exist.
+- When outside the local Mac, prefer the current project's own environment and documented setup over personal `agent-dotfiles` resources.
+
+## Config Source
+
+- `~/Documents/agent-dotfiles` is the source of truth for personal agent configuration.
+- Agent runtime config directories may contain files copied, symlinked, or mirrored from that directory.
+- Treat `~/Documents/agent-dotfiles/...` and active agent runtime config paths as the same configuration source when both appear.
+
+## Runtime Environment
+
+### Python Environment
+
+- Prefer the current project's Python environment when it exists, for example `<project>/.venv/bin/python`.
+- On the local Mac only, if the project has no Python environment, use the shared agent Python at `~/.local/share/agent-dotfiles/python/bin/python`.
+- Fall back to `python3` only when neither a project environment nor the shared agent Python is available.
+- Do not install dependencies into the system Python.
+- Project-specific dependencies belong in that project's own environment.
+- On the local Mac only, cross-agent or cross-skill packages belong in `~/Documents/agent-dotfiles/master/bootstrap/packages/agent-python.txt`.
+
+### Network / Proxy
+
+- On the local Mac only, for terminal-based network operations, if a command appears stuck, times out, or fails due to connectivity issues, retry with the user's proxy enabled.
+- Do not assume shell aliases are available in non-interactive commands.
+- Prefer invoking zsh explicitly with aliases loaded when using shell proxy helpers:
+  - `zsh -lc 'proxy_on && <command>; proxy_off'`
+- Or set proxy environment variables directly for the command:
+  - `http_proxy=http://127.0.0.1:7897 https_proxy=http://127.0.0.1:7897 HTTP_PROXY=http://127.0.0.1:7897 HTTPS_PROXY=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897 <command>`
+- After the network-dependent task is finished, turn the proxy off unless there is a clear reason to keep it enabled:
+  - `unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY all_proxy ALL_PROXY`
+
+## Task Workflow
+
+- Before non-trivial work, identify the intended artifact: one-off answer, code change, research conclusion, durable note, document edit, decision recommendation, automation, or verification result.
+- Match the workflow to the artifact. Do not treat every request as a code task.
+- If the result has long-term value, preserve it in the appropriate durable place instead of leaving it only in chat.
+- For any repository, project, research topic, or product area, first identify the authoritative source of truth.
+- Prefer primary sources over summaries: design docs over implementation guesses, official docs over blog posts, papers or datasets over secondary commentary, user-provided files over memory.
+- If implementation, documentation, external sources, or prior conversation conflict, call out the conflict explicitly before acting.
+- For substantial implementation, present the goal, assumptions, proposed method, plan, tradeoffs, and success criteria, then wait for explicit user approval.
+- For trivial, low-risk tasks, proceed directly and state assumptions afterward.
+- If a task is materially ambiguous, do not guess silently. Surface the ambiguity, present the main interpretations, and recommend one.
+- Prefer concrete acceptance criteria and verifiable outcomes over vague completion claims.
+
+## Scope And Boundaries
+
+- Make surgical changes. Touch only what is needed, and do not refactor, reformat, or add speculative abstractions unless directly necessary or clearly requested.
+- If a simpler approach exists than the one implied by the request, say so before doing more complex work.
+- Clean up only artifacts created by your own changes. Mention unrelated issues separately instead of fixing them opportunistically.
+- Every changed line or durable edit should be traceable to the user's request or to verification required for that request.
+- For any non-trivial task, identify who owns the decision or behavior: project design, module, document, data source, external standard, user preference, automation, or research evidence.
+- Keep responsibilities separated. Interfaces and adapters should translate, validate, and present, not quietly own core semantics.
+- Avoid bypassing established public surfaces, documented workflows, canonical documents, or owner documents unless the task explicitly changes those boundaries.
+
+## Coding Standards
+
+- Prefer clean separation of concerns, well-scoped modules, and intentionally small public surfaces.
+- Prefer the simplest solution that fully solves the stated problem.
+- Match the surrounding codebase style and conventions unless there is a strong reason not to.
+- For Python code, write explicit types for function parameters, return values, and variables when the variable type is not obvious from the assignment.
+- Prefer TypeScript over untyped JavaScript for durable scripts, tools, and application code.
+- Do not expose internals only to make implementation or testing more convenient.
+- Use dependencies conservatively and only when they materially simplify the solution.
+- When architecture rules are easy to violate and easy to check mechanically, prefer adding a lightweight guard or verification step.
+
+## Research And Evidence
+
+- For research tasks, separate primary evidence, secondary summaries, and your own inference.
+- Cite or name the source of important claims when precision matters.
+- For fast-moving, high-stakes, or niche topics, verify current facts before answering.
+- Do not overstate certainty. Mark uncertain, disputed, stale, or inferred conclusions clearly.
+- When summarizing papers, tools, products, or technical systems, preserve enough context for the conclusion to be auditable later.
+
+## Execution And Verification
+
+- When fixing bugs, prefer reproducing the issue first and then verifying the fix.
+- When refactoring, verify behavior before and after.
+- Use tests or checks when appropriate, but do not add heavyweight scaffolding for trivial changes.
+- If verification cannot be run, say exactly what was not run and why.
+- Prefer evidence-backed completion: command output, tests, screenshots, rendered files, citations, or concrete inspected state.
+
+## Writing Style
+
+- When writing English LaTeX or Markdown, avoid colon-led explanatory phrasing unless it is the clearest structure for paired terms, labels, definitions, or field-like text.
+- When writing Markdown prose, do not insert hard line breaks just to fit a preferred line width. Let paragraphs wrap naturally unless the format requires line breaks.
+- Prefer natural prose or `\emph{i.e.}` when introducing a clarification that would otherwise be written after a colon.
+- Avoid semicolons in English prose. Split the thought into two sentences, or use an ordinary conjunction when the relationship should stay in one sentence.
+- Do not rewrite quoted text, code, data formats, citations, bibliographic metadata, or syntax examples just to satisfy this punctuation preference.
+
+## Review Stance
+
+- When asked for a review, prioritize findings over summaries.
+- Review first for wrong goals, source-of-truth conflicts, boundary violations, data loss risks, security issues, and behavioral regressions.
+- Then review for missing verification, weak evidence, redundant logic, and maintainability risks.
+- Style and minor cleanup should not obscure correctness, safety, or boundary issues.
+- If no issues are found, say so clearly and mention any residual risk or unrun verification.

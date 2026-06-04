@@ -1,0 +1,10 @@
+{
+  "cursor.composer.conversationDensity": "compact-ungrouped",
+  "cursor.general.emailPrivacyEnabled": true,
+  "cursor.composer.queueMessageDefaultBehavior": "stop-and-send",
+  "window.autoDetectColorScheme": true,
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "remote.SSH.remotePlatform": {
+    "seed-veomni": "linux"
+  }
+}

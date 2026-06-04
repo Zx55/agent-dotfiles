@@ -242,12 +242,35 @@ resolve_link_target() {
   esac
 }
 
+check_resolved_symlink() {
+  local source="$1"
+  local target="$2"
+
+  if [[ ! -e "$source" ]]; then
+    fail "source missing: $source"
+    return 0
+  fi
+
+  if [[ ! -L "$target" ]]; then
+    fail "target should be a symlink: $target"
+    return 0
+  fi
+
+  if [[ "$(resolve_link_target "$target")" == "$source" ]]; then
+    ok "symlink current: $target -> $source"
+  else
+    fail "symlink target differs: $target -> $(resolve_link_target "$target")"
+  fi
+}
+
 check_codex_link_state() {
-  check_symlink "$REPO_ROOT/shared/AGENTS.md" "$HOME/.codex/AGENTS.md"
+  check_symlink "$PROFILE_ROOT/agent/codex/AGENTS.md" "$HOME/.codex/AGENTS.md"
   check_symlink "$PROFILE_ROOT/agent/codex/config.toml" "$HOME/.codex/config.toml"
   check_symlink "$PROFILE_ROOT/agent/codex/hooks.json" "$HOME/.codex/hooks.json"
   check_symlink "$PROFILE_ROOT/agent/codex/rules" "$HOME/.codex/rules"
   check_symlink "$PROFILE_ROOT/agent/codex/automations" "$HOME/.codex/automations"
+  check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-config.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-config.py"
+  check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-automations.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-automations.py"
 
   local skills_root="$PROFILE_ROOT/agent/skills"
   local skill_path

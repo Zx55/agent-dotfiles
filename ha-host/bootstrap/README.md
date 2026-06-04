@@ -7,7 +7,7 @@ The first version is intentionally conservative:
 - `audit` collects read-only host facts for planning.
 - `verify` checks whether the host looks ready.
 - `install` ensures Homebrew exists, installs the minimal host package manifest, installs required uv tools, creates the shared agent Python environment, copies it into a dedicated root-owned HA host service Python at `/usr/local/libexec/agent-dotfiles/ha-host-python`, and sets the AC power policy so the host does not sleep while plugged in.
-- `links` symlinks shared global instructions plus this profile's Codex config, hooks, skills, and dotfiles into `~/.codex`.
+- `links` symlinks this profile's Codex instructions, config, hooks, skills, and dotfiles into `~/.codex`.
 - `tools/orchestrator` contains the host-side orchestration runtime for registered LAN clients, Mac `pf` forwarding, launchd startup/watch jobs, and UTM HAOS startup/watch checks.
 - `tools/ps5-ha-bridge` contains an opt-in PS5 to Home Assistant MQTT bridge. It keeps runtime config and Remote Play credentials outside this repository.
 
@@ -76,10 +76,10 @@ For the full HAOS-on-macOS workflow after a Mac reinstall, including UTM setup, 
 
 Codex config policy:
 
-- symlink shared global instructions from `shared/AGENTS.md` into `~/.codex/AGENTS.md`
+- symlink Codex instructions from `ha-host/agent/codex/AGENTS.md` into `~/.codex/AGENTS.md`
 - symlink profile-managed files from `ha-host/agent/codex/` into `~/.codex`
 - install only the IoT skill symlinks present under `ha-host/agent/skills/iot/`, resolving each one to its canonical source under `shared/skills/`
-- keep `hooks.json` profile-specific, with shared hook implementation scripts under `shared/hooks/`
+- keep `hooks.json` profile-specific, calling profile-local hook symlinks under `ha-host/agent/codex/hooks/`
 - sync runtime Codex config and automation snapshots back only to `ha-host/agent/codex/`
 - keep HA host skills and tools separate from master-only research, finance, and desktop automation assets
 

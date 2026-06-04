@@ -1,0 +1,1 @@
+../../../../shared/hooks/cursor-sync-settings.py
