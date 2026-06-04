@@ -7,13 +7,13 @@ Use this for the normal lifecycle after a Mac reinstall or when preparing a dedi
 Assume:
 
 - Apple ID and iCloud sync are complete.
-- `agent-dotfiles` is present at `~/Documents/codex-workspace/agent-dotfiles`.
+- `agent-dotfiles` is present at `~/agent-dotfiles`.
 - The current shell can run Homebrew or the bootstrap script can install it.
 
 Run:
 
 ```sh
-cd ~/Documents/codex-workspace/agent-dotfiles
+cd ~/agent-dotfiles
 ./ha-host/bootstrap/bootstrap.sh install --dry-run
 ./ha-host/bootstrap/bootstrap.sh install
 ./ha-host/bootstrap/bootstrap.sh verify --agent codex

@@ -47,7 +47,7 @@ Then temporarily switch UTM back to shared networking/NAT if needed.
 ## Stop Host Router
 
 ```sh
-cd ~/Documents/codex-workspace/agent-dotfiles
+cd ~/agent-dotfiles
 sudo ./ha-host/tools/orchestrator/src/ha_host_orchestrator/mac_router/mac-router.sh stop
 ```
 

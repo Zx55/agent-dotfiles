@@ -14,7 +14,7 @@ Use this skill when a user needs timing for an existing narration audio file, es
    - Recommended: final script `.txt` used to synthesize the narration.
    - Optional: video clip to compare against a section of the narration.
 2. Check whether WhisperX is available.
-   - First try `command -v whisperx` and `whisperx --help`.
+   - First try `~/.local/share/agent-dotfiles/python/bin/whisperx --help`, then `command -v whisperx` and `whisperx --help`.
    - If it is not available or model caches are missing, read `references/installation.md`.
    - Do not assume the user's bootstrap has already installed the tool.
 3. Run WhisperX for timestamps.
@@ -36,10 +36,10 @@ Use this skill when a user needs timing for an existing narration audio file, es
 
 ## WhisperX Command
 
-After confirming `whisperx` is on `PATH`, run:
+After confirming WhisperX is available, prefer the shared agent Python CLI:
 
 ```bash
-whisperx narration.wav \
+~/.local/share/agent-dotfiles/python/bin/whisperx narration.wav \
   --model tiny \
   --language en \
   --device cpu \

@@ -7,7 +7,7 @@ description: Generate local QR codes from URLs with offline validation. Use when
 
 ## Prerequisites
 
-- Install Python packages: `python3 -m pip install segno Pillow`
+- Install Python packages in the shared agent Python environment: `~/.local/share/agent-dotfiles/python/bin/python -m pip install segno Pillow`
 - Install local decoder: `brew install zbar`
 - Check decoder availability: `command -v zbarimg`
 
@@ -36,25 +36,25 @@ description: Generate local QR codes from URLs with offline validation. Use when
 Generate and validate a PNG:
 
 ```bash
-python3 scripts/make_qr.py "example.com" --out example-qr.png
+~/.local/share/agent-dotfiles/python/bin/python scripts/make_qr.py "example.com" --out example-qr.png
 ```
 
 Generate and validate SVG content through a temporary PNG:
 
 ```bash
-python3 scripts/make_qr.py "https://example.com/path" --out example-qr.svg
+~/.local/share/agent-dotfiles/python/bin/python scripts/make_qr.py "https://example.com/path" --out example-qr.svg
 ```
 
 Require validation to succeed:
 
 ```bash
-python3 scripts/make_qr.py "https://example.com" --out example-qr.png --strict-validate
+~/.local/share/agent-dotfiles/python/bin/python scripts/make_qr.py "https://example.com" --out example-qr.png --strict-validate
 ```
 
 Skip validation only when the user explicitly requests it:
 
 ```bash
-python3 scripts/make_qr.py "https://example.com" --out example-qr.png --no-validate
+~/.local/share/agent-dotfiles/python/bin/python scripts/make_qr.py "https://example.com" --out example-qr.png --no-validate
 ```
 
 ## Notes

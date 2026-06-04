@@ -39,7 +39,7 @@ Codex config policy:
 Cursor config policy:
 
 - master keeps the portable Cursor settings snapshot current from the local app settings.
-- `links` symlinks Cursor MCP config and user-level `hooks.json` from `master/agent/cursor/` into `~/.cursor`.
+- `links` symlinks Cursor MCP config, user-level `hooks.json`, and `sandbox.json` from `master/agent/cursor/` into `~/.cursor`.
 - Cursor `hooks.json` calls profile-local hook scripts under `master/agent/cursor/hooks/`; those scripts are symlinks to `shared/hooks/`.
 - `master/agent/cursor/user-rules.md` is the repo-managed source for Cursor User Rules.
 - Cursor User Rules are global app state; Cursor does not expose a stable documented file path for `links` to symlink or verify.

@@ -225,6 +225,7 @@ link_cursor() {
 
   link_path "$PROFILE_ROOT/agent/cursor/mcp.json" "$HOME/.cursor/mcp.json"
   link_path "$PROFILE_ROOT/agent/cursor/hooks.json" "$HOME/.cursor/hooks.json"
+  link_path "$PROFILE_ROOT/agent/cursor/sandbox.json" "$HOME/.cursor/sandbox.json"
   warn "Cursor User Rules cannot be linked automatically. Manually copy $PROFILE_ROOT/agent/cursor/user-rules.md into Cursor Settings > Rules."
 }
 

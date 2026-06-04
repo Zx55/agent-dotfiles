@@ -40,7 +40,7 @@ Use this skill to turn text into a fixed audio file. Keep it provider-agnostic b
 From the skill directory:
 
 ```bash
-python3 scripts/synthesize.py \
+~/.local/share/agent-dotfiles/python/bin/python scripts/synthesize.py \
   --input output/tts/narration.txt \
   --output output/tts/narration.wav \
   --voice Chloe \
@@ -51,7 +51,7 @@ python3 scripts/synthesize.py \
 For direct text:
 
 ```bash
-python3 scripts/synthesize.py \
+~/.local/share/agent-dotfiles/python/bin/python scripts/synthesize.py \
   --text "This is the text to synthesize." \
   --output output/tts/sample.wav
 ```

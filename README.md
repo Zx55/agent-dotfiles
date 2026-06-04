@@ -38,7 +38,7 @@ Each Codex profile keeps its own `agent/codex/AGENTS.md`, and profile link scrip
 
 `shared/hooks/` contains hook implementation scripts only. Profiles expose those scripts through `*/agent/*/hooks/` symlinks, and each profile's hook config calls its own profile-local hook paths.
 
-`master/agent/cursor/` contains the master Cursor profile: global MCP config, user-level hooks, a repo-managed source for Cursor User Rules, and a portable snapshot of Cursor app settings.
+`master/agent/cursor/` contains the master Cursor profile: global MCP config, user-level hooks, sandbox config, a repo-managed source for Cursor User Rules, and a portable snapshot of Cursor app settings.
 
 `shared/skills/` contains the canonical skill sources. Profile directories under `*/agent/skills/` contain only symlinks to the shared skill directories, so profile skill selection is managed by filesystem links instead of bootstrap script lists.
 

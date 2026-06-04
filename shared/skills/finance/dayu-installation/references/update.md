@@ -44,8 +44,8 @@ Search broadly:
 
 ```bash
 rg -n "v[0-9]+\\.[0-9]+\\.[0-9]+|Dayu `[0-9v.+-]+|offline package|MiMo|release notes|dayu_agent-[0-9]" \
-  ~/Documents/codex-workspace/agent-dotfiles/skills/finance/dayu \
-  ~/Documents/codex-workspace/agent-dotfiles/skills/finance/dayu-installation
+  ~/agent-dotfiles/skills/finance/dayu \
+  ~/agent-dotfiles/skills/finance/dayu-installation
 ```
 
 Rules:
@@ -98,8 +98,8 @@ Then search the skill docs for command mentions:
 
 ```bash
 rg -n "dayu-cli|dayu-render|dayu-web|upload_filing|upload_filings_from|upload_material|download|interactive|prompt|runs|host|sessions|conv|write|reset-init|overwrite-init" \
-  ~/Documents/codex-workspace/agent-dotfiles/skills/finance/dayu \
-  ~/Documents/codex-workspace/agent-dotfiles/skills/finance/dayu-installation
+  ~/agent-dotfiles/skills/finance/dayu \
+  ~/agent-dotfiles/skills/finance/dayu-installation
 ```
 
 Patch the sibling `dayu` skill when research commands or workflow semantics changed. Patch this installation skill when setup, update, init, executable discovery, or render verification changed.

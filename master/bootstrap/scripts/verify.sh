@@ -515,6 +515,7 @@ check_codex_config() {
 check_cursor_links() {
   check_symlink "$PROFILE_ROOT/agent/cursor/mcp.json" "$HOME/.cursor/mcp.json"
   check_symlink "$PROFILE_ROOT/agent/cursor/hooks.json" "$HOME/.cursor/hooks.json"
+  check_symlink "$PROFILE_ROOT/agent/cursor/sandbox.json" "$HOME/.cursor/sandbox.json"
 }
 
 check_cursor_config() {
@@ -524,6 +525,7 @@ check_cursor_config() {
 
   check_json_file "$cursor_dir/mcp.json"
   check_json_file "$cursor_dir/hooks.json"
+  check_json_file "$cursor_dir/sandbox.json"
   check_json_file "$cursor_dir/settings.json"
   check_file "$cursor_dir/user-rules.md"
   check_resolved_symlink "$syncer" "$cursor_dir/hooks/cursor-sync-settings.py"

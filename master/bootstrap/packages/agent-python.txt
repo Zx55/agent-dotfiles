@@ -5,6 +5,7 @@
 #
 # Keep project-specific dependencies in the project environment instead.
 # Add only cross-agent or cross-skill Python packages here.
+huggingface-hub
 matplotlib
 numpy
 openai
@@ -14,3 +15,4 @@ pypdf
 pyfiglet
 requests
 segno
+whisperx

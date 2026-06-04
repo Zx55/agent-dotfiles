@@ -19,7 +19,7 @@ Fresh HAOS first boot is still safer through UTM shared networking/NAT until onb
 Mac host:
 
 ```sh
-cd ~/Documents/codex-workspace/agent-dotfiles
+cd ~/agent-dotfiles
 PYTHON=/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python
 PYTHONPATH=ha-host/tools/orchestrator/src \
   "$PYTHON" -m ha_host_orchestrator.entrypoints.host_startup --check-only --no-require-utun
