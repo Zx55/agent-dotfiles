@@ -1,0 +1,1 @@
+../../../../shared/hooks/codex-secret-guard-tool-use-after.py

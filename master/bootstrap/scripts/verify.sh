@@ -325,6 +325,7 @@ check_codex_links() {
   check_symlink "$PROFILE_ROOT/agent/codex/automations" "$HOME/.codex/automations" optional
   check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-config.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-config.py"
   check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-automations.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-automations.py"
+  check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-secret-guard-tool-use-after.py" "$PROFILE_ROOT/agent/codex/hooks/codex-secret-guard-tool-use-after.py"
 
   local skills_root="$PROFILE_ROOT/agent/skills"
   local skill_path
@@ -351,6 +352,7 @@ check_codex_automations() {
   local automations_dir="$PROFILE_ROOT/agent/codex/automations"
   local runtime_dir="$HOME/.codex/automations"
   local syncer="$REPO_ROOT/shared/hooks/codex-sync-automations.py"
+  local agent_python="$HOME/.local/share/agent-dotfiles/python/bin/python"
   local automation_dir runtime_automation_dir source target expected_id actual_id runtime_source
   [[ -d "$automations_dir" ]] || {
     warn "optional Codex automations source missing: $automations_dir"
@@ -358,8 +360,8 @@ check_codex_automations() {
   }
 
   if [[ -f "$syncer" ]]; then
-    if command -v python3 >/dev/null 2>&1; then
-      if python3 "$syncer" \
+    if [[ -x "$agent_python" ]]; then
+      if "$agent_python" "$syncer" \
         --runtime-dir "$HOME/.codex/automations" \
         --output-dir "$automations_dir" \
         --check >/dev/null 2>&1; then
@@ -368,7 +370,7 @@ check_codex_automations() {
         fail "Codex automation snapshots are out of sync with ~/.codex/automations"
       fi
     else
-      fail "python3 missing for Codex automation sync hook"
+      fail "shared agent Python missing for Codex automation sync hook: $agent_python"
     fi
   else
     fail "Codex automation sync hook missing: $syncer"
@@ -461,13 +463,14 @@ check_secret_link() {
 check_codex_config() {
   local config="$PROFILE_ROOT/agent/codex/config.toml"
   local syncer="$REPO_ROOT/shared/hooks/codex-sync-config.py"
+  local agent_python="$HOME/.local/share/agent-dotfiles/python/bin/python"
   [[ -f "$config" ]] || {
     fail "Codex config missing: $config"
     return 0
   }
 
-  if [[ -f "$syncer" && -f "$config" ]] && command -v python3 >/dev/null 2>&1; then
-    python3 "$syncer" --config "$config" --output "$config" >/dev/null
+  if [[ -f "$syncer" && -f "$config" && -x "$agent_python" ]]; then
+    "$agent_python" "$syncer" --config "$config" --output "$config" >/dev/null
   fi
 
   if awk '
@@ -482,31 +485,33 @@ check_codex_config() {
   fi
 
   if [[ -f "$syncer" ]]; then
-    if command -v python3 >/dev/null 2>&1; then
-      if python3 "$syncer" --config "$config" --output "$config" --check >/dev/null 2>&1; then
+    if [[ -x "$agent_python" ]]; then
+      if "$agent_python" "$syncer" --config "$config" --output "$config" --check >/dev/null 2>&1; then
         ok "Codex config paths are normalized"
       else
         fail "Codex config contains machine-local home paths"
       fi
     else
-      fail "python3 missing for Codex config sync hook"
+      fail "shared agent Python missing for Codex config sync hook: $agent_python"
     fi
   else
     fail "Codex config sync missing: $syncer"
   fi
 
-  if command -v codex >/dev/null 2>&1; then
+  if command -v codex >/dev/null 2>&1 && [[ -x "$agent_python" ]]; then
     local temp_codex_home
     temp_codex_home="$(mktemp -d "${TMPDIR:-/tmp}/agent-dotfiles-codex.XXXXXX")"
     cp "$config" "$temp_codex_home/config.toml"
     if CODEX_HOME="$temp_codex_home" codex features list >/dev/null 2>&1; then
-      python3 "$syncer" --config "$config" --output "$config" >/dev/null
+      "$agent_python" "$syncer" --config "$config" --output "$config" >/dev/null
       ok "portable Codex config loads"
     else
-      python3 "$syncer" --config "$config" --output "$config" >/dev/null
+      "$agent_python" "$syncer" --config "$config" --output "$config" >/dev/null
       fail "portable Codex config did not load with CODEX_HOME=$PROFILE_ROOT/agent/codex"
     fi
     rm -rf "$temp_codex_home"
+  elif [[ ! -x "$agent_python" ]]; then
+    warn "shared agent Python unavailable, skipping portable Codex config load check"
   else
     warn "codex command unavailable, skipping portable config load check"
   fi
@@ -522,6 +527,10 @@ check_cursor_config() {
   local cursor_dir="$PROFILE_ROOT/agent/cursor"
   local settings="$HOME/Library/Application Support/Cursor/User/settings.json"
   local syncer="$REPO_ROOT/shared/hooks/cursor-sync-settings.py"
+  local secret_tool_before="$REPO_ROOT/shared/hooks/cursor-secret-guard-tool-use-before.py"
+  local secret_tool_after="$REPO_ROOT/shared/hooks/cursor-secret-guard-tool-use-after.py"
+  local secret_file_before="$REPO_ROOT/shared/hooks/cursor-secret-guard-file-read-before.py"
+  local agent_python="$HOME/.local/share/agent-dotfiles/python/bin/python"
 
   check_json_file "$cursor_dir/mcp.json"
   check_json_file "$cursor_dir/hooks.json"
@@ -529,13 +538,16 @@ check_cursor_config() {
   check_json_file "$cursor_dir/settings.json"
   check_file "$cursor_dir/user-rules.md"
   check_resolved_symlink "$syncer" "$cursor_dir/hooks/cursor-sync-settings.py"
+  check_resolved_symlink "$secret_tool_before" "$cursor_dir/hooks/cursor-secret-guard-tool-use-before.py"
+  check_resolved_symlink "$secret_tool_after" "$cursor_dir/hooks/cursor-secret-guard-tool-use-after.py"
+  check_resolved_symlink "$secret_file_before" "$cursor_dir/hooks/cursor-secret-guard-file-read-before.py"
   warn "Cursor User Rules cannot be verified from a stable file path. Manually compare Cursor Settings > Rules with $cursor_dir/user-rules.md."
 
   if [[ ! -f "$syncer" ]]; then
     fail "Cursor settings sync hook missing: $syncer"
-  elif ! command -v python3 >/dev/null 2>&1; then
-    fail "python3 missing for Cursor settings sync hook"
-  elif python3 "$syncer" \
+  elif [[ ! -x "$agent_python" ]]; then
+    fail "shared agent Python missing for Cursor settings sync hook: $agent_python"
+  elif "$agent_python" "$syncer" \
     --settings "$settings" \
     --output "$cursor_dir/settings.json" \
     --check >/dev/null 2>&1; then

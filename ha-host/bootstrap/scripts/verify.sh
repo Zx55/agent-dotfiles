@@ -271,6 +271,7 @@ check_codex_link_state() {
   check_symlink "$PROFILE_ROOT/agent/codex/automations" "$HOME/.codex/automations"
   check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-config.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-config.py"
   check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-automations.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-automations.py"
+  check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-secret-guard-tool-use-after.py" "$PROFILE_ROOT/agent/codex/hooks/codex-secret-guard-tool-use-after.py"
 
   local skills_root="$PROFILE_ROOT/agent/skills"
   local skill_path
