@@ -40,6 +40,7 @@
 - Use dependencies conservatively and only when they materially simplify the solution.
 - Do not expose internals only to make implementation or testing easier.
 - When architecture rules are easy to violate and easy to check mechanically, prefer adding a lightweight guard or verification step.
+- Git commit subjects must use the format `<type>: <message>`, where `<type>` is one of `feat`, `refactor`, `test`, `docs`, `chore`, or `fix`.
 
 ## Writing And Review
 

@@ -1,6 +1,7 @@
 ---
 name: haos-macos-installation
 description: Install, restore, configure, and verify Home Assistant OS on a macOS UTM host. Use only when explicitly asked to set up or repair an HAOS VM on a Mac, migrate after reinstalling the Mac, restore an HA backup, configure UTM networking, install and verify Terminal & SSH as the automation boundary, verify the HA host orchestrator, or troubleshoot HAOS store/Docker/GitHub/GHCR connectivity on a macOS host.
+disable-model-invocation: true
 ---
 
 # HAOS macOS Installation

@@ -1,6 +1,7 @@
 ---
 name: zotero-mcp-installation
 description: Install, update, and configure Zotero MCP for local agents on macOS, including the bundled zotero-mcp-wrapper binary, the Zotero Add Local File plugin, local add-from-file token setup, agent MCP configuration, and smoke tests for search and PDF import.
+disable-model-invocation: true
 ---
 
 # Zotero MCP Installation
