@@ -1,6 +1,7 @@
 ---
 name: dayu-installation
 description: Install, update, verify, and initialize the Dayu CLI with uv-managed Python. Use when Dayu is missing, broken, needs an upgrade, or a workspace has not been initialized with `dayu-cli init`.
+disable-model-invocation: true
 ---
 
 # Dayu Installation

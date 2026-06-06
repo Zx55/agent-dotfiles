@@ -200,6 +200,7 @@ sync_live_cursor_settings() {
   local settings="$HOME/Library/Application Support/Cursor/User/settings.json"
   local output="$PROFILE_ROOT/agent/cursor/settings.json"
   local syncer="$REPO_ROOT/shared/hooks/cursor-sync-settings.py"
+  local agent_python="$HOME/.local/share/agent-dotfiles/python/bin/python"
 
   [[ -f "$settings" ]] || return 0
 
@@ -208,13 +209,13 @@ sync_live_cursor_settings() {
     return 0
   fi
 
-  if ! command -v python3 >/dev/null 2>&1; then
-    warn "python3 missing, skipping live Cursor settings snapshot"
+  if [[ ! -x "$agent_python" ]]; then
+    warn "shared agent Python missing, skipping live Cursor settings snapshot: $agent_python"
     return 0
   fi
 
   log "Snapshotting live Cursor settings from $settings"
-  python3 "$syncer" \
+  "$agent_python" "$syncer" \
     --settings "$settings" \
     --output "$output" \
     >/dev/null
@@ -233,6 +234,7 @@ sync_live_codex_automations() {
   local runtime_dir="$HOME/.codex/automations"
   local automations_dir="$PROFILE_ROOT/agent/codex/automations"
   local syncer="$REPO_ROOT/shared/hooks/codex-sync-automations.py"
+  local agent_python="$HOME/.local/share/agent-dotfiles/python/bin/python"
 
   [[ -d "$runtime_dir" ]] || return 0
 
@@ -241,13 +243,13 @@ sync_live_codex_automations() {
     return 0
   fi
 
-  if ! command -v python3 >/dev/null 2>&1; then
-    warn "python3 missing, skipping live Codex automation snapshot"
+  if [[ ! -x "$agent_python" ]]; then
+    warn "shared agent Python missing, skipping live Codex automation snapshot: $agent_python"
     return 0
   fi
 
   log "Snapshotting live Codex automations from $runtime_dir"
-  python3 "$syncer" \
+  "$agent_python" "$syncer" \
     --runtime-dir "$runtime_dir" \
     --output-dir "$automations_dir" \
     >/dev/null

@@ -1,15 +1,63 @@
 {
   "version": 1,
   "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-secret-guard-tool-use-before.py\" --hook-output",
+        "timeout": 5
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-secret-guard-tool-use-after.py\" --hook-output --mac-notify",
+        "timeout": 5
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-secret-guard-tool-use-after.py\" --hook-output --mac-notify",
+        "matcher": "Shell",
+        "timeout": 5
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-secret-guard-tool-use-after.py\" --hook-output --mac-notify",
+        "matcher": "Shell",
+        "timeout": 5
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-secret-guard-file-read-before.py\" --hook-output",
+        "matcher": "Read",
+        "timeout": 5,
+        "failClosed": true
+      }
+    ],
+    "beforeTabFileRead": [
+      {
+        "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-secret-guard-file-read-before.py\" --hook-output",
+        "matcher": "TabRead",
+        "timeout": 5,
+        "failClosed": true
+      }
+    ],
+    "workspaceOpen": [
+      {
+        "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-sync-settings.py\" --output \"$HOME/Documents/agent-dotfiles/master/agent/cursor/settings.json\" --hook-output",
+        "timeout": 10
+      }
+    ],
     "sessionStart": [
       {
-        "command": "/usr/bin/env python3 \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-sync-settings.py\" --output \"$HOME/Documents/agent-dotfiles/master/agent/cursor/settings.json\" --hook-output",
+        "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-sync-settings.py\" --output \"$HOME/Documents/agent-dotfiles/master/agent/cursor/settings.json\" --hook-output",
         "timeout": 10
       }
     ],
     "sessionEnd": [
       {
-        "command": "/usr/bin/env python3 \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-sync-settings.py\" --output \"$HOME/Documents/agent-dotfiles/master/agent/cursor/settings.json\" --hook-output",
+        "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/cursor/hooks/cursor-sync-settings.py\" --output \"$HOME/Documents/agent-dotfiles/master/agent/cursor/settings.json\" --hook-output",
         "timeout": 10
       }
     ]

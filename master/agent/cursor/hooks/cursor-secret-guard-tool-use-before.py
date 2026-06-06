@@ -1,0 +1,1 @@
+../../../../shared/hooks/cursor-secret-guard-tool-use-before.py

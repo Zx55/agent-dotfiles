@@ -1,10 +1,60 @@
 {
-  "cursor.composer.conversationDensity": "compact-ungrouped",
-  "cursor.general.emailPrivacyEnabled": true,
-  "cursor.composer.queueMessageDefaultBehavior": "stop-and-send",
-  "window.autoDetectColorScheme": true,
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.startupEditor": "none",
+  "workbench.tree.enableStickyScroll": true,
+  "workbench.tree.stickyScrollMaxItemCount": 10,
+  "workbench.editor.enablePreview": false,
+  "editor.foldingStrategy": "indentation",
+  "editor.fontSize": 14,
+  "editor.unicodeHighlight.ambiguousCharacters": false,
+  "editor.minimap.enabled": false,
   "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.stickyScroll.enabled": true,
+  "terminal.integrated.stickyScroll.maxLineCount": 10,
+  "window.autoDetectColorScheme": true,
+  "window.restoreWindows": "none",
+  "files.exclude": {
+    ".vscode": false,
+    ".vscode-server": true,
+    ".zcomp*": true,
+    "**/__pycache__": true,
+    "**/.dotnet": true,
+    "**/.DS_Store": true,
+    "**/.git": true,
+    "**/.ipynb_checkpoints": true,
+    "**/.pytest_cache": true,
+    "**/.svn": true,
+    "**/*.egg-info": true,
+    "**/CVS": true,
+    "**/Thumbs.db": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/__pycache__/**": true,
+    "**/miniconda3/**": true
+  },
+  "vim.useSystemClipboard": true,
+  "vim.handleKeys": {
+    "<C-s>": false,
+    "<C-c>": false,
+    "<C-v>": false,
+    "<C-x>": false,
+    "<C-a>": false,
+    "<C-f>": false,
+    "<C-h>": false,
+    "<C-z>": false,
+    "<C-y>": false
+  },
+  "[python]": {
+    "editor.formatOnType": true
+  },
   "remote.SSH.remotePlatform": {
     "seed-veomni": "linux"
-  }
+  },
+  "cursor.composer.conversationDensity": "compact-ungrouped",
+  "cursor.composer.queueMessageDefaultBehavior": "stop-and-send",
+  "cursor.general.emailPrivacyEnabled": true
 }

@@ -1,6 +1,7 @@
 ---
 name: miair-installation
 description: Install, configure, repair, and verify MiAir for AirPlay or DLNA bridging to Xiaomi AI speakers. Use only when explicitly asked to set up MiAir on macOS native launchd or Linux/OpenWrt/NAS Docker host networking, manage fixed MiAir paths, configure Xiaomi cookie-based login, set up launchd autostart, diagnose discovery or playback issues, update MiAir, or advise on router DHCP fixed IP binding for MiAir.
+disable-model-invocation: true
 ---
 
 # MiAir Installation

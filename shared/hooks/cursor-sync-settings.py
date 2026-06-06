@@ -50,8 +50,120 @@ def normalize_value(value: Any) -> Any:
     return value
 
 
+def strip_jsonc_comments(text: str) -> str:
+    result: list[str] = []
+    in_string = False
+    escape = False
+    line_comment = False
+    block_comment = False
+    index = 0
+
+    while index < len(text):
+        char = text[index]
+        next_char = text[index + 1] if index + 1 < len(text) else ""
+
+        if line_comment:
+            if char == "\n":
+                line_comment = False
+                result.append(char)
+            else:
+                result.append(" ")
+            index += 1
+            continue
+
+        if block_comment:
+            if char == "*" and next_char == "/":
+                result.extend("  ")
+                block_comment = False
+                index += 2
+            else:
+                result.append("\n" if char == "\n" else " ")
+                index += 1
+            continue
+
+        if in_string:
+            result.append(char)
+            if escape:
+                escape = False
+            elif char == "\\":
+                escape = True
+            elif char == '"':
+                in_string = False
+            index += 1
+            continue
+
+        if char == '"':
+            in_string = True
+            result.append(char)
+            index += 1
+            continue
+
+        if char == "/" and next_char == "/":
+            line_comment = True
+            result.extend("  ")
+            index += 2
+            continue
+
+        if char == "/" and next_char == "*":
+            block_comment = True
+            result.extend("  ")
+            index += 2
+            continue
+
+        result.append(char)
+        index += 1
+
+    return "".join(result)
+
+
+def strip_jsonc_trailing_commas(text: str) -> str:
+    result: list[str] = []
+    in_string = False
+    escape = False
+    index = 0
+
+    while index < len(text):
+        char = text[index]
+
+        if in_string:
+            result.append(char)
+            if escape:
+                escape = False
+            elif char == "\\":
+                escape = True
+            elif char == '"':
+                in_string = False
+            index += 1
+            continue
+
+        if char == '"':
+            in_string = True
+            result.append(char)
+            index += 1
+            continue
+
+        if char == ",":
+            lookahead = index + 1
+            while lookahead < len(text) and text[lookahead].isspace():
+                lookahead += 1
+            if lookahead < len(text) and text[lookahead] in "}]":
+                index += 1
+                continue
+
+        result.append(char)
+        index += 1
+
+    return "".join(result)
+
+
+def parse_jsonc(text: str) -> Any:
+    without_comments = strip_jsonc_comments(text)
+    without_trailing_commas = strip_jsonc_trailing_commas(without_comments)
+    return json.loads(without_trailing_commas)
+
+
 def normalize_text(text: str) -> str:
-    settings = json.loads(text)
+    settings = parse_jsonc(text)
     normalized = normalize_value(settings)
     return json.dumps(normalized, indent=2, ensure_ascii=False) + "\n"
 

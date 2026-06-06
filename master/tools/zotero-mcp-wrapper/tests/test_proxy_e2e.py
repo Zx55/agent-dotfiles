@@ -6,8 +6,10 @@ import socket
 import socketserver
 import subprocess
 import sys
+import tempfile
 import threading
 import unittest
+from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 
 from zotero_mcp_wrapper.framing import read_frame, write_frame
@@ -32,6 +34,45 @@ class _ReadyServer:
         self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
 
     def __enter__(self) -> "_ReadyServer":
+        self._thread.start()
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self._server.shutdown()
+        self._server.server_close()
+        self._thread.join(timeout=1)
+
+
+class _AddFromFileHandler(BaseHTTPRequestHandler):
+    def do_POST(self) -> None:
+        length = int(self.headers.get("Content-Length", "0"))
+        self.rfile.read(length)
+        body = json.dumps(
+            {
+                "ok": True,
+                "parentKey": "PARENT01",
+                "attachmentKey": "ATTACH01",
+                "attachmentTitle": "paper.pdf",
+                "storedPath": "/Users/example/Zotero/storage/ATTACH01/paper.pdf",
+            }
+        ).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def log_message(self, format: str, *args: object) -> None:
+        return
+
+
+class _AddFromFileServer:
+    def __init__(self) -> None:
+        self._server = socketserver.TCPServer(("127.0.0.1", 0), _AddFromFileHandler)
+        self.host, self.port = self._server.server_address
+        self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
+
+    def __enter__(self) -> "_AddFromFileServer":
         self._thread.start()
         return self
 
@@ -108,6 +149,35 @@ class ProxyE2ETests(unittest.TestCase):
                     response["result"]["echoParams"],
                     {"name": "search", "arguments": {"query": "SceneWeaver"}},
                 )
+            finally:
+                self._stop_wrapper(process)
+
+    def test_add_from_file_returns_structured_content(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir, _AddFromFileServer() as add_server:
+            file_path = Path(tmpdir) / "paper.pdf"
+            file_path.write_bytes(b"%PDF-1.7\n")
+            process = self._start_wrapper(
+                ZOTERO_LOCAL_HOST=add_server.host,
+                ZOTERO_LOCAL_PORT=str(add_server.port),
+                ZOTERO_ADD_LOCAL_FILE_TOKEN="test-token",
+            )
+            try:
+                response = self._request(
+                    process,
+                    {
+                        "jsonrpc": "2.0",
+                        "id": 3,
+                        "method": "tools/call",
+                        "params": {
+                            "name": "zotero_add_from_file",
+                            "arguments": {"file_path": str(file_path)},
+                        },
+                    },
+                )
+                self.assertEqual(response["id"], 3)
+                result_text = response["result"]["content"][0]["text"]
+                self.assertIn("Item key: `PARENT01`", result_text)
+                self.assertEqual(response["result"]["structuredContent"], {"result": result_text})
             finally:
                 self._stop_wrapper(process)
 

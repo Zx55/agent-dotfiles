@@ -6,13 +6,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/usr/bin/env python3 \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-config.py\" --config \"$HOME/.codex/config.toml\" --output \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/config.toml\" --hook-output",
+            "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-config.py\" --config \"$HOME/.codex/config.toml\" --output \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/config.toml\" --hook-output",
             "statusMessage": "Syncing portable Codex config",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "/usr/bin/env python3 \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-automations.py\" --runtime-dir \"$HOME/.codex/automations\" --output-dir \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/automations\" --hook-output",
+            "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-automations.py\" --runtime-dir \"$HOME/.codex/automations\" --output-dir \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/automations\" --hook-output",
             "statusMessage": "Syncing portable Codex automations",
             "timeout": 10
           }
@@ -24,15 +24,28 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/usr/bin/env python3 \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-config.py\" --config \"$HOME/.codex/config.toml\" --output \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/config.toml\" --hook-output",
+            "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-config.py\" --config \"$HOME/.codex/config.toml\" --output \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/config.toml\" --hook-output",
             "statusMessage": "Syncing portable Codex config",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "/usr/bin/env python3 \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-automations.py\" --runtime-dir \"$HOME/.codex/automations\" --output-dir \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/automations\" --hook-output",
+            "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-automations.py\" --runtime-dir \"$HOME/.codex/automations\" --output-dir \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/automations\" --hook-output",
             "statusMessage": "Syncing portable Codex automations",
             "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-secret-guard-tool-use-after.py\" --hook-output",
+            "statusMessage": "Auditing Bash output for sensitive values",
+            "timeout": 5
           }
         ]
       }
@@ -42,13 +55,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/usr/bin/env python3 \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-config.py\" --config \"$HOME/.codex/config.toml\" --output \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/config.toml\" --hook-output",
+            "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-config.py\" --config \"$HOME/.codex/config.toml\" --output \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/config.toml\" --hook-output",
             "statusMessage": "Syncing portable Codex config",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "/usr/bin/env python3 \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-automations.py\" --runtime-dir \"$HOME/.codex/automations\" --output-dir \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/automations\" --hook-output",
+            "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/hooks/codex-sync-automations.py\" --runtime-dir \"$HOME/.codex/automations\" --output-dir \"$HOME/Documents/agent-dotfiles/ha-host/agent/codex/automations\" --hook-output",
             "statusMessage": "Syncing portable Codex automations",
             "timeout": 10
           }

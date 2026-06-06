@@ -144,6 +144,9 @@ class Proxy:
                         "text": text,
                     }
                 ],
+                "structuredContent": {
+                    "result": text,
+                },
             },
         }
         if is_error:
