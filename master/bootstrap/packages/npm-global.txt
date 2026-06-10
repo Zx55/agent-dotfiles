@@ -1,0 +1,1 @@
+@larksuite/cli@latest | npx-install

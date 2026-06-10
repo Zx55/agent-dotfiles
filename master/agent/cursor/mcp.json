@@ -13,6 +13,8 @@
         "--env",
         "ZOTERO_EMBEDDING_MODEL=default",
         "--env",
+        "ZOTERO_LIBRARY_ID=14669519",
+        "--env",
         "ZOTERO_LOCAL=true",
         "--env",
         "ZOTERO_LOCAL_HOST=127.0.0.1",

@@ -26,4 +26,9 @@ uv run pyinstaller \
   --paths "$ROOT_DIR" \
   "$ROOT_DIR/zotero_mcp_wrapper/cli.py"
 
+if command -v xattr >/dev/null 2>&1; then
+  xattr -c "$ROOT_DIR/dist/zotero-mcp-wrapper" || true
+fi
+codesign --force --sign - "$ROOT_DIR/dist/zotero-mcp-wrapper"
+
 echo "Built binary: $ROOT_DIR/dist/zotero-mcp-wrapper"

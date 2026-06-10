@@ -217,12 +217,33 @@ install_npm_globals() {
   }
   command -v npm >/dev/null 2>&1 || die "npm is required before installing global npm packages"
 
-  while IFS= read -r package || [[ -n "$package" ]]; do
-    package="${package%%#*}"
-    package="$(trim "$package")"
+  local line package mode
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%%#*}"
+    line="$(trim "$line")"
+    [[ -n "$line" ]] || continue
+
+    package="$(trim "${line%%|*}")"
+    mode="npm-global"
+    if [[ "$line" == *"|"* ]]; then
+      mode="$(trim "${line#*|}")"
+    fi
     [[ -n "$package" ]] || continue
-    log "Installing npm global package: $package"
-    npm install -g "$package"
+
+    case "$mode" in
+      npm-global)
+        log "Installing npm global package: $package"
+        npm install -g "$package"
+        ;;
+      npx-install)
+        command -v npx >/dev/null 2>&1 || die "npx is required before running npx installers"
+        log "Running npm package installer: $package install"
+        npx "$package" install
+        ;;
+      *)
+        die "unknown npm-global install mode '$mode' for package '$package'"
+        ;;
+    esac
   done < "$file"
 }
 

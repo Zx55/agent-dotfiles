@@ -1,0 +1,6 @@
+interface:
+  display_name: "Lark CLI Installation"
+  short_description: "Install, configure, authorize, update, and repair the official Lark/Feishu CLI for local agents."
+  default_prompt: "Install or repair Lark CLI, complete app configuration and OAuth login, verify auth status, and handle any missing-scope authorization."
+policy:
+  allow_implicit_invocation: false

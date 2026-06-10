@@ -22,7 +22,7 @@ Package manifests:
 - `packages/Brewfile.large-app`: large GUI apps installed only with `--with-large-app`.
 - `packages/agent-python.txt`: shared agent Python packages for `~/.local/share/agent-dotfiles/python`.
 - `packages/uv-tools.txt`: uv-managed CLI tools.
-- `packages/npm-global.txt`: global npm tools.
+- `packages/npm-global.txt`: global npm tools. Lines default to `npm install -g <package>`; append `| npx-install` for packages whose official setup is `npx <package> install`.
 - `packages/mas-apps.txt`: Mac App Store apps.
 - `packages/local-tools.txt`: repo-local tools checked by verify.
 - `packages/ml-models.tsv`: optional model warmup list.

@@ -80,6 +80,7 @@ args = [
     "--env", "ZOTERO_MCP_BIN=~/.local/bin/zotero-mcp",
     "--env", "ZOTERO_READY_STABLE_POLLS=1",
     "--env", "ZOTERO_STARTUP_TIMEOUT_SEC=30",
+    "--env", "ZOTERO_ADD_LOCAL_FILE_TIMEOUT_SEC=180",
     "--", "~/.local/bin/zotero-mcp-wrapper"
 ]
 enabled = true

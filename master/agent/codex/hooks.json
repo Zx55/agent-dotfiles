@@ -15,6 +15,12 @@
             "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/codex/hooks/codex-sync-automations.py\" --runtime-dir \"$HOME/.codex/automations\" --output-dir \"$HOME/Documents/agent-dotfiles/master/agent/codex/automations\" --hook-output",
             "statusMessage": "Syncing portable Codex automations",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "\"$HOME/.local/share/agent-dotfiles/python/bin/python\" \"$HOME/Documents/agent-dotfiles/master/agent/codex/hooks/codex-prune-lark-skills.py\" --hook-output",
+            "statusMessage": "Pruning Lark skills",
+            "timeout": 10
           }
         ]
       }

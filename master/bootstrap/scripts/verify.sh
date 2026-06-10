@@ -10,6 +10,8 @@ AGENT="codex"
 ERRORS=0
 WARNINGS=0
 
+export PATH="$HOME/.local/bin:$PATH"
+
 usage() {
   cat <<'EOF'
 Usage: master/bootstrap/bootstrap.sh verify [options]
@@ -326,6 +328,7 @@ check_codex_links() {
   check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-config.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-config.py"
   check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-automations.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-automations.py"
   check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-secret-guard-tool-use-after.py" "$PROFILE_ROOT/agent/codex/hooks/codex-secret-guard-tool-use-after.py"
+  check_resolved_symlink "$REPO_ROOT/shared/hooks/prune-lark-skills.py" "$PROFILE_ROOT/agent/codex/hooks/codex-prune-lark-skills.py"
 
   local skills_root="$PROFILE_ROOT/agent/skills"
   local skill_path
@@ -530,6 +533,7 @@ check_cursor_config() {
   local secret_tool_before="$REPO_ROOT/shared/hooks/cursor-secret-guard-tool-use-before.py"
   local secret_tool_after="$REPO_ROOT/shared/hooks/cursor-secret-guard-tool-use-after.py"
   local secret_file_before="$REPO_ROOT/shared/hooks/cursor-secret-guard-file-read-before.py"
+  local prune_lark_skills="$REPO_ROOT/shared/hooks/prune-lark-skills.py"
   local agent_python="$HOME/.local/share/agent-dotfiles/python/bin/python"
 
   check_json_file "$cursor_dir/mcp.json"
@@ -541,6 +545,7 @@ check_cursor_config() {
   check_resolved_symlink "$secret_tool_before" "$cursor_dir/hooks/cursor-secret-guard-tool-use-before.py"
   check_resolved_symlink "$secret_tool_after" "$cursor_dir/hooks/cursor-secret-guard-tool-use-after.py"
   check_resolved_symlink "$secret_file_before" "$cursor_dir/hooks/cursor-secret-guard-file-read-before.py"
+  check_resolved_symlink "$prune_lark_skills" "$cursor_dir/hooks/cursor-prune-lark-skills.py"
   warn "Cursor User Rules cannot be verified from a stable file path. Manually compare Cursor Settings > Rules with $cursor_dir/user-rules.md."
 
   if [[ ! -f "$syncer" ]]; then
