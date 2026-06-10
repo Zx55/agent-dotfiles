@@ -38,6 +38,10 @@ def haos_watch_state_path(host_state_path: Path | None = None) -> Path:
     return base.parent / "haos-watch-state.json"
 
 
+def log_timestamp(name: str) -> None:
+    print(f"{name}={time.strftime('%Y-%m-%dT%H:%M:%S%z', time.localtime())}")
+
+
 def read_haos_watch_state(path: Path) -> HaosWatchState | None:
     if not path.exists():
         return None
@@ -126,6 +130,21 @@ def watch_state_matches_host(
         and cached.guest_device == guest_device
         and cached.gateway == host_state.lan_ip
     )
+
+
+def print_cache_summary(cached: HaosWatchState | None) -> None:
+    print(f"cache_present={1 if cached else 0}")
+    if cached is None:
+        return
+    print(f"cache_updated_at={time.strftime('%Y-%m-%dT%H:%M:%S%z', time.localtime(cached.updated_at))}")
+    print(f"cache_age_seconds={max(0, int(time.time() - cached.updated_at))}")
+    print(f"cache_vm_name={cached.vm_name}")
+    print(f"cache_host_lan_interface={cached.host_lan_interface}")
+    print(f"cache_host_lan_ip={cached.host_lan_ip}")
+    print(f"cache_bridge_interface={cached.bridge_interface}")
+    print(f"cache_gateway={cached.gateway}")
+    print(f"cache_haos_interface={cached.haos_interface}")
+    print(f"cache_guest_device={cached.guest_device}")
 
 
 def utmctl_path() -> str:
@@ -342,8 +361,24 @@ def ha_network_info(host_alias: str) -> HaosNetworkStatus:
     return HaosNetworkStatus(True, result.stdout, result.stderr)
 
 
+UTMCTL_ERROR_MARKERS = (
+    "Error from event:",
+    "OSStatus",
+    "QEMU 客户机代理没有运行",
+    "guest agent is not running",
+)
+
+
+def output_has_utmctl_error(result: CommandResult) -> bool:
+    combined = "\n".join([result.stdout, result.stderr])
+    return any(marker in combined for marker in UTMCTL_ERROR_MARKERS)
+
+
 def utm_exec(vm_name: str, command: list[str], *, timeout: int = 30) -> CommandResult:
-    return run_command([utmctl_path(), "exec", vm_name, "--cmd", *command], timeout=timeout)
+    result = run_command([utmctl_path(), "exec", vm_name, "--cmd", *command], timeout=timeout)
+    if result.returncode == 0 and output_has_utmctl_error(result):
+        return CommandResult(75, result.stdout, result.stderr)
+    return result
 
 
 def guest_ip_route(vm_name: str) -> CommandResult:
@@ -425,25 +460,35 @@ def watch(
     wait_seconds: int,
     sleep_seconds: int,
 ) -> int:
+    log_timestamp("haos_watch_started_at")
     state = wait_for_state(state_path, wait_seconds=wait_seconds, sleep_seconds=sleep_seconds)
+    resolved_state_path = state_path or default_state_path()
+    print(f"host_state_path={resolved_state_path}")
     print(f"host_lan_ip={state.lan_ip}")
+    print(f"host_lan_interface={state.lan_interface}")
+    print(f"host_lan_kind={state.lan_kind}")
+    print(f"host_egress_interface={state.egress_interface}")
     cache_path = haos_watch_state_path(state_path)
+    print(f"haos_watch_state_path={cache_path}")
     cached = read_haos_watch_state(cache_path)
-    if watch_state_matches_host(
+    print_cache_summary(cached)
+    cache_matches_host = watch_state_matches_host(
         cached,
         vm_name=vm_name,
         host_state=state,
         haos_interface=haos_interface,
         guest_device=guest_device,
-    ):
+    )
+    print(f"cache_matches_host={1 if cache_matches_host else 0}")
+    if cache_matches_host:
         print("utm_bridge_check=skipped_cached")
-        print("haos_guest_agent_check=skipped_cached")
-        print("gateway_matches=cached")
         status = ha_network_info(host_alias)
         print(f"haos_ssh_reachable={1 if status.reachable else 0}")
         if status.stderr:
             print(status.stderr.rstrip())
-        if status.reachable:
+        if ssh_reports_gateway(status, state.lan_ip):
+            print("haos_guest_agent_check=skipped_ssh_verified")
+            print("gateway_matches=ssh_verified")
             return 0
         print("cache_health_check_failed=1")
 
@@ -470,21 +515,25 @@ def watch(
             current_bridge = state.lan_interface
     else:
         print(f"utm_config_missing={config_path}")
-    if current_bridge and watch_state_matches(
+    cache_matches_bridge = bool(current_bridge) and watch_state_matches(
         cached,
         vm_name=vm_name,
         host_state=state,
         bridge=current_bridge,
         haos_interface=haos_interface,
         guest_device=guest_device,
-    ):
-        print("haos_guest_agent_check=skipped_cached")
-        print("gateway_matches=cached")
+    )
+    print(f"cache_matches_bridge={1 if cache_matches_bridge else 0}")
+    if cache_matches_bridge:
         status = ha_network_info(host_alias)
         print(f"haos_ssh_reachable={1 if status.reachable else 0}")
         if status.stderr:
             print(status.stderr.rstrip())
-        return 0
+        if ssh_reports_gateway(status, state.lan_ip):
+            print("haos_guest_agent_check=skipped_ssh_verified")
+            print("gateway_matches=ssh_verified")
+            return 0
+        print("cache_health_check_failed=1")
 
     status = ha_network_info(host_alias)
     print(f"haos_ssh_reachable={1 if status.reachable else 0}")
