@@ -56,5 +56,6 @@
   },
   "cursor.composer.conversationDensity": "compact-ungrouped",
   "cursor.composer.queueMessageDefaultBehavior": "stop-and-send",
-  "cursor.general.emailPrivacyEnabled": true
+  "cursor.general.emailPrivacyEnabled": true,
+  "remote.autoForwardPortsSource": "hybrid"
 }

@@ -33,6 +33,15 @@
         "--",
         "~/.local/bin/zotero-mcp-wrapper"
       ]
+    },
+    "cursor-inline-img-loader": {
+      "type": "stdio",
+      "command": "${userHome}/.local/bin/mcp-launcher",
+      "args": ["--", "~/.local/bin/cursor-inline-img-loader"]
+    },
+    "xcode-tools": {
+      "command": "xcrun",
+      "args": ["mcpbridge"]
     }
   }
 }

@@ -45,6 +45,7 @@ Cursor config policy:
 - Cursor User Rules are global app state; Cursor does not expose a stable documented file path for `links` to symlink or verify.
 - After first install or any `user-rules.md` change, manually copy it into `Cursor Settings > Rules`.
 - `links` does not symlink Cursor app `settings.json`; hooks sync the runtime settings back to `master/agent/cursor/settings.json`.
+- `verify --agent cursor` checks that every `master/agent/skills/` skill is visible in at least one runtime skill directory such as `~/.codex/skills` or `~/.cursor/skills`.
 
 Typical first-run sequence:
 

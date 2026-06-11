@@ -157,6 +157,54 @@ check_resolved_symlink() {
   fi
 }
 
+check_profile_skill_runtime_visibility() {
+  local skills_root="$PROFILE_ROOT/agent/skills"
+  [[ -d "$skills_root" ]] || return 0
+
+  local runtime_roots=(
+    "$HOME/.cursor/skills"
+    "$HOME/.codex/skills"
+    "$HOME/.agent/skills"
+    "$HOME/.agents/skills"
+    "$HOME/.claude/skills"
+  )
+
+  local skill_path
+  while IFS= read -r skill_path; do
+    local relative
+    local source
+    local runtime_root
+    local target
+    local found=0
+
+    relative="${skill_path#$skills_root/}"
+    if [[ ! -L "$skill_path" ]]; then
+      fail "profile skill should be a symlink: $skill_path"
+      continue
+    fi
+
+    source="$(resolve_link_target "$skill_path")"
+    if [[ ! -d "$source" ]]; then
+      fail "profile skill link target missing: $skill_path -> $source"
+      continue
+    fi
+
+    for runtime_root in "${runtime_roots[@]}"; do
+      target="$runtime_root/$relative"
+      [[ -L "$target" ]] || continue
+      if [[ "$(resolve_link_target "$target")" == "$source" ]]; then
+        ok "profile skill visible to agent runtimes: $relative via $target"
+        found=1
+        break
+      fi
+    done
+
+    if [[ "$found" -eq 0 ]]; then
+      fail "profile skill missing from runtime skill dirs: $relative"
+    fi
+  done < <(find "$skills_root" -mindepth 2 -maxdepth 2 \( -type d -o -type l \) | sort)
+}
+
 check_file() {
   local path="$1"
   if [[ -f "$path" ]]; then
@@ -524,6 +572,7 @@ check_cursor_links() {
   check_symlink "$PROFILE_ROOT/agent/cursor/mcp.json" "$HOME/.cursor/mcp.json"
   check_symlink "$PROFILE_ROOT/agent/cursor/hooks.json" "$HOME/.cursor/hooks.json"
   check_symlink "$PROFILE_ROOT/agent/cursor/sandbox.json" "$HOME/.cursor/sandbox.json"
+  check_profile_skill_runtime_visibility
 }
 
 check_cursor_config() {
