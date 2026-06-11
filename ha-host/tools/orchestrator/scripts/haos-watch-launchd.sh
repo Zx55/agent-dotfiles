@@ -10,6 +10,10 @@ HAOS_INTERFACE="${HAOS_INTERFACE:-default}"
 GUEST_DEVICE="${GUEST_DEVICE:-enp0s1}"
 APPLY_GATEWAY="${APPLY_GATEWAY:-1}"
 APPLY_BRIDGE="${APPLY_BRIDGE:-1}"
+HA_WATCH_APPLY_VM_RESTART="${HA_WATCH_APPLY_VM_RESTART:-1}"
+HA_WATCH_ALLOW_UTM_APP_RESTART="${HA_WATCH_ALLOW_UTM_APP_RESTART:-0}"
+HA_WATCH_RESTART_AFTER_FAILURES="${HA_WATCH_RESTART_AFTER_FAILURES:-3}"
+HA_WATCH_RESTART_COOLDOWN_SECONDS="${HA_WATCH_RESTART_COOLDOWN_SECONDS:-1800}"
 FORCE_BRIDGE_RESTART="${FORCE_BRIDGE_RESTART:-1}"
 UTM_CONFIG_PATH="${UTM_CONFIG_PATH:-}"
 WAIT_SECONDS="${WAIT_SECONDS:-60}"
@@ -42,6 +46,22 @@ if [[ "$APPLY_BRIDGE" == "1" ]]; then
 else
   args+=(--no-apply-bridge)
 fi
+
+if [[ "$HA_WATCH_APPLY_VM_RESTART" == "1" ]]; then
+  args+=(--apply-vm-restart)
+else
+  args+=(--no-apply-vm-restart)
+fi
+
+if [[ "$HA_WATCH_ALLOW_UTM_APP_RESTART" == "1" ]]; then
+  args+=(--allow-utm-app-restart)
+else
+  args+=(--no-allow-utm-app-restart)
+fi
+
+args+=(--restart-after-failures "$HA_WATCH_RESTART_AFTER_FAILURES"
+  --restart-cooldown-seconds "$HA_WATCH_RESTART_COOLDOWN_SECONDS"
+)
 
 if [[ "$FORCE_BRIDGE_RESTART" == "1" ]]; then
   args+=(--force-bridge-restart)

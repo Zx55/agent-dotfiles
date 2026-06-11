@@ -33,9 +33,23 @@ class HaosWatchState:
     gateway: str
 
 
+@dataclass(frozen=True)
+class HaosRecoveryState:
+    version: int
+    updated_at: float
+    consecutive_failures: int
+    last_failure_reason: str
+    last_restart_at: float
+
+
 def haos_watch_state_path(host_state_path: Path | None = None) -> Path:
     base = host_state_path or default_state_path()
     return base.parent / "haos-watch-state.json"
+
+
+def haos_recovery_state_path(host_state_path: Path | None = None) -> Path:
+    base = host_state_path or default_state_path()
+    return base.parent / "haos-watch-recovery.json"
 
 
 def log_timestamp(name: str) -> None:
@@ -61,6 +75,50 @@ def read_haos_watch_state(path: Path) -> HaosWatchState | None:
         )
     except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
         return None
+
+
+def read_haos_recovery_state(path: Path) -> HaosRecoveryState | None:
+    if not path.exists():
+        return None
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            data: dict[str, Any] = json.load(handle)
+        return HaosRecoveryState(
+            version=int(data["version"]),
+            updated_at=float(data["updated_at"]),
+            consecutive_failures=int(data["consecutive_failures"]),
+            last_failure_reason=str(data["last_failure_reason"]),
+            last_restart_at=float(data.get("last_restart_at", 0)),
+        )
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError):
+        return None
+
+
+def write_haos_recovery_state(path: Path, state: HaosRecoveryState) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    with tmp_path.open("w", encoding="utf-8") as handle:
+        json.dump(state.__dict__, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+    tmp_path.replace(path)
+
+
+def clear_haos_recovery_state(path: Path) -> None:
+    current = read_haos_recovery_state(path)
+    if current is None or current.consecutive_failures == 0:
+        print("recovery_failures_cleared=0")
+        return
+    write_haos_recovery_state(
+        path,
+        HaosRecoveryState(
+            version=1,
+            updated_at=time.time(),
+            consecutive_failures=0,
+            last_failure_reason="",
+            last_restart_at=current.last_restart_at,
+        ),
+    )
+    print("recovery_failures_cleared=1")
 
 
 def write_haos_watch_state(
@@ -147,6 +205,19 @@ def print_cache_summary(cached: HaosWatchState | None) -> None:
     print(f"cache_guest_device={cached.guest_device}")
 
 
+def print_recovery_summary(path: Path, recovery: HaosRecoveryState | None) -> None:
+    print(f"haos_recovery_state_path={path}")
+    print(f"recovery_present={1 if recovery else 0}")
+    if recovery is None:
+        print("recovery_consecutive_failures=0")
+        return
+    print(f"recovery_updated_at={time.strftime('%Y-%m-%dT%H:%M:%S%z', time.localtime(recovery.updated_at))}")
+    print(f"recovery_consecutive_failures={recovery.consecutive_failures}")
+    print(f"recovery_last_failure_reason={recovery.last_failure_reason}")
+    if recovery.last_restart_at > 0:
+        print(f"recovery_last_restart_at={time.strftime('%Y-%m-%dT%H:%M:%S%z', time.localtime(recovery.last_restart_at))}")
+
+
 def utmctl_path() -> str:
     found = shutil.which("utmctl")
     if found:
@@ -195,16 +266,46 @@ def quit_utm_app() -> int:
     return result.returncode
 
 
-def start_vm_after_config_change(name: str) -> int:
+def start_vm_after_config_change(name: str, *, allow_utm_app_restart: bool) -> int:
     rc = start_vm(name)
     if rc == 0:
         return 0
+    if not allow_utm_app_restart:
+        print("utm_restart_app=disabled")
+        return rc
     print("utm_restart_app=1")
     quit_utm_app()
     import time
 
     time.sleep(5)
     return start_vm(name)
+
+
+def restart_vm_for_recovery(
+    name: str,
+    *,
+    force_restart: bool,
+    allow_utm_app_restart: bool,
+    wait_seconds: int,
+    sleep_seconds: int,
+) -> int:
+    print(f"recovery_utm_stop_request={name}")
+    rc = stop_vm_request(name)
+    if rc != 0:
+        return rc
+    if not wait_for_vm_status(name, "stopped", wait_seconds=wait_seconds, sleep_seconds=sleep_seconds):
+        print(f"recovery_utm_stop_request_timeout={name}")
+        if not force_restart:
+            return 75
+        print(f"recovery_utm_stop_force={name}")
+        rc = stop_vm_force(name)
+        if rc != 0:
+            return rc
+        if not wait_for_vm_status(name, "stopped", wait_seconds=wait_seconds, sleep_seconds=sleep_seconds):
+            print(f"recovery_utm_stop_force_timeout={name}")
+            return 75
+    print(f"recovery_utm_start={name}")
+    return start_vm_after_config_change(name, allow_utm_app_restart=allow_utm_app_restart)
 
 
 def stop_vm_request(name: str) -> int:
@@ -329,7 +430,7 @@ def reconcile_bridge(
     print(f"utm_bridge_applied={interface}")
     if was_started:
         print(f"utm_start={vm_name}")
-        return start_vm_after_config_change(vm_name)
+        return start_vm_after_config_change(vm_name, allow_utm_app_restart=False)
     return 0
 
 
@@ -446,6 +547,75 @@ def update_gateway_via_utm(vm_name: str, *, haos_interface: str, guest_device: s
     return 0
 
 
+def record_recovery_failure(
+    *,
+    recovery_path: Path,
+    vm_name: str,
+    reason: str,
+    apply_vm_restart: bool,
+    allow_utm_app_restart: bool,
+    restart_after_failures: int,
+    restart_cooldown_seconds: int,
+    force_restart: bool,
+    wait_seconds: int,
+    sleep_seconds: int,
+) -> int:
+    current = read_haos_recovery_state(recovery_path)
+    now = time.time()
+    previous_failures = current.consecutive_failures if current else 0
+    last_restart_at = current.last_restart_at if current else 0
+    consecutive_failures = previous_failures + 1
+    print(f"recovery_failure_reason={reason}")
+    print(f"recovery_previous_consecutive_failures={previous_failures}")
+    print(f"recovery_consecutive_failures={consecutive_failures}")
+    print(f"recovery_restart_after_failures={restart_after_failures}")
+    print(f"recovery_restart_cooldown_seconds={restart_cooldown_seconds}")
+    restart_due = restart_after_failures > 0 and consecutive_failures >= restart_after_failures
+    cooldown_remaining = int(max(0, restart_cooldown_seconds - (now - last_restart_at))) if last_restart_at else 0
+    write_haos_recovery_state(
+        recovery_path,
+        HaosRecoveryState(
+            version=1,
+            updated_at=now,
+            consecutive_failures=consecutive_failures,
+            last_failure_reason=reason,
+            last_restart_at=last_restart_at,
+        ),
+    )
+    if not restart_due:
+        print("recovery_restart_due=0")
+        return 0
+    print("recovery_restart_due=1")
+    if cooldown_remaining > 0:
+        print(f"recovery_restart_skipped_cooldown_remaining={cooldown_remaining}")
+        return 0
+    if not apply_vm_restart:
+        print("recovery_restart_apply=disabled")
+        return 0
+    print("recovery_restart_apply=1")
+    rc = restart_vm_for_recovery(
+        vm_name,
+        force_restart=force_restart,
+        allow_utm_app_restart=allow_utm_app_restart,
+        wait_seconds=wait_seconds,
+        sleep_seconds=sleep_seconds,
+    )
+    if rc != 0:
+        return rc
+    write_haos_recovery_state(
+        recovery_path,
+        HaosRecoveryState(
+            version=1,
+            updated_at=time.time(),
+            consecutive_failures=0,
+            last_failure_reason="",
+            last_restart_at=time.time(),
+        ),
+    )
+    print("recovery_restart_completed=1")
+    return 0
+
+
 def watch(
     *,
     vm_name: str,
@@ -455,6 +625,10 @@ def watch(
     apply_gateway: bool,
     apply_bridge: bool,
     force_bridge_restart: bool,
+    apply_vm_restart: bool,
+    allow_utm_app_restart: bool,
+    restart_after_failures: int,
+    restart_cooldown_seconds: int,
     utm_config_path: Path | None,
     state_path: Path | None,
     wait_seconds: int,
@@ -472,6 +646,8 @@ def watch(
     print(f"haos_watch_state_path={cache_path}")
     cached = read_haos_watch_state(cache_path)
     print_cache_summary(cached)
+    recovery_path = haos_recovery_state_path(state_path)
+    print_recovery_summary(recovery_path, read_haos_recovery_state(recovery_path))
     cache_matches_host = watch_state_matches_host(
         cached,
         vm_name=vm_name,
@@ -489,30 +665,35 @@ def watch(
         if ssh_reports_gateway(status, state.lan_ip):
             print("haos_guest_agent_check=skipped_ssh_verified")
             print("gateway_matches=ssh_verified")
+            clear_haos_recovery_state(recovery_path)
             return 0
         print("cache_health_check_failed=1")
 
     config_path = utm_config_path or default_utm_config_path(vm_name)
     current_bridge = ""
     if config_path.exists():
-        current_bridge = bridge_interface(config_path)
-        print(f"utm_bridge_interface={current_bridge or 'unknown'}")
-        print(f"host_lan_interface={state.lan_interface}")
-        if current_bridge == state.lan_interface:
-            print("utm_bridge_matches=1")
-        else:
-            rc = reconcile_bridge(
-                vm_name=vm_name,
-                config_path=config_path,
-                interface=state.lan_interface,
-                apply_bridge=apply_bridge,
-                force_bridge_restart=force_bridge_restart,
-                wait_seconds=wait_seconds,
-                sleep_seconds=sleep_seconds,
-            )
-            if rc != 0:
-                return rc
-            current_bridge = state.lan_interface
+        try:
+            current_bridge = bridge_interface(config_path)
+            print(f"utm_bridge_interface={current_bridge or 'unknown'}")
+            print(f"host_lan_interface={state.lan_interface}")
+            if current_bridge == state.lan_interface:
+                print("utm_bridge_matches=1")
+            else:
+                rc = reconcile_bridge(
+                    vm_name=vm_name,
+                    config_path=config_path,
+                    interface=state.lan_interface,
+                    apply_bridge=apply_bridge,
+                    force_bridge_restart=force_bridge_restart,
+                    wait_seconds=wait_seconds,
+                    sleep_seconds=sleep_seconds,
+                )
+                if rc != 0:
+                    return rc
+                current_bridge = state.lan_interface
+        except OSError as exc:
+            print(f"utm_config_read_failed={config_path}")
+            print(f"utm_config_read_error={exc}")
     else:
         print(f"utm_config_missing={config_path}")
     cache_matches_bridge = bool(current_bridge) and watch_state_matches(
@@ -532,6 +713,7 @@ def watch(
         if ssh_reports_gateway(status, state.lan_ip):
             print("haos_guest_agent_check=skipped_ssh_verified")
             print("gateway_matches=ssh_verified")
+            clear_haos_recovery_state(recovery_path)
             return 0
         print("cache_health_check_failed=1")
 
@@ -550,6 +732,7 @@ def watch(
             haos_interface=haos_interface,
             guest_device=guest_device,
         )
+        clear_haos_recovery_state(recovery_path)
         return 0
 
     route = guest_ip_route(vm_name)
@@ -557,7 +740,18 @@ def watch(
         print("haos_guest_agent_reachable=0")
         if route.stderr:
             print(route.stderr.rstrip())
-        return 75
+        return record_recovery_failure(
+            recovery_path=recovery_path,
+            vm_name=vm_name,
+            reason="guest_agent_unreachable",
+            apply_vm_restart=apply_vm_restart,
+            allow_utm_app_restart=allow_utm_app_restart,
+            restart_after_failures=restart_after_failures,
+            restart_cooldown_seconds=restart_cooldown_seconds,
+            force_restart=force_bridge_restart,
+            wait_seconds=wait_seconds,
+            sleep_seconds=sleep_seconds,
+        )
     print("haos_guest_agent_reachable=1")
     if route.stdout:
         print(route.stdout.rstrip())
@@ -570,7 +764,18 @@ def watch(
             return 0
         rc = update_gateway_via_utm(vm_name, haos_interface=haos_interface, guest_device=guest_device, gateway=state.lan_ip)
         if rc != 0:
-            return rc
+            return record_recovery_failure(
+                recovery_path=recovery_path,
+                vm_name=vm_name,
+                reason="gateway_update_failed",
+                apply_vm_restart=apply_vm_restart,
+                allow_utm_app_restart=allow_utm_app_restart,
+                restart_after_failures=restart_after_failures,
+                restart_cooldown_seconds=restart_cooldown_seconds,
+                force_restart=force_bridge_restart,
+                wait_seconds=wait_seconds,
+                sleep_seconds=sleep_seconds,
+            )
     if current_bridge:
         write_haos_watch_state(
             cache_path,
@@ -579,6 +784,19 @@ def watch(
             bridge=current_bridge,
             haos_interface=haos_interface,
             guest_device=guest_device,
+        )
+    if gateway_matches:
+        return record_recovery_failure(
+            recovery_path=recovery_path,
+            vm_name=vm_name,
+            reason="ssh_unreachable_gateway_ok",
+            apply_vm_restart=apply_vm_restart,
+            allow_utm_app_restart=allow_utm_app_restart,
+            restart_after_failures=restart_after_failures,
+            restart_cooldown_seconds=restart_cooldown_seconds,
+            force_restart=force_bridge_restart,
+            wait_seconds=wait_seconds,
+            sleep_seconds=sleep_seconds,
         )
     return 0
 
