@@ -14,6 +14,11 @@
 
 ## Runtime Environment
 
+### Shell Environment
+
+- On the local Mac, prefer running terminal commands through `zsh -lc '<command>'` so commands see the same Homebrew paths, aliases, and shell setup as the user.
+- Use a direct executable path only when a tool-provided runtime is explicitly required or when avoiding shell startup behavior is important.
+
 ### Python Environment
 
 - Prefer the current project's Python environment when it exists, for example `<project>/.venv/bin/python`.

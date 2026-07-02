@@ -118,6 +118,77 @@ export async function fetchUsageCsv(token) {
   throw new Error(`Cursor usage export auth failed: ${failures.join('; ')}`);
 }
 
+function authHeaders(token, extra = {}) {
+  const sub = decodeJwtSub(token);
+  const cookieValue = sub ? `${sub}::${token}` : token;
+  return {
+    Authorization: `Bearer ${token}`,
+    Cookie: `${SESSION_COOKIE}=${cookieValue}`,
+    ...extra,
+  };
+}
+
+const JSON_TIMEOUT_MS = 10_000;
+
+export async function fetchUsageSummary(token) {
+  const baseUrl = (process.env.CURSOR_WEB_BASE_URL?.trim() || 'https://cursor.com').replace(/\/+$/, '');
+  const url = `${baseUrl}/api/usage-summary`;
+  const response = await fetch(url, {
+    headers: authHeaders(token, { Accept: 'application/json' }),
+    signal: AbortSignal.timeout(JSON_TIMEOUT_MS),
+  });
+  if (!response.ok) {
+    throw new Error(`Cursor usage-summary fetch failed: ${response.status} ${response.statusText}`);
+  }
+  const data = await response.json();
+  const overall = data?.individualUsage?.overall;
+  return {
+    billingCycleStart: data?.billingCycleStart ? new Date(data.billingCycleStart) : null,
+    billingCycleEnd: data?.billingCycleEnd ? new Date(data.billingCycleEnd) : null,
+    limitCents: typeof overall?.limit === 'number' ? overall.limit : null,
+    usedCents: typeof overall?.used === 'number' ? overall.used : null,
+    isUnlimited: Boolean(data?.isUnlimited),
+    membershipType: data?.membershipType ?? null,
+    limitType: data?.limitType ?? null,
+  };
+}
+
+export async function fetchDailySpendByCategory(token, { periodStartMs, periodEndMs, groupBy = 1, spendType = 3 } = {}) {
+  if (!Number.isFinite(periodStartMs) || !Number.isFinite(periodEndMs)) {
+    throw new Error('fetchDailySpendByCategory requires periodStartMs and periodEndMs');
+  }
+  const baseUrl = (process.env.CURSOR_WEB_BASE_URL?.trim() || 'https://cursor.com').replace(/\/+$/, '');
+  const url = `${baseUrl}/api/dashboard/get-daily-spend-by-category`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: authHeaders(token, {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Origin: baseUrl,
+      Referer: `${baseUrl}/dashboard/usage`,
+    }),
+    body: JSON.stringify({ periodStartMs: Number(periodStartMs), periodEndMs: Number(periodEndMs), groupBy, spendType }),
+    signal: AbortSignal.timeout(JSON_TIMEOUT_MS),
+  });
+  if (!response.ok) {
+    throw new Error(`Cursor daily-spend fetch failed: ${response.status} ${response.statusText}`);
+  }
+  const data = await response.json();
+  const dailySpend = Array.isArray(data?.dailySpend)
+    ? data.dailySpend.map((entry) => ({
+        dayMs: Number.parseInt(String(entry?.day ?? ''), 10),
+        category: String(entry?.category ?? '').trim(),
+        spendCents: Number(entry?.spendCents ?? 0) || 0,
+        totalTokens: Number.parseInt(String(entry?.totalTokens ?? '0'), 10) || 0,
+      }))
+    : [];
+  return {
+    categories: Array.isArray(data?.categories) ? data.categories.map(String) : [],
+    dailySpend,
+    effectiveLimitCents: typeof data?.effectiveLimitCents === 'number' ? data.effectiveLimitCents : null,
+  };
+}
+
 function parseCsv(text) {
   const rows = [];
   let field = '';
@@ -188,11 +259,6 @@ function parseInteger(value) {
   return Number.isFinite(number) && number > 0 ? Math.round(number) : 0;
 }
 
-function parseCost(value) {
-  const number = Number(String(value ?? '').replace(/[$,]/g, '').trim());
-  return Number.isFinite(number) && number > 0 ? number : 0;
-}
-
 export function parseUsageRows(csv) {
   const rows = parseCsv(csv);
   if (rows.length < 2) return [];
@@ -206,7 +272,6 @@ export function parseUsageRows(csv) {
     inputNoCache: idx('Input (w/o Cache Write)'),
     cacheRead: idx('Cache Read'),
     output: idx('Output Tokens'),
-    cost: idx('Cost'),
   };
 
   if (indexes.date < 0 || indexes.model < 0) {
@@ -223,9 +288,8 @@ export function parseUsageRows(csv) {
     const inputNoCache = indexes.inputNoCache >= 0 ? parseInteger(row[indexes.inputNoCache]) : 0;
     const cacheRead = indexes.cacheRead >= 0 ? parseInteger(row[indexes.cacheRead]) : 0;
     const output = indexes.output >= 0 ? parseInteger(row[indexes.output]) : 0;
-    const cost = indexes.cost >= 0 ? parseCost(row[indexes.cost]) : 0;
     const total = inputCacheWrite + inputNoCache + cacheRead + output;
-    if (total === 0 && cost === 0) return [];
+    if (total === 0) return [];
 
     return [{
       date,
@@ -235,7 +299,6 @@ export function parseUsageRows(csv) {
       cacheRead,
       output,
       total,
-      cost,
     }];
   });
 }

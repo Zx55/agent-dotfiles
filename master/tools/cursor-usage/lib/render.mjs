@@ -54,7 +54,7 @@ function renderDailyChart(items) {
 }
 
 export function renderMarkdown(summary) {
-  const budget = monthlyBudgetUsd();
+  const budget = summary.budget ?? monthlyBudgetUsd();
   const budgetPercent = budget > 0 ? (summary.total.cost / budget) * 100 : 0;
   const lines = [
     '# 周期统计',

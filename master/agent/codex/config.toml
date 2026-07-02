@@ -4,18 +4,22 @@ service_tier = "fast"
 
 approval_policy = "on-request"
 approvals_reviewer = "user"
-
-sandbox_mode = "workspace-write"
-default_permissions = "secret_safe"
 personality = "pragmatic"
 
 notify = ["~/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 
+default_permissions = "secret_safe"
+
+[permissions.secret_safe]
+extends = ":workspace"
+
 [permissions.secret_safe.filesystem]
-":project_roots" = { "." = "write" }
-"~/.secret" = "none"
-"~/Documents/agent-dotfiles/master/dotfiles/secrets/secret.local" = "none"
-"~/Documents/agent-dotfiles/ha-host/dotfiles/secrets/secret.local" = "none"
+"~/.codex/skills" = "write"
+"~/.agents/skills" = "write"
+"~/.cursor/skills" = "write"
+"~/.secret" = "deny"
+"~/Documents/agent-dotfiles/master/dotfiles/secrets/secret.local" = "deny"
+"~/Documents/agent-dotfiles/ha-host/dotfiles/secrets/secret.local" = "deny"
 
 [permissions.secret_safe.network]
 enabled = true
@@ -27,6 +31,16 @@ enabled = true
 "~/Documents/workspace/mihome-geek" = { trust_level = "trusted" }
 "~/Documents/workspace/材料" = { trust_level = "trusted" }
 "~/Documents/workspace/Perch" = { trust_level = "trusted" }
+"~/Documents/workspace/harness" = { trust_level = "trusted" }
+
+[projects."~/Documents/Codex/2026-06-30/new-chat"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-06-30/new-chat-2"]
+trust_level = "trusted"
+
+[projects."~/Documents/workspace/merlin-cli"]
+trust_level = "trusted"
 
 [plugins]
 "github@openai-curated" = { enabled = true }
@@ -41,30 +55,35 @@ enabled = true
 [plugins."documents@openai-primary-runtime" ]
 enabled = true
 
-[plugins."browser@openai-bundled"]
-enabled = true
-
 [plugins."chrome@openai-bundled"]
 enabled = true
 
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
 
-[[skills.config]]
-path = "~/.codex/skills/creativity/gpt-image2/SKILL.md"
-enabled = false
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
 
 [marketplaces.openai-bundled]
-last_updated = "2026-06-11T09:20:08Z"
+last_updated = "2026-07-01T04:15:08Z"
 source_type = "local"
 source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-06-01T18:26:56Z"
+last_updated = "2026-07-01T07:52:37Z"
 source_type = "local"
 source = "~/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
 [features]
 memories = true
 js_repl = false
+multi_agent = true
 
 [memories]
 disable_on_external_context = true
@@ -154,12 +173,12 @@ NODE_REPL_NODE_MODULE_DIRS = "/Applications/Codex.app/Contents/Resources/cua_nod
 NODE_REPL_NODE_PATH = "/Applications/Codex.app/Contents/Resources/cua_node/bin/node"
 NODE_REPL_TRUSTED_CODE_PATHS = "~/.codex"
 CODEX_HOME = "~/.codex"
-NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "72614174f4dad67a58d46a3ac759cffb45c92fa48a293af4c4ea35102ba391ba"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "cb79053fda6deb0f3b5d6f0d90d4257305ebdbd1e378a12e8fbc5bde782eb59b"
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
 NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.608.12217"
+BROWSER_USE_CODEX_APP_VERSION = "26.623.81905"
 CODEX_CLI_PATH = "/Applications/Codex.app/Contents/Resources/codex"
 
 [desktop]

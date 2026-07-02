@@ -1,6 +1,5 @@
 dayu-agent
 ipython
 ./master/tools/mcp-launcher
-./master/tools/cursor-inline-img-loader
 ruff
 zotero-mcp-server

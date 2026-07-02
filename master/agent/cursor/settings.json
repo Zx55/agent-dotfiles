@@ -27,7 +27,8 @@
     "**/.svn": true,
     "**/*.egg-info": true,
     "**/CVS": true,
-    "**/Thumbs.db": true
+    "**/Thumbs.db": true,
+    "**/.ruff_cache": true
   },
   "files.watcherExclude": {
     "**/.git/objects/**": true,
@@ -57,5 +58,6 @@
   "cursor.composer.conversationDensity": "compact-ungrouped",
   "cursor.composer.queueMessageDefaultBehavior": "stop-and-send",
   "cursor.general.emailPrivacyEnabled": true,
-  "remote.autoForwardPortsSource": "hybrid"
+  "remote.autoForwardPortsSource": "hybrid",
+  "vim.disableExtension": true
 }

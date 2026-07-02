@@ -4,12 +4,11 @@ function roundCost(value) {
   return Math.round(value * 100) / 100;
 }
 
-function addUsage(target, row) {
+function addTokens(target, row) {
   target.input += row.input;
   target.cacheRead += row.cacheRead;
   target.output += row.output;
   target.total += row.total;
-  target.cost = roundCost(target.cost + row.cost);
   target.events += 1;
 }
 
@@ -29,73 +28,110 @@ function utcDayStart(date = new Date()) {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
 
-function currentMonthRange(now = new Date()) {
-  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
-  return { start, end };
-}
-
-function filterRows(rows, options) {
+export function resolvePeriod(tokenRows, usageSummary, options) {
   if (options.allTime) {
-    return {
-      period: 'Cursor 导出范围',
-      rows,
-      dayRange: null,
-    };
+    if (tokenRows.length === 0) {
+      const now = new Date();
+      const start = utcDayStart(now);
+      return { start, end: addUtcDays(start, 1), label: 'Cursor 导出范围', fill: false };
+    }
+    let minDate = tokenRows[0].date;
+    let maxDate = tokenRows[0].date;
+    for (const row of tokenRows) {
+      if (row.date < minDate) minDate = row.date;
+      if (row.date > maxDate) maxDate = row.date;
+    }
+    const start = utcDayStart(minDate);
+    const end = addUtcDays(utcDayStart(maxDate), 1);
+    return { start, end, label: 'Cursor 导出范围', fill: false };
   }
 
   if (options.days) {
-    const cutoff = Date.now() - options.days * DAY_MS;
-    return {
-      period: `最近 ${options.days} 天`,
-      rows: rows.filter((row) => row.date.getTime() >= cutoff),
-      dayRange: null,
-    };
+    const end = addUtcDays(utcDayStart(), 1);
+    const start = addUtcDays(end, -options.days);
+    return { start, end, label: `最近 ${options.days} 天`, fill: true };
   }
 
-  const { start, end } = currentMonthRange();
-  const chartEnd = new Date(Math.min(end.getTime(), addUtcDays(utcDayStart(), 1).getTime()));
-  return {
-    period: `${formatDay(start)} 到 ${formatDay(end)}（当前月）`,
-    rows: rows.filter((row) => row.date >= start && row.date < end),
-    dayRange: { start, end: chartEnd },
-  };
+  const start = usageSummary?.billingCycleStart ?? new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), 1));
+  const end = usageSummary?.billingCycleEnd ?? new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + 1, 1));
+  return { start, end, label: `${formatDay(start)} 到 ${formatDay(end)}（当前月）`, fill: true };
 }
 
-function dailySeries(byDay, dayRange) {
+function dayRangeForChart(period) {
+  if (!period.fill) return null;
+  const chartEnd = new Date(Math.min(period.end.getTime(), addUtcDays(utcDayStart(), 1).getTime()));
+  return { start: period.start, end: chartEnd };
+}
+
+function buildCostMaps(dailySpend) {
+  const byDay = new Map();
+  const byModel = new Map();
+  let totalCents = 0;
+  for (const entry of dailySpend) {
+    if (!entry.category || !Number.isFinite(entry.dayMs)) continue;
+    const day = new Date(entry.dayMs).toISOString().slice(0, 10);
+    const cents = entry.spendCents || 0;
+    byDay.set(day, (byDay.get(day) ?? 0) + cents);
+    byModel.set(entry.category, (byModel.get(entry.category) ?? 0) + cents);
+    totalCents += cents;
+  }
+  return { byDay, byModel, totalCents };
+}
+
+function buildDailySeries(byDay, costByDay, dayRange) {
   if (!dayRange) {
     return [...byDay.values()].sort((a, b) => a.key.localeCompare(b.key));
   }
-
   const items = [];
   for (let day = dayRange.start; day < dayRange.end; day = addUtcDays(day, 1)) {
     const key = formatDay(day);
-    items.push(byDay.get(key) || emptyUsage(key));
+    const tokens = byDay.get(key) ?? emptyUsage(key);
+    const item = { ...tokens, key, cost: roundCost((costByDay.get(key) ?? 0) / 100) };
+    items.push(item);
   }
   return items;
 }
 
-export function summarize(rows, options = {}) {
-  const { period, rows: filtered, dayRange } = filterRows(rows, options);
-  const total = emptyUsage('total');
-  const byModel = new Map();
-  const byDay = new Map();
+export function summarize(tokenRows, dailySpend, usageSummary, options = {}) {
+  const period = resolvePeriod(tokenRows, usageSummary, options);
+  const { start, end } = period;
 
-  for (const row of filtered) {
-    addUsage(total, row);
-    if (!byModel.has(row.model)) byModel.set(row.model, emptyUsage(row.model));
-    if (!byDay.has(row.day)) byDay.set(row.day, emptyUsage(row.day));
-    addUsage(byModel.get(row.model), row);
-    addUsage(byDay.get(row.day), row);
+  const total = emptyUsage('total');
+  const byModelMap = new Map();
+  const byDayMap = new Map();
+
+  for (const row of tokenRows) {
+    if (row.date < start || row.date >= end) continue;
+    addTokens(total, row);
+    if (!byModelMap.has(row.model)) byModelMap.set(row.model, emptyUsage(row.model));
+    if (!byDayMap.has(row.day)) byDayMap.set(row.day, emptyUsage(row.day));
+    addTokens(byModelMap.get(row.model), row);
+    addTokens(byDayMap.get(row.day), row);
   }
 
+  const { byDay: costByDay, byModel: costByModel, totalCents } = buildCostMaps(dailySpend);
+
+  total.cost = roundCost(totalCents / 100);
+
   const sortUsage = (items) => [...items].sort((a, b) => b.total - a.total || a.key.localeCompare(b.key));
+
+  const byModel = sortUsage(byModelMap.values()).map((item) => ({
+    ...item,
+    cost: roundCost((costByModel.get(item.key) ?? 0) / 100),
+  }));
+
+  const byDay = [...byDayMap.values()]
+    .map((item) => ({ ...item, cost: roundCost((costByDay.get(item.key) ?? 0) / 100) }))
+    .sort((a, b) => b.key.localeCompare(a.key));
+
+  const dailySeries = buildDailySeries(byDayMap, costByDay, dayRangeForChart(period));
+
   return {
     generatedAt: new Date().toISOString(),
-    period,
+    period: period.label,
     total,
-    byModel: sortUsage(byModel.values()),
-    byDay: [...byDay.values()].sort((a, b) => b.key.localeCompare(a.key)),
-    dailySeries: dailySeries(byDay, dayRange),
+    byModel,
+    byDay,
+    dailySeries,
   };
 }

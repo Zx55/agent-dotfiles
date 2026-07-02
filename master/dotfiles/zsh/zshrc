@@ -31,3 +31,6 @@ alias hf-cli="huggingface-cli"
 [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
 export PATH="$HOME/.local/bin:$PATH"
+
+# merlin-cli
+export PATH="$HOME/.merlin-cli/bin:$PATH"
