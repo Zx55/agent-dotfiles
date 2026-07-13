@@ -32,7 +32,8 @@ Codex config policy:
 - master keeps the portable Codex config snapshot current.
 - `links` symlinks Codex instructions from `master/agent/codex/AGENTS.md` into `~/.codex/AGENTS.md`.
 - `links` symlinks repo-managed config into `~/.codex`.
-- `links` installs only the skill symlinks present under `master/agent/skills/`, resolving each one to its canonical source under `shared/skills/`.
+- `links` installs only the skill symlinks present under `master/agent/skills/`, resolving each one to its canonical source under `shared/skills/` and publishing it under `~/.agents/skills/<category>/<skill>`.
+- Both `links --agent codex` and `links --agent cursor` publish the same profile skill set. Agent-specific skill directories remain available for skills owned by those runtimes.
 - master is the profile where hooks and full local workflow integrations belong.
 - local/private runtime state such as memories stays outside this repo unless explicitly decided otherwise.
 
@@ -45,7 +46,7 @@ Cursor config policy:
 - Cursor User Rules are global app state; Cursor does not expose a stable documented file path for `links` to symlink or verify.
 - After first install or any `user-rules.md` change, manually copy it into `Cursor Settings > Rules`.
 - `links` does not symlink Cursor app `settings.json`; hooks sync the runtime settings back to `master/agent/cursor/settings.json`.
-- `verify --agent cursor` checks that every `master/agent/skills/` skill is visible in at least one runtime skill directory such as `~/.codex/skills` or `~/.cursor/skills`.
+- `verify --agent cursor` checks that every `master/agent/skills/` skill is linked at the matching category path under `~/.agents/skills`.
 
 Typical first-run sequence:
 

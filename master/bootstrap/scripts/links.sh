@@ -119,7 +119,15 @@ resolve_link_target() {
   target="$(readlink "$link_path")"
   case "$target" in
     /*)
-      printf '%s\n' "$target"
+      local target_dir
+      local target_base
+      target_dir="$(dirname "$target")"
+      target_base="$(basename "$target")"
+      if [[ -d "$target_dir" ]]; then
+        printf '%s/%s\n' "$(cd "$target_dir" && pwd)" "$target_base"
+      else
+        printf '%s\n' "$target"
+      fi
       ;;
     *)
       local target_dir
@@ -133,17 +141,36 @@ resolve_link_target() {
 
 ensure_skill_category_dir() {
   local category="$1"
-  local target="$HOME/.codex/skills/$category"
+  local target="$HOME/.agents/skills/$category"
 
   if [[ -L "$target" || ( -e "$target" && ! -d "$target" ) ]]; then
-    backup_target "$target"
+    die "runtime skill category path is occupied: $target"
   fi
   mkdir -p "$target"
+}
+
+link_skill_path() {
+  local source="$1"
+  local target="$2"
+
+  if same_symlink "$source" "$target"; then
+    log "Already linked: $target"
+    return 0
+  fi
+
+  if [[ -e "$target" || -L "$target" ]]; then
+    die "runtime skill path is occupied: $target"
+  fi
+
+  log "Linking $target -> $source"
+  ln -s "$source" "$target"
 }
 
 link_profile_skills() {
   local skills_root="$PROFILE_ROOT/agent/skills"
   [[ -d "$skills_root" ]] || return 0
+
+  mkdir -p "$HOME/.agents/skills"
 
   local category
   for category in "$skills_root"/*; do
@@ -158,7 +185,8 @@ link_profile_skills() {
     relative="${skill_link#$skills_root/}"
     source="$(resolve_link_target "$skill_link")"
     [[ -d "$source" ]] || die "profile skill link target missing: $skill_link -> $source"
-    link_path "$source" "$HOME/.codex/skills/$relative"
+    [[ -f "$source/SKILL.md" ]] || die "profile skill is missing SKILL.md: $skill_link -> $source"
+    link_skill_path "$source" "$HOME/.agents/skills/$relative"
   done < <(find "$skills_root" -mindepth 2 -maxdepth 2 -type l | sort)
 }
 
@@ -191,9 +219,6 @@ link_codex() {
   link_path "$PROFILE_ROOT/agent/codex/hooks.json" "$HOME/.codex/hooks.json"
   link_path "$PROFILE_ROOT/agent/codex/rules" "$HOME/.codex/rules" optional
   link_path "$PROFILE_ROOT/agent/codex/automations" "$HOME/.codex/automations" optional
-
-  mkdir -p "$HOME/.codex/skills"
-  link_profile_skills
 }
 
 sync_live_cursor_settings() {
@@ -288,6 +313,7 @@ main() {
       ;;
   esac
 
+  link_profile_skills
   link_dotfiles
   configure_git_hooks
 

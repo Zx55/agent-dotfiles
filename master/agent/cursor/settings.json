@@ -50,7 +50,8 @@
     "<C-y>": false
   },
   "[python]": {
-    "editor.formatOnType": true
+    "editor.formatOnType": true,
+    "diffEditor.ignoreTrimWhitespace": false
   },
   "remote.SSH.remotePlatform": {
     "seed-veomni": "linux"
@@ -59,5 +60,6 @@
   "cursor.composer.queueMessageDefaultBehavior": "stop-and-send",
   "cursor.general.emailPrivacyEnabled": true,
   "remote.autoForwardPortsSource": "hybrid",
-  "vim.disableExtension": true
+  "vim.disableExtension": true,
+  "diffEditor.renderSideBySide": false
 }

@@ -40,7 +40,7 @@ Each Codex profile keeps its own `agent/codex/AGENTS.md`, and profile link scrip
 
 `master/agent/cursor/` contains the master Cursor profile: global MCP config, user-level hooks, sandbox config, a repo-managed source for Cursor User Rules, and a portable snapshot of Cursor app settings.
 
-`shared/skills/` contains the canonical skill sources. Profile directories under `*/agent/skills/` contain only symlinks to the shared skill directories, so profile skill selection is managed by filesystem links instead of bootstrap script lists.
+`shared/skills/` contains the canonical skill sources. Profile directories under `*/agent/skills/` contain only symlinks to the shared skill directories, so profile skill selection is managed by filesystem links instead of bootstrap script lists. The master profile publishes its selected skills to `~/.agents/skills/<category>/<skill>` so agents that support the shared Agent Skills location use one runtime projection.
 
 ## Bootstrap
 
@@ -60,7 +60,7 @@ Run the profile entrypoint directly. There is no root-level profile dispatcher.
 ./ha-host/bootstrap/bootstrap.sh verify --agent codex
 ```
 
-Both profiles use symlinks for agent-specific instructions, profile-managed Codex files, skills, and dotfiles. Existing targets are backed up under `~/.dotfiles-backup/<timestamp>/` before replacement.
+Both profiles use symlinks for agent-specific instructions, profile-managed Codex files, skills, and dotfiles. Existing config and dotfile targets are backed up under `~/.dotfiles-backup/<timestamp>/` before replacement. In the master profile, occupied shared skill paths cause `links` to stop instead of replacing another skill provider's content.
 
 ## Profiles
 

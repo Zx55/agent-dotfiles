@@ -124,7 +124,15 @@ resolve_link_target() {
   target="$(readlink "$link_path")"
   case "$target" in
     /*)
-      printf '%s\n' "$target"
+      local target_dir
+      local target_base
+      target_dir="$(dirname "$target")"
+      target_base="$(basename "$target")"
+      if [[ -d "$target_dir" ]]; then
+        printf '%s/%s\n' "$(cd "$target_dir" && pwd)" "$target_base"
+      else
+        printf '%s\n' "$target"
+      fi
       ;;
     *)
       local target_dir
@@ -157,25 +165,15 @@ check_resolved_symlink() {
   fi
 }
 
-check_profile_skill_runtime_visibility() {
+check_profile_skill_links() {
   local skills_root="$PROFILE_ROOT/agent/skills"
   [[ -d "$skills_root" ]] || return 0
-
-  local runtime_roots=(
-    "$HOME/.cursor/skills"
-    "$HOME/.codex/skills"
-    "$HOME/.agent/skills"
-    "$HOME/.agents/skills"
-    "$HOME/.claude/skills"
-  )
 
   local skill_path
   while IFS= read -r skill_path; do
     local relative
     local source
-    local runtime_root
     local target
-    local found=0
 
     relative="${skill_path#$skills_root/}"
     if [[ ! -L "$skill_path" ]]; then
@@ -189,19 +187,13 @@ check_profile_skill_runtime_visibility() {
       continue
     fi
 
-    for runtime_root in "${runtime_roots[@]}"; do
-      target="$runtime_root/$relative"
-      [[ -L "$target" ]] || continue
-      if [[ "$(resolve_link_target "$target")" == "$source" ]]; then
-        ok "profile skill visible to agent runtimes: $relative via $target"
-        found=1
-        break
-      fi
-    done
-
-    if [[ "$found" -eq 0 ]]; then
-      fail "profile skill missing from runtime skill dirs: $relative"
+    if [[ ! -f "$source/SKILL.md" ]]; then
+      fail "profile skill is missing SKILL.md: $skill_path -> $source"
+      continue
     fi
+
+    target="$HOME/.agents/skills/$relative"
+    check_resolved_symlink "$source" "$target"
   done < <(find "$skills_root" -mindepth 2 -maxdepth 2 \( -type d -o -type l \) | sort)
 }
 
@@ -376,27 +368,7 @@ check_codex_links() {
   check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-config.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-config.py"
   check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-sync-automations.py" "$PROFILE_ROOT/agent/codex/hooks/codex-sync-automations.py"
   check_resolved_symlink "$REPO_ROOT/shared/hooks/codex-secret-guard-tool-use-after.py" "$PROFILE_ROOT/agent/codex/hooks/codex-secret-guard-tool-use-after.py"
-  check_resolved_symlink "$REPO_ROOT/shared/hooks/prune-lark-skills.py" "$PROFILE_ROOT/agent/codex/hooks/codex-prune-lark-skills.py"
-
-  local skills_root="$PROFILE_ROOT/agent/skills"
-  local skill_path
-  while IFS= read -r skill_path; do
-    local relative
-    local source
-    relative="${skill_path#$skills_root/}"
-    if [[ ! -L "$skill_path" ]]; then
-      fail "profile skill should be a symlink: $skill_path"
-      continue
-    fi
-    source="$(resolve_link_target "$skill_path")"
-    if [[ -d "$source" ]]; then
-      ok "profile skill link target exists: $relative"
-    else
-      fail "profile skill link target missing: $skill_path -> $source"
-      continue
-    fi
-    check_symlink "$source" "$HOME/.codex/skills/$relative"
-  done < <(find "$skills_root" -mindepth 2 -maxdepth 2 \( -type d -o -type l \) | sort)
+  check_profile_skill_links
 }
 
 check_codex_automations() {
@@ -572,7 +544,7 @@ check_cursor_links() {
   check_symlink "$PROFILE_ROOT/agent/cursor/mcp.json" "$HOME/.cursor/mcp.json"
   check_symlink "$PROFILE_ROOT/agent/cursor/hooks.json" "$HOME/.cursor/hooks.json"
   check_symlink "$PROFILE_ROOT/agent/cursor/sandbox.json" "$HOME/.cursor/sandbox.json"
-  check_profile_skill_runtime_visibility
+  check_profile_skill_links
 }
 
 check_cursor_config() {
@@ -582,7 +554,6 @@ check_cursor_config() {
   local secret_tool_before="$REPO_ROOT/shared/hooks/cursor-secret-guard-tool-use-before.py"
   local secret_tool_after="$REPO_ROOT/shared/hooks/cursor-secret-guard-tool-use-after.py"
   local secret_file_before="$REPO_ROOT/shared/hooks/cursor-secret-guard-file-read-before.py"
-  local prune_lark_skills="$REPO_ROOT/shared/hooks/prune-lark-skills.py"
   local agent_python="$HOME/.local/share/agent-dotfiles/python/bin/python"
 
   check_json_file "$cursor_dir/mcp.json"
@@ -594,7 +565,6 @@ check_cursor_config() {
   check_resolved_symlink "$secret_tool_before" "$cursor_dir/hooks/cursor-secret-guard-tool-use-before.py"
   check_resolved_symlink "$secret_tool_after" "$cursor_dir/hooks/cursor-secret-guard-tool-use-after.py"
   check_resolved_symlink "$secret_file_before" "$cursor_dir/hooks/cursor-secret-guard-file-read-before.py"
-  check_resolved_symlink "$prune_lark_skills" "$cursor_dir/hooks/cursor-prune-lark-skills.py"
   warn "Cursor User Rules cannot be verified from a stable file path. Manually compare Cursor Settings > Rules with $cursor_dir/user-rules.md."
 
   if [[ ! -f "$syncer" ]]; then

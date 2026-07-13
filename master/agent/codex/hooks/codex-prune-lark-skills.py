@@ -1,1 +1,0 @@
-../../../../shared/hooks/prune-lark-skills.py

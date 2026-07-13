@@ -1,6 +1,5 @@
 cask "orbstack"
 cask "mactex-no-gui"
-cask "discord"
 cask "tencent-meeting"
 cask "baidunetdisk"
 cask "bilibili"

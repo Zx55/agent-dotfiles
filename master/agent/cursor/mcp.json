@@ -2,8 +2,11 @@
   "mcpServers": {
     "zotero": {
       "type": "stdio",
-      "command": "${userHome}/.local/bin/mcp-launcher",
+      "command": "/bin/zsh",
       "args": [
+        "-lc",
+        "exec \"$HOME/.local/bin/mcp-launcher\" \"$@\"",
+        "mcp-launcher",
         "--env-file",
         "~/.secret",
         "--env",
