@@ -19,9 +19,9 @@ Options:
   --dry-run             Print planned link operations without changing files.
   -h, --help            Show this help.
 
-The HA host profile installs profile-managed Codex config, skills, hook config,
-and dotfiles as symlinks. Hook implementation scripts are exposed through
-profile-local symlinks to shared/hooks.
+The HA host profile installs profile-managed Codex config, hook config, shared
+Agent Skills, and dotfiles as symlinks. Hook implementation scripts are exposed
+through profile-local symlinks to shared/hooks.
 EOF
 }
 
@@ -151,10 +151,10 @@ resolve_link_target() {
 
 ensure_skill_category_dir() {
   local category="$1"
-  local target="$HOME/.codex/skills/$category"
+  local target="$HOME/.agents/skills/$category"
 
   if [[ -L "$target" || ( -e "$target" && ! -d "$target" ) ]]; then
-    backup_target "$target"
+    die "runtime skill category path is occupied: $target"
   fi
 
   if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -162,6 +162,28 @@ ensure_skill_category_dir() {
     return 0
   fi
   mkdir -p "$target"
+}
+
+link_skill_path() {
+  local source="$1"
+  local target="$2"
+
+  if same_symlink "$source" "$target"; then
+    log "Already linked: $target"
+    return 0
+  fi
+
+  if [[ -e "$target" || -L "$target" ]]; then
+    die "runtime skill path is occupied: $target"
+  fi
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    log "Would link $target -> $source"
+    return 0
+  fi
+
+  log "Linking $target -> $source"
+  ln -s "$source" "$target"
 }
 
 link_profile_skills() {
@@ -181,7 +203,8 @@ link_profile_skills() {
     relative="${skill_link#$skills_root/}"
     source="$(resolve_link_target "$skill_link")"
     [[ -d "$source" ]] || die "profile skill link target missing: $skill_link -> $source"
-    link_path "$source" "$HOME/.codex/skills/$relative"
+    [[ -f "$source/SKILL.md" ]] || die "profile skill is missing SKILL.md: $skill_link -> $source"
+    link_skill_path "$source" "$HOME/.agents/skills/$relative"
   done < <(find "$skills_root" -mindepth 2 -maxdepth 2 -type l | sort)
 }
 
@@ -250,7 +273,7 @@ link_codex() {
   link_path "$PROFILE_ROOT/agent/codex/rules" "$HOME/.codex/rules" optional
   link_path "$PROFILE_ROOT/agent/codex/automations" "$HOME/.codex/automations" optional
 
-  mkdir -p "$HOME/.codex/skills"
+  mkdir -p "$HOME/.agents/skills"
   link_profile_skills
 }
 

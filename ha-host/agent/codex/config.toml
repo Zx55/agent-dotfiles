@@ -16,6 +16,7 @@ personality = "pragmatic"
 
 [permissions.secret_safe.filesystem]
 ":project_roots" = { "." = "write" }
+"~/.agents/skills" = "write"
 "~/.secret" = "none"
 "~/Documents/agent-dotfiles/master/dotfiles/secrets/secret.local" = "none"
 "~/Documents/agent-dotfiles/ha-host/dotfiles/secrets/secret.local" = "none"

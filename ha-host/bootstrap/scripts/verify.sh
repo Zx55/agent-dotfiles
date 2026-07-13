@@ -290,7 +290,7 @@ check_codex_link_state() {
       fail "profile skill link target missing: $skill_path -> $source"
       continue
     fi
-    check_symlink "$source" "$HOME/.codex/skills/$relative"
+    check_symlink "$source" "$HOME/.agents/skills/$relative"
   done < <(find "$skills_root" -mindepth 2 -maxdepth 2 \( -type d -o -type l \) | sort)
 }
 
