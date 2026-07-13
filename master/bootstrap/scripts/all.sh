@@ -120,7 +120,11 @@ run_install() {
   fi
 
   log "Running install"
-  "$INSTALL_SCRIPT" "${args[@]}"
+  if [[ "${#args[@]}" -gt 0 ]]; then
+    "$INSTALL_SCRIPT" "${args[@]}"
+  else
+    "$INSTALL_SCRIPT"
+  fi
 }
 
 run_links() {

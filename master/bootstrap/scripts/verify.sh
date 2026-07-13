@@ -567,7 +567,9 @@ check_cursor_config() {
   check_resolved_symlink "$secret_file_before" "$cursor_dir/hooks/cursor-secret-guard-file-read-before.py"
   warn "Cursor User Rules cannot be verified from a stable file path. Manually compare Cursor Settings > Rules with $cursor_dir/user-rules.md."
 
-  if [[ ! -f "$syncer" ]]; then
+  if [[ ! -f "$settings" ]]; then
+    warn "Cursor app settings missing, skipping live settings sync check: $settings"
+  elif [[ ! -f "$syncer" ]]; then
     fail "Cursor settings sync hook missing: $syncer"
   elif [[ ! -x "$agent_python" ]]; then
     fail "shared agent Python missing for Cursor settings sync hook: $agent_python"
@@ -640,7 +642,7 @@ expand_path() {
       printf '%s\n' "$HOME"
       ;;
     "~/"*)
-      printf '%s\n' "$HOME/${value#~/}"
+      printf '%s\n' "$HOME/${value#\~/}"
       ;;
     /*)
       printf '%s\n' "$value"

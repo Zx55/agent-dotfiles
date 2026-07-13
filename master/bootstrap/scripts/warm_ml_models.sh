@@ -30,7 +30,7 @@ expand_path() {
       printf '%s\n' "$HOME"
       ;;
     "~/"*)
-      printf '%s\n' "$HOME/${value#~/}"
+      printf '%s\n' "$HOME/${value#\~/}"
       ;;
     /*)
       printf '%s\n' "$value"

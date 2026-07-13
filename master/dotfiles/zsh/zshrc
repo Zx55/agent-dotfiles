@@ -34,3 +34,18 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # merlin-cli
 export PATH="$HOME/.merlin-cli/bin:$PATH"
+
+# dayu-cli init 自动写入
+export DAYU_INIT_PROVIDER_OPTION="mimo"
+
+# dayu-cli init 自动写入
+export HF_ENDPOINT="https://hf-mirror.com"
+
+# dayu-cli init 自动写入
+export TRANSFORMERS_VERBOSITY="error"
+
+# dayu-cli init 自动写入
+export HF_HUB_DISABLE_PROGRESS_BARS="1"
+
+# dayu-cli init 自动写入
+export TQDM_DISABLE="1"

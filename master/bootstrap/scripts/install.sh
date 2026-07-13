@@ -152,7 +152,12 @@ install_uv_tools() {
     tool="$(trim "$tool")"
     [[ -n "$tool" ]] || continue
 
-    if [[ "$tool" == ./* ]]; then
+    if [[ "$tool" == "dayu-agent" ]]; then
+      local dayu_installer="$REPO_ROOT/shared/skills/finance/dayu-installation/scripts/dayu_install_or_update.sh"
+      [[ -x "$dayu_installer" ]] || die "Dayu installer missing or not executable: $dayu_installer"
+      log "Installing uv tool via Dayu release installer: $tool"
+      "$dayu_installer" --workspace "$HOME/.dayu/workspace" --version v0.1.4 --skip-init
+    elif [[ "$tool" == ./* ]]; then
       log "Installing uv tool from local path: $tool"
       uv tool install --force "$REPO_ROOT/${tool#./}"
     else
@@ -288,10 +293,6 @@ install_mas_apps() {
     warn "mas is unavailable. Skipping Mac App Store apps."
     return 0
   }
-  if ! mas account >/dev/null 2>&1; then
-    warn "not signed in to the Mac App Store. Skipping mas apps."
-    return 0
-  fi
 
   while IFS= read -r line || [[ -n "$line" ]]; do
     line="$(trim "$line")"
@@ -325,7 +326,7 @@ expand_path() {
       printf '%s\n' "$HOME"
       ;;
     "~/"*)
-      printf '%s\n' "$HOME/${value#~/}"
+      printf '%s\n' "$HOME/${value#\~/}"
       ;;
     /*)
       printf '%s\n' "$value"

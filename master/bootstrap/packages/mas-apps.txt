@@ -10,7 +10,6 @@
 1473785373 # MoneyTrack: Expense Tracker
 1592917505 # Noir - Dark Mode for Safari
 697942581 # Disk Graph
-6698876601 # Folder Preview
 462054704 # Microsoft Word
 462058435 # Microsoft Excel
 462062816 # Microsoft PowerPoint
