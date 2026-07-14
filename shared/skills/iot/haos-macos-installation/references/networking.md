@@ -20,7 +20,7 @@ Mac host:
 
 ```sh
 cd ~/agent-dotfiles
-PYTHON=/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python
+PYTHON=~/.local/share/agent-dotfiles/python/bin/python
 PYTHONPATH=ha-host/tools/orchestrator/src \
   "$PYTHON" -m ha_host_orchestrator.entrypoints.host_startup --check-only --no-require-utun
 cat ~/.ha_host/state.json

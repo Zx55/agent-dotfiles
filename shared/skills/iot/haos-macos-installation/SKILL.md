@@ -54,7 +54,7 @@ Mac host:
 ```sh
 ./ha-host/bootstrap/bootstrap.sh install --dry-run
 ./ha-host/bootstrap/bootstrap.sh verify
-PYTHON=/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python
+PYTHON=~/.local/share/agent-dotfiles/python/bin/python
 PYTHONPATH=ha-host/tools/orchestrator/src "$PYTHON" -m ha_host_orchestrator.entrypoints.host_startup --check-only --no-require-utun
 PYTHONPATH=ha-host/tools/orchestrator/src "$PYTHON" -m ha_host_orchestrator.entrypoints.host_watch --check-only --no-require-utun
 launchctl print system/com.user.ha-host-startup

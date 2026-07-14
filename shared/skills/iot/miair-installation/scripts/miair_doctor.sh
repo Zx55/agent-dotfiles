@@ -176,7 +176,7 @@ case "$MODE" in
     SRC_DIR="${MIAIR_HOME:-$HOME/.local/share/miair}/src"
     VENV_DIR="${MIAIR_HOME:-$HOME/.local/share/miair}/venv"
     BIN_DIR="${MIAIR_HOME:-$HOME/.local/share/miair}/bin"
-    ROOT_SERVICE_PYTHON_BIN="/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python"
+    SHARED_AGENT_PYTHON_BIN="$HOME/.local/share/agent-dotfiles/python/bin/python"
     CORE_BIN="$BIN_DIR/miair-core"
     WATCHER_BIN="$BIN_DIR/miair-watch"
     OLD_CORE_BIN="$BIN_DIR/MiAir"
@@ -211,6 +211,7 @@ case "$MODE" in
       fi
     done
     command -v uv >/dev/null 2>&1 && ok "uv found on PATH" || warn "uv not found on PATH"
+    [ -x "$SHARED_AGENT_PYTHON_BIN" ] && ok "shared agent Python exists: $SHARED_AGENT_PYTHON_BIN" || fail "shared agent Python missing: $SHARED_AGENT_PYTHON_BIN"
 
     [ -d "$SRC_DIR/.git" ] && ok "source exists: $SRC_DIR" || warn "source missing: $SRC_DIR"
     [ -x "$VENV_DIR/bin/python" ] && ok "venv python exists: $VENV_DIR/bin/python" || warn "venv missing: $VENV_DIR"
@@ -229,14 +230,14 @@ from pathlib import Path
 print(Path(os.environ["VENV_DIR"]).joinpath("bin", "python").absolute())
 PY
 )"
-      if [ -x "$ROOT_SERVICE_PYTHON_BIN" ]; then
+      if [ -x "$SHARED_AGENT_PYTHON_BIN" ]; then
         if [ "$VENV_REALPATH" = "$EXPECTED_VENV_PYTHON" ]; then
-          ok "MiAir venv Python is copied and launchd-isolated: $VENV_REALPATH"
+          ok "MiAir venv Python is copied from shared agent Python: $VENV_REALPATH"
         else
           warn "MiAir venv Python resolves outside the venv: $VENV_REALPATH"
         fi
       else
-        fail "root-owned HA host service Python missing: $ROOT_SERVICE_PYTHON_BIN"
+        fail "shared agent Python missing: $SHARED_AGENT_PYTHON_BIN"
       fi
     fi
     [ -x "$CORE_BIN" ] && ok "launchd-visible core executable exists: $CORE_BIN" || warn "launchd-visible core executable missing: $CORE_BIN"

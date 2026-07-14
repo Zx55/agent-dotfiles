@@ -6,7 +6,7 @@ The first version is intentionally conservative:
 
 - `audit` collects read-only host facts for planning.
 - `verify` checks whether the host looks ready.
-- `install` ensures Homebrew exists, installs the minimal host package manifest, installs required uv tools, creates the shared agent Python environment, copies it into a dedicated root-owned HA host service Python at `/usr/local/libexec/agent-dotfiles/ha-host-python`, and sets the AC power policy so the host does not sleep while plugged in.
+- `install` ensures Homebrew exists, installs the minimal host package manifest, installs required uv tools, creates the shared agent Python environment at `~/.local/share/agent-dotfiles/python`, and sets the AC power policy so the host does not sleep while plugged in.
 - `links` symlinks this profile's Codex instructions, config, hooks, shared Agent Skills, and dotfiles into their runtime locations.
 - `tools/orchestrator` contains the host-side orchestration runtime for registered LAN clients, Mac `pf` forwarding, launchd startup/watch jobs, and UTM HAOS startup/watch checks.
 - `tools/ps5-ha-bridge` contains an opt-in PS5 to Home Assistant MQTT bridge. It keeps runtime config and Remote Play credentials outside this repository.
@@ -25,7 +25,7 @@ Common commands:
 Host orchestrator source checks:
 
 ```sh
-PYTHON=/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python
+PYTHON=~/.local/share/agent-dotfiles/python/bin/python
 PYTHONPATH=ha-host/tools/orchestrator/src \
   "$PYTHON" -m ha_host_orchestrator.entrypoints.host_startup --check-only --no-require-utun
 PYTHONPATH=ha-host/tools/orchestrator/src \
@@ -44,7 +44,7 @@ Launchd installer for the orchestrator:
 ./ha-host/tools/orchestrator/scripts/uninstall-launchd.sh
 ```
 
-The orchestrator reads registered devices from `~/.router/device.json`, writes host state and logs under `~/.ha_host/`, runs from a root/user runtime copy under `/usr/local/libexec/agent-dotfiles/orchestrator/`, and uses the HA host service Python at `/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python`. Re-run the installer after changing the orchestrator launchd scripts or plist templates.
+The orchestrator reads registered devices from `~/.router/device.json`, writes host state and logs under `~/.ha_host/`, runs from a root/user runtime copy under `/usr/local/libexec/agent-dotfiles/orchestrator/`, and uses the shared agent Python at `~/.local/share/agent-dotfiles/python/bin/python`. Re-run the installer after changing the orchestrator launchd scripts or plist templates.
 
 Read `ha-host/tools/orchestrator/README.md` before changing registered targets or launchd jobs. The root host jobs own dynamic LAN selection, egress checks, and Mac `pf` routing. The user HAOS jobs own UTM startup and HAOS-side network drift detection.
 

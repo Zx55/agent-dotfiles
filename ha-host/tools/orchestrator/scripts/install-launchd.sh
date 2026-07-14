@@ -34,8 +34,7 @@ DRY_RUN="0"
 LOAD_NOW="0"
 HA_HOST_DIR="${HA_HOST_DIR:-$HOME/.ha_host}"
 REGISTRY_PATH="${MAC_ROUTER_REGISTRY:-$HOME/.router/device.json}"
-ROOT_SERVICE_PYTHON_BIN="/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python"
-SERVICE_PYTHON_BIN="${HA_HOST_SERVICE_PYTHON:-}"
+SHARED_AGENT_PYTHON_BIN="$HOME/.local/share/agent-dotfiles/python/bin/python"
 UTM_PERMISSION_PREFLIGHT="1"
 
 log() {
@@ -68,7 +67,7 @@ Options:
   --no-force-bridge-restart
                           Do not use UTM force stop if graceful bridge restart times out.
   --utm-config-path PATH  UTM config.plist path. Default: ~/Library/.../<vm-name>.utm/config.plist.
-  --python PATH           Explicit Python 3.11+ binary for launchd jobs. Default: root-owned HA host service Python.
+  --python PATH           Explicit Python 3.11+ binary for launchd jobs. Default: shared agent Python.
   --no-scan               Do not scan registry targets during host router apply.
   --no-require-utun       Do not require route target to use utun.
   --load-now              Bootstrap all launchd jobs after installing.
@@ -182,16 +181,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$PYTHON_BIN" ]]; then
-  if [[ -n "$SERVICE_PYTHON_BIN" ]]; then
-    if [[ -x "$SERVICE_PYTHON_BIN" ]]; then
-      PYTHON_BIN="$SERVICE_PYTHON_BIN"
-    else
-      die "explicit HA_HOST_SERVICE_PYTHON is not executable: $SERVICE_PYTHON_BIN"
-    fi
-  elif [[ -x "$ROOT_SERVICE_PYTHON_BIN" ]]; then
-    PYTHON_BIN="$ROOT_SERVICE_PYTHON_BIN"
+  if [[ -x "$SHARED_AGENT_PYTHON_BIN" ]]; then
+    PYTHON_BIN="$SHARED_AGENT_PYTHON_BIN"
   else
-    die "root-owned HA host service Python missing: $ROOT_SERVICE_PYTHON_BIN. Run ha-host/bootstrap/bootstrap.sh install first."
+    die "shared agent Python missing: $SHARED_AGENT_PYTHON_BIN. Run master/bootstrap/bootstrap.sh install or ha-host/bootstrap/bootstrap.sh install first."
   fi
 fi
 
@@ -241,7 +234,7 @@ PY
   then
     log "UTM app-data read/write preflight passed: $vm_dir"
   else
-    die "UTM app-data preflight failed for $vm_dir. Allow the macOS prompt for the HA host service Python, or grant it Full Disk Access, then rerun install."
+    die "UTM app-data preflight failed for $vm_dir. Allow the macOS prompt for the shared agent Python, or grant it Full Disk Access, then rerun install."
   fi
 }
 

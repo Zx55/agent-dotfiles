@@ -194,13 +194,6 @@ check_agent_python() {
   else
     fail "shared agent Python missing: $python"
   fi
-
-  local root_service_python="/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python"
-  if [[ -x "$root_service_python" ]]; then
-    ok "root-owned HA host service Python available: $root_service_python"
-  else
-    fail "HA host service Python missing: $root_service_python"
-  fi
 }
 
 check_symlink() {

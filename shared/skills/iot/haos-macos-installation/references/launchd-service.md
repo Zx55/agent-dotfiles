@@ -30,15 +30,15 @@ By default, the installer allows forced bridge restart. If UTM must move the VM 
 
 macOS may prompt that `python3.12` wants to access another app's data when `haos-watch` reads or edits UTM's sandboxed VM config. Cached steady-state checks avoid UTM data access, but unattended bridge recovery still needs this permission ahead of time. Run the orchestrator `doctor.sh` interactively after install and allow the prompt, or grant the Python binary in the launchd plist Full Disk Access before relying on automatic recovery.
 
-The launchd installer preflights read/write access to the UTM VM package with the HA host service Python. If macOS prompts, allow it during install so later bridge recovery can run unattended. Use `--skip-utm-permission-preflight` only when the VM does not exist yet or permission will be granted another way.
+The launchd installer preflights read/write access to the UTM VM package with the shared agent Python. If macOS prompts, allow it during install so later bridge recovery can run unattended. Use `--skip-utm-permission-preflight` only when the VM does not exist yet or permission will be granted another way.
 
-The HA host bootstrap creates a dedicated service Python:
+The master and HA host profiles use the shared agent Python:
 
 ```text
-/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python
+~/.local/share/agent-dotfiles/python/bin/python
 ```
 
-Grant App Data or Full Disk Access to that service Python, not to the shared uv-managed agent Python. `doctor.sh` reports whether the root-owned service Python is in use.
+Grant App Data or Full Disk Access to that shared agent Python when unattended bridge recovery needs access to UTM's sandboxed VM config. `doctor.sh` reports whether the shared agent Python is in use.
 
 ## Verify
 
@@ -63,7 +63,7 @@ Then verify the router and HAOS state:
 
 ```sh
 cd ~/agent-dotfiles
-PYTHON=/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python
+PYTHON=~/.local/share/agent-dotfiles/python/bin/python
 PYTHONPATH=ha-host/tools/orchestrator/src \
   "$PYTHON" -m ha_host_orchestrator.entrypoints.host_startup --check-only --no-require-utun
 PYTHONPATH=ha-host/tools/orchestrator/src \

@@ -25,7 +25,7 @@ Upstream project: `https://github.com/KiriChen-Wind/MiAir`
 - State and logs: `~/.local/state/miair`
 - Core launchd plist: `~/Library/LaunchAgents/com.user.miair-core.plist`
 - Watch launchd plist: `~/Library/LaunchAgents/com.user.miair-watch.plist`
-- Runtime Python prerequisite: `/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python`, created by `ha-host/bootstrap/bootstrap.sh install`
+- Runtime Python prerequisite: `~/.local/share/agent-dotfiles/python/bin/python`, created by the master or HA host bootstrap install flow
 
 MiAir upstream defaults to `--conf-path conf`, so native `python miair.py` stores config in `./conf/config.json` relative to the current working directory. Always pass an explicit config path.
 Do not patch files under `~/.local/share/miair/src`. macOS-local behavior belongs in the repo-managed wrapper at `ha-host/tools/miair-macos-wrapper` or this skill's scripts.
@@ -41,7 +41,7 @@ Keep the macOS runtime wrapper outside this skill directory. This skill owns ins
 ## Workflow
 
 1. Identify the target platform.
-   - For the user's current Mac, prefer macOS native deployment after the HA host bootstrap has created the root-owned service Python.
+   - For the user's current Mac, prefer macOS native deployment after the bootstrap has created the shared agent Python.
    - For Linux, OpenWrt, NAS, soft router, or Raspberry Pi, use Docker host networking.
 2. Confirm the LAN IP strategy.
    - MiAir should run with a stable LAN IP.

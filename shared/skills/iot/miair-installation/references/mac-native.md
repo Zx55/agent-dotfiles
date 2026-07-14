@@ -31,8 +31,8 @@ The script:
 - installs missing Homebrew formulae `ffmpeg` and `portaudio`
 - installs missing Homebrew formula `uv`
 - clones or updates `https://github.com/KiriChen-Wind/MiAir`
-- requires the root-owned HA host service Python at `/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python`
-- creates an independent MiAir venv with `/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python -m venv --copies` so the service does not run through the shared uv-managed Python.
+- requires the shared agent Python at `~/.local/share/agent-dotfiles/python/bin/python`
+- creates an independent MiAir venv with `~/.local/share/agent-dotfiles/python/bin/python -m venv --copies` so MiAir runtime dependencies stay outside the shared agent Python.
 - installs MiAir into that venv with `uv pip`
 - installs `ha-host/tools/miair-macos-wrapper` into that same venv
 - writes `~/.local/share/miair/bin/miair-core` as the launchd-visible executable
@@ -40,7 +40,7 @@ The script:
 - writes and loads `com.user.miair-core.plist`
 - writes and loads `com.user.miair-watch.plist`
 
-The script must not install Python packages into system Python, the shared agent Python, or the HA host service Python. MiAir runtime dependencies belong only in `~/.local/share/miair/venv`.
+The script must not install Python packages into system Python or the shared agent Python. MiAir runtime dependencies belong only in `~/.local/share/miair/venv`.
 The launchd plist should execute the `miair-core` launcher, not the venv `python` binary directly. This keeps macOS Login Items and Background Items identifiable by the service role instead of a generic Python process.
 macOS System Settings displays Background Items from the executable basename and the Background Task Management cache, not only from the launchd `Label`. Keep the launchd-visible executable names aligned with the plist labels.
 The launchd plist must include a PATH containing Homebrew locations so MiAir can find `ffmpeg` during background execution.

@@ -35,7 +35,7 @@ Run source entrypoints with `PYTHONPATH` while developing:
 
 ```sh
 cd ~/Documents/codex-workspace/agent-dotfiles
-PYTHON=/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python
+PYTHON=~/.local/share/agent-dotfiles/python/bin/python
 PYTHONPATH=ha-host/tools/orchestrator/src \
   "$PYTHON" -m ha_host_orchestrator.entrypoints.host_startup --check-only --no-require-utun
 
@@ -61,15 +61,15 @@ By default, the installer sets `FORCE_BRIDGE_RESTART=1`. If the VM must change f
 
 macOS may prompt that `python3.12` wants to access another app's data when the watch reads or edits UTM's sandboxed VM config. Steady-state cached runs avoid UTM data access, but unattended bridge recovery still needs that permission ahead of time. Run `scripts/doctor.sh` interactively after install and allow the prompt, or grant the Python binary shown in the launchd plist Full Disk Access before relying on automatic recovery.
 
-`install-launchd.sh` preflights read/write access to the UTM VM package with the same service Python before it installs and loads launchd jobs. If macOS prompts, allow it during install so later bridge recovery can run unattended. Use `--skip-utm-permission-preflight` only when the VM does not exist yet or permission will be granted another way.
+`install-launchd.sh` preflights read/write access to the UTM VM package with the shared agent Python before it installs and loads launchd jobs. If macOS prompts, allow it during install so later bridge recovery can run unattended. Use `--skip-utm-permission-preflight` only when the VM does not exist yet or permission will be granted another way.
 
-The HA host bootstrap creates a dedicated service Python:
+The master and HA host profiles use the shared agent Python:
 
 ```text
-/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python
+~/.local/share/agent-dotfiles/python/bin/python
 ```
 
-That Python is created from the shared agent Python with `venv --copies --without-pip` during `ha-host/bootstrap/bootstrap.sh install`, owned by `root:wheel`, and readable/executable by launchd user jobs. The four orchestrator launchd jobs use it by default. Grant App Data or Full Disk Access to this service Python, not to the shared uv Python. Pass `--python PATH` only when intentionally overriding this isolation for diagnostics.
+That Python is created by the bootstrap install flow and is shared by master and HA host tooling. The four orchestrator launchd jobs use it by default. Grant App Data or Full Disk Access to this shared agent Python when unattended UTM config repair needs it. Pass `--python PATH` only when intentionally overriding this default for diagnostics.
 
 ## Launchd
 
@@ -99,7 +99,7 @@ The installer copies the runtime to:
 /usr/local/libexec/agent-dotfiles/orchestrator/
 ```
 
-The installer writes the HA host service Python binary into the plists. Run `ha-host/bootstrap/bootstrap.sh install` before installing launchd jobs so `/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python` exists.
+The installer writes the shared agent Python binary into the plists. Run `ha-host/bootstrap/bootstrap.sh install` before installing launchd jobs so `~/.local/share/agent-dotfiles/python/bin/python` exists.
 
 Uninstall the launchd jobs and runtime copy:
 

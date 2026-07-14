@@ -5,7 +5,7 @@ TOOL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 INSTALL_DIR="/usr/local/libexec/agent-dotfiles/orchestrator"
 HA_HOST_DIR="${HA_HOST_DIR:-$HOME/.ha_host}"
 PYTHON_BIN="${PYTHON:-}"
-ROOT_SERVICE_PYTHON="/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python"
+SHARED_AGENT_PYTHON="$HOME/.local/share/agent-dotfiles/python/bin/python"
 VM_NAME="${VM_NAME:-HAOS-17.3}"
 UTM_CONFIG_PATH="${UTM_CONFIG_PATH:-}"
 ERRORS=0
@@ -53,18 +53,18 @@ check_executable "$TOOL_DIR/scripts/haos-start-launchd.sh"
 check_executable "$TOOL_DIR/scripts/haos-watch-launchd.sh"
 
 if [ -z "$PYTHON_BIN" ]; then
-  PYTHON_BIN="$ROOT_SERVICE_PYTHON"
+  PYTHON_BIN="$SHARED_AGENT_PYTHON"
 fi
 
 ok "orchestrator Python: $PYTHON_BIN"
-if [ "$PYTHON_BIN" = "$ROOT_SERVICE_PYTHON" ]; then
+if [ "$PYTHON_BIN" = "$SHARED_AGENT_PYTHON" ]; then
   if [ -x "$PYTHON_BIN" ]; then
-    ok "root-owned HA host service Python in use"
+    ok "shared agent Python in use"
   else
-    fail "root-owned HA host service Python missing or not executable: $PYTHON_BIN"
+    fail "shared agent Python missing or not executable: $PYTHON_BIN"
   fi
 else
-  warn "orchestrator Python is not the HA host service Python: $PYTHON_BIN"
+  warn "orchestrator Python is not the shared agent Python: $PYTHON_BIN"
 fi
 
 if [ -x "$PYTHON_BIN" ] && PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$TOOL_DIR/src" "$PYTHON_BIN" - <<'PY' >/dev/null 2>&1
@@ -101,7 +101,7 @@ PY
     ok "UTM config package readable/writable by orchestrator Python: $UTM_CONFIG_PATH"
   else
     warn "UTM config package is not readable/writable by orchestrator Python: $UTM_CONFIG_PATH"
-    warn "automatic HAOS bridge repair may prompt for App Data access; run install or doctor interactively and allow the HA host service Python, or grant it Full Disk Access before relying on unattended recovery"
+    warn "automatic HAOS bridge repair may prompt for App Data access; run install or doctor interactively and allow the shared agent Python, or grant it Full Disk Access before relying on unattended recovery"
   fi
 else
   warn "UTM config not found for permission preflight: $UTM_CONFIG_PATH"

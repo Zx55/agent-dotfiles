@@ -10,7 +10,6 @@ UV_TOOLS_FILE="$PACKAGE_DIR/uv-tools.txt"
 AGENT_PYTHON_FILE="$PACKAGE_DIR/agent-python.txt"
 AGENT_PYTHON_VERSION="3.12"
 AGENT_PYTHON_VENV="$HOME/.local/share/agent-dotfiles/python"
-SERVICE_PYTHON_VENV="/usr/local/libexec/agent-dotfiles/ha-host-python"
 AC_SLEEP="0"
 AC_DISPLAY_SLEEP="10"
 AC_DISK_SLEEP="0"
@@ -26,7 +25,7 @@ Usage: ha-host/bootstrap/bootstrap.sh install [options]
 Options:
   --dry-run             Print what would run without installing packages.
   --skip-uv-tools       Skip uv tool installation.
-  --skip-agent-python   Skip shared agent Python and HA host service Python installation.
+  --skip-agent-python   Skip shared agent Python installation.
   -h, --help            Show this help.
 EOF
 }
@@ -146,7 +145,6 @@ install_agent_python() {
     log "Would install uv-managed Python $AGENT_PYTHON_VERSION"
     log "Would create shared agent Python venv: $AGENT_PYTHON_VENV"
     log "Would install shared agent Python packages from $AGENT_PYTHON_FILE"
-    log "Would create root-owned HA host service Python venv: $SERVICE_PYTHON_VENV"
     return 0
   fi
 
@@ -164,13 +162,6 @@ install_agent_python() {
   else
     log "No shared agent Python packages listed."
   fi
-
-  log "Creating root-owned HA host service Python venv: $SERVICE_PYTHON_VENV"
-  sudo rm -rf "$SERVICE_PYTHON_VENV"
-  sudo mkdir -p "$(dirname "$SERVICE_PYTHON_VENV")"
-  sudo "$AGENT_PYTHON_VENV/bin/python" -m venv --copies --without-pip "$SERVICE_PYTHON_VENV"
-  sudo chown -R root:wheel "$SERVICE_PYTHON_VENV"
-  sudo chmod -R a+rX "$SERVICE_PYTHON_VENV"
 }
 
 configure_power_policy() {

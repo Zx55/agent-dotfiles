@@ -10,8 +10,8 @@ INSTALL_ROOT="${MIAIR_HOME:-$HOME/.local/share/miair}"
 SRC_DIR="$INSTALL_ROOT/src"
 VENV_DIR="$INSTALL_ROOT/venv"
 BIN_DIR="$INSTALL_ROOT/bin"
-ROOT_SERVICE_PYTHON_BIN="/usr/local/libexec/agent-dotfiles/ha-host-python/bin/python"
-SERVICE_PYTHON_BIN="${HA_HOST_SERVICE_PYTHON:-$ROOT_SERVICE_PYTHON_BIN}"
+SHARED_AGENT_PYTHON_BIN="$HOME/.local/share/agent-dotfiles/python/bin/python"
+AGENT_PYTHON_BIN="${AGENT_PYTHON:-$SHARED_AGENT_PYTHON_BIN}"
 LAUNCHER="$BIN_DIR/miair-core"
 IP_WATCHER="$BIN_DIR/miair-watch"
 OLD_LAUNCHER="$BIN_DIR/MiAir"
@@ -207,15 +207,9 @@ fi
 
 mkdir -p "$INSTALL_ROOT" "$BIN_DIR" "$CONF_DIR" "$STATE_DIR" "$(dirname "$PLIST")"
 
-if [ "$SERVICE_PYTHON_BIN" != "$ROOT_SERVICE_PYTHON_BIN" ]; then
-  echo "MiAir macOS native install requires the root-owned HA host service Python: $ROOT_SERVICE_PYTHON_BIN" >&2
-  echo "Do not set HA_HOST_SERVICE_PYTHON for this installer." >&2
-  exit 1
-fi
-
-if [ ! -x "$SERVICE_PYTHON_BIN" ]; then
-  echo "Root-owned HA host service Python is missing: $SERVICE_PYTHON_BIN" >&2
-  echo "Run ha-host/bootstrap/bootstrap.sh install first." >&2
+if [ ! -x "$AGENT_PYTHON_BIN" ]; then
+  echo "Shared agent Python is missing: $AGENT_PYTHON_BIN" >&2
+  echo "Run master/bootstrap/bootstrap.sh install or ha-host/bootstrap/bootstrap.sh install first." >&2
   exit 1
 fi
 
@@ -233,7 +227,7 @@ else
   git -C "$SRC_DIR" checkout "$REF"
 fi
 
-if [ -x "$SERVICE_PYTHON_BIN" ] && [ -x "$VENV_DIR/bin/python" ]; then
+if [ -x "$AGENT_PYTHON_BIN" ] && [ -x "$VENV_DIR/bin/python" ]; then
   venv_realpath="$("$VENV_DIR/bin/python" - <<'PY'
 import os
 import sys
@@ -241,7 +235,7 @@ import sys
 print(os.path.realpath(sys.executable))
 PY
 )"
-  expected_realpath="$(VENV_DIR="$VENV_DIR" "$SERVICE_PYTHON_BIN" - <<'PY'
+  expected_realpath="$(VENV_DIR="$VENV_DIR" "$AGENT_PYTHON_BIN" - <<'PY'
 import os
 from pathlib import Path
 
@@ -254,7 +248,7 @@ PY
 fi
 
 if [ ! -x "$VENV_DIR/bin/python" ]; then
-  "$SERVICE_PYTHON_BIN" -m venv --copies "$VENV_DIR"
+  "$AGENT_PYTHON_BIN" -m venv --copies "$VENV_DIR"
 fi
 
 uv pip install --python "$VENV_DIR/bin/python" -e "$SRC_DIR"
