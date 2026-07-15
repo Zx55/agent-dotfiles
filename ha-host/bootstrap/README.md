@@ -68,9 +68,9 @@ uv pip install --python .venv/bin/python -e .
 
 Read `ha-host/tools/ps5-ha-bridge/README.md` before pairing. The bridge stores local test credentials under `~/.config/ps5-ha-bridge/credentials` and the future HAOS add-on stores its own credentials under `/config/ps5-ha-bridge/credentials`.
 
-Optional MiAir bridge:
+Optional MiPlay bridge:
 
-MiAir can run on the same Mac as an AirPlay or DLNA bridge to Xiaomi AI speakers, but it is not part of the HA host bootstrap or orchestrator. Install, update, or repair it only by explicitly using the `miair-installation` setup skill.
+MiPlay can run in a dedicated UTM Ubuntu VM as an AirPlay bridge to Xiaomi AI speakers, but it is not part of the HA host bootstrap or orchestrator. Install, update, or repair it only by explicitly using the `miplay-installation` setup skill.
 
 For the full HAOS-on-macOS workflow after a Mac reinstall, including UTM setup, backup restore, bridged-network verification, DNS pitfalls, and launchd service setup, use the `haos-macos-installation` setup skill.
 
