@@ -132,7 +132,7 @@ check_uv() {
 }
 
 check_dayu_install() {
-  local cli_bin render_bin
+  local cli_bin prompt_help render_bin
 
   if [[ -n "${UV_BIN:-}" ]]; then
     local tool_list
@@ -154,6 +154,12 @@ check_dayu_install() {
     note "dayu-cli: $cli_bin"
     if ! "$cli_bin" --help >/dev/null 2>&1; then
       fail "dayu-cli exists but --help failed"
+    elif ! prompt_help="$("$cli_bin" prompt --help 2>&1)"; then
+      fail "dayu-cli prompt --help failed"
+    elif printf '%s\n' "$prompt_help" | grep -q -- '--output'; then
+      note "dayu-cli prompt supports --output"
+    else
+      fail "dayu-cli prompt is missing --output; reinstall the configured fork branch"
     fi
   else
     fail "dayu-cli is not available"

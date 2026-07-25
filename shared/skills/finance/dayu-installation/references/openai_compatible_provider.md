@@ -82,5 +82,7 @@ curl -sS https://api.moonshot.cn/v1/chat/completions \
 Once the config and manifest defaults are aligned, users should normally be able to omit `--model-name` and rely on the manifest default. If they want to force the model explicitly during verification, use:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --model-name <config-name> "Just respond OK"
+dayu-cli prompt --base ~/.dayu/workspace --model-name <config-name> \
+  --output ~/.dayu/workspace/output/prompt/provider-check.md \
+  "Just respond OK"
 ```

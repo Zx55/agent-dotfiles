@@ -2,8 +2,9 @@
 
 set -euo pipefail
 
-REPO_API_BASE="https://api.github.com/repos/noho/dayu-agent/releases"
 DAYU_PACKAGE_NAME="dayu-agent"
+DAYU_GIT_REPO="https://github.com/Zx55/dayu-agent.git"
+DEFAULT_SOURCE_REF="dev"
 DEFAULT_WORKSPACE="$HOME/.dayu/workspace"
 TEMP_UV_CACHE_DIR=0
 
@@ -12,11 +13,11 @@ usage() {
 Install or update Dayu CLI with uv-managed Python, then optionally run dayu-cli init.
 
 Usage:
-  dayu_install_or_update.sh [--workspace PATH] [--version latest|TAG] [--skip-init] [--overwrite-init] [--reset-init]
+  dayu_install_or_update.sh [--workspace PATH] [--ref BRANCH|TAG|COMMIT] [--skip-init] [--overwrite-init] [--reset-init]
 
 Options:
   --workspace PATH   Workspace to initialize with dayu-cli init. Default: ~/.dayu/workspace
-  --version VALUE    Release tag such as vX.Y.Z, or latest. Default: latest
+  --ref VALUE        Fork branch, tag, or commit to install. Default: dev
   --skip-init        Install or update Dayu without running dayu-cli init
   --overwrite-init   Pass --overwrite to dayu-cli init
   --reset-init       Pass --reset to dayu-cli init
@@ -64,7 +65,7 @@ setup_uv_cache_dir() {
 
 parse_args() {
   WORKSPACE="$DEFAULT_WORKSPACE"
-  RELEASE_TAG="latest"
+  SOURCE_REF="$DEFAULT_SOURCE_REF"
   SKIP_INIT=0
   OVERWRITE_INIT=0
   RESET_INIT=0
@@ -76,9 +77,9 @@ parse_args() {
         WORKSPACE="$2"
         shift 2
         ;;
-      --version)
-        [[ $# -ge 2 ]] || die "--version requires a value"
-        RELEASE_TAG="$2"
+      --ref)
+        [[ $# -ge 2 ]] || die "--ref requires a value"
+        SOURCE_REF="$2"
         shift 2
         ;;
       --skip-init)
@@ -115,6 +116,8 @@ parse_args() {
   if [[ "$OVERWRITE_INIT" -eq 1 && "$RESET_INIT" -eq 1 ]]; then
     die "--overwrite-init and --reset-init cannot be used together"
   fi
+
+  [[ -n "$SOURCE_REF" ]] || die "--ref cannot be empty"
 }
 
 detect_uv() {
@@ -151,89 +154,16 @@ ensure_managed_python() {
   PYTHON_REQUEST="3.11"
 }
 
-parse_release_metadata_json() {
-  local release_json="$1"
-
-  RESOLVED_TAG="$(printf '%s\n' "$release_json" | sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p' | head -n1)"
-  WHEEL_URL="$(printf '%s\n' "$release_json" | sed -n 's/.*"browser_download_url":[[:space:]]*"\([^"]*dayu_agent-[^"]*\.whl\)".*/\1/p' | head -n1)"
-
-  [[ -n "$RESOLVED_TAG" && -n "$WHEEL_URL" ]]
-}
-
-resolve_release_metadata_with_api() {
-  local api_url
-  local release_json
-
-  if [[ "$RELEASE_TAG" == "latest" ]]; then
-    api_url="$REPO_API_BASE/latest"
-  else
-    api_url="$REPO_API_BASE/tags/$RELEASE_TAG"
-  fi
-
-  release_json="$(curl --fail --silent --show-error --location --retry 2 --retry-delay 1 "$api_url")" \
-    || return 1
-
-  parse_release_metadata_json "$release_json"
-}
-
-resolve_release_metadata_with_gh() {
-  command -v gh >/dev/null 2>&1 || return 1
-
-  local release_info
-  if [[ "$RELEASE_TAG" == "latest" ]]; then
-    release_info="$(gh release view --repo noho/dayu-agent --json tagName,assets --jq '.tagName, (.assets[] | select(.name | test("^dayu_agent-.*\\.whl$")) | .url)' 2>/dev/null)" \
-      || return 1
-  else
-    release_info="$(gh release view "$RELEASE_TAG" --repo noho/dayu-agent --json tagName,assets --jq '.tagName, (.assets[] | select(.name | test("^dayu_agent-.*\\.whl$")) | .url)' 2>/dev/null)" \
-      || return 1
-  fi
-
-  RESOLVED_TAG="$(printf '%s\n' "$release_info" | sed -n '1p')"
-  WHEEL_URL="$(printf '%s\n' "$release_info" | sed -n '2p')"
-
-  [[ -n "$RESOLVED_TAG" && -n "$WHEEL_URL" ]]
-}
-
-resolve_release_metadata_with_direct_tag() {
-  [[ "$RELEASE_TAG" != "latest" ]] || return 1
-
-  local version="${RELEASE_TAG#v}"
-  local wheel_url="https://github.com/noho/dayu-agent/releases/download/$RELEASE_TAG/dayu_agent-$version-py3-none-any.whl"
-
-  curl --fail --silent --show-error --location --head "$wheel_url" >/dev/null \
-    || return 1
-
-  RESOLVED_TAG="$RELEASE_TAG"
-  WHEEL_URL="$wheel_url"
-}
-
-resolve_release_metadata() {
-  if resolve_release_metadata_with_api; then
-    return
-  fi
-
-  warn "GitHub API release lookup failed; trying gh release metadata fallback"
-  if resolve_release_metadata_with_gh; then
-    return
-  fi
-
-  warn "gh release metadata fallback failed; trying direct wheel URL for explicit tag"
-  if resolve_release_metadata_with_direct_tag; then
-    return
-  fi
-
-  die "Failed to resolve Dayu release metadata. Check network/proxy settings, or pass an explicit --version tag with the standard wheel naming pattern."
-}
-
 install_dayu_tool() {
   local requirement
-  requirement="$DAYU_PACKAGE_NAME @ $WHEEL_URL"
+  requirement="$DAYU_PACKAGE_NAME @ git+$DAYU_GIT_REPO@$SOURCE_REF"
 
-  log "Installing Dayu from $RESOLVED_TAG"
+  log "Installing Dayu from $DAYU_GIT_REPO@$SOURCE_REF"
   "$UV_BIN" tool install \
     --managed-python \
     --python "$PYTHON_REQUEST" \
     --force \
+    --refresh-package "$DAYU_PACKAGE_NAME" \
     "$requirement" \
     || die "uv tool install failed for $requirement"
 
@@ -244,13 +174,13 @@ install_dayu_tool() {
 resolve_executable() {
   local name="$1"
 
-  if command -v "$name" >/dev/null 2>&1; then
-    command -v "$name"
+  if [[ -x "$TOOL_BIN_DIR/$name" ]]; then
+    printf '%s\n' "$TOOL_BIN_DIR/$name"
     return 0
   fi
 
-  if [[ -x "$TOOL_BIN_DIR/$name" ]]; then
-    printf '%s\n' "$TOOL_BIN_DIR/$name"
+  if command -v "$name" >/dev/null 2>&1; then
+    command -v "$name"
     return 0
   fi
 
@@ -260,9 +190,13 @@ resolve_executable() {
 verify_dayu_commands() {
   DAYU_CLI_BIN="$(resolve_executable dayu-cli)" || die "dayu-cli was not found after installation"
   DAYU_RENDER_BIN="$(resolve_executable dayu-render)" || die "dayu-render was not found after installation"
-  local render_output render_status
+  local prompt_help render_output render_status
 
   "$DAYU_CLI_BIN" --help >/dev/null || die "dayu-cli --help failed after installation"
+  prompt_help="$("$DAYU_CLI_BIN" prompt --help 2>&1)" \
+    || die "dayu-cli prompt --help failed after installation"
+  printf '%s\n' "$prompt_help" | grep -q -- '--output' \
+    || die "installed dayu-cli prompt does not expose the required --output flag"
   set +e
   render_output="$("$DAYU_RENDER_BIN" 2>&1)"
   render_status=$?
@@ -323,7 +257,7 @@ warn_optional_render_dependencies() {
 print_summary() {
   log "Setup complete"
   printf '  uv: %s\n' "$UV_BIN"
-  printf '  release: %s\n' "$RESOLVED_TAG"
+  printf '  source: %s@%s\n' "$DAYU_GIT_REPO" "$SOURCE_REF"
   printf '  tool bin: %s\n' "$TOOL_BIN_DIR"
   printf '  dayu-cli: %s\n' "$DAYU_CLI_BIN"
   printf '  dayu-render: %s\n' "$DAYU_RENDER_BIN"
@@ -345,7 +279,6 @@ main() {
   detect_uv
   setup_uv_cache_dir
   ensure_managed_python
-  resolve_release_metadata
   install_dayu_tool
   verify_dayu_commands
   run_init_if_requested

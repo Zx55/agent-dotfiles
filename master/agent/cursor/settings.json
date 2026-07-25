@@ -54,7 +54,8 @@
     "diffEditor.ignoreTrimWhitespace": false
   },
   "remote.SSH.remotePlatform": {
-    "seed-veomni": "linux"
+    "seed-veomni": "linux",
+    "seed-data": "linux"
   },
   "cursor.composer.conversationDensity": "compact-ungrouped",
   "cursor.composer.queueMessageDefaultBehavior": "stop-and-send",

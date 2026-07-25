@@ -7,7 +7,7 @@ Use this reference only when the user explicitly asks for report-shaped output o
 Do not generate reports by default. Normal Dayu usage is dialogue-first research through:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared question>"
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> --output "<OUTPUT_MD>" "<prepared question>"
 ```
 
 Do not switch to `write` as a host-agent entrypoint.
@@ -17,7 +17,7 @@ Do not switch to `write` as a host-agent entrypoint.
 Put the requested report shape into the Dayu prompt:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared report request>"
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> --output "<OUTPUT_MD>" "<prepared report request>"
 ```
 
 Examples of report-shape constraints to include when the user asks:
@@ -28,7 +28,7 @@ Examples of report-shape constraints to include when the user asks:
 - thesis, key evidence, risks, and watchlist
 - conservative, base, and upside cases
 
-Relay Dayu output directly. If the user asked for a different language, format, or extraction, put that requirement into the Dayu prompt whenever possible.
+Treat the Markdown file as the authoritative report. Read it completely, then return 3–5 key takeaways and a clickable absolute-path link. Do not paste the full report into chat. If the user asked for a different language, format, or extraction, put that requirement into the Dayu prompt whenever possible.
 
 ## Export Artifacts
 
@@ -43,6 +43,7 @@ dayu-render
 Suggested flow:
 
 1. Choose or reuse the correct label.
-2. Run `dayu-cli prompt --label --ticker` with the report request.
-3. Relay Dayu output directly.
-4. Render only if the user explicitly asks for an export artifact.
+2. Choose a unique persistent Markdown output path.
+3. Run `dayu-cli prompt --label --ticker --output` with the report request.
+4. Return 3–5 takeaways and the Markdown link.
+5. Render the saved Markdown only if the user explicitly asks for HTML or PDF.

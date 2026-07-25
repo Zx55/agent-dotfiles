@@ -50,7 +50,7 @@ Useful `material-name` examples:
 Return to the canonical prompt path:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared question>"
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> --output "<OUTPUT_MD>" "<prepared question>"
 ```
 
-Relay Dayu output directly.
+Read the saved Markdown, then deliver 3–5 grounded takeaways and a clickable absolute-path link. Do not paste the complete answer into chat.

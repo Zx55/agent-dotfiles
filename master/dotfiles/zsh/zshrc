@@ -36,7 +36,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.merlin-cli/bin:$PATH"
 
 # dayu-cli init 自动写入
-export DAYU_INIT_PROVIDER_OPTION="mimo"
+export DAYU_INIT_PROVIDER_OPTION="custom_openai"
 
 # dayu-cli init 自动写入
 export HF_ENDPOINT="https://hf-mirror.com"

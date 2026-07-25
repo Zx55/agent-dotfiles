@@ -2,15 +2,12 @@ model = "gpt-5.6-sol"
 model_reasoning_effort = "high"
 service_tier = "default"
 
-approval_policy = "on-request"
+approval_policy = "never"
 approvals_reviewer = "user"
 personality = "pragmatic"
 
-
-
-
-
 default_permissions = "secret_safe"
+sandbox_mode = "danger-full-access"
 
 notify = ["~/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 
@@ -36,39 +33,19 @@ enabled = true
 "~/Documents/workspace/harness" = { trust_level = "trusted" }
 "~/Documents/workspace/材料" = { trust_level = "trusted" }
 "~/Documents/workspace/Perch" = { trust_level = "trusted" }
-
-[projects."~/Documents/Codex/2026-06-30/new-chat"]
-trust_level = "trusted"
-
-[projects."~/Documents/Codex/2026-06-30/new-chat-2"]
-trust_level = "trusted"
-
-[projects."~/Documents/workspace/merlin-cli"]
-trust_level = "trusted"
-
-[projects."~/Documents/workspace/papers"]
-trust_level = "trusted"
-
-[projects."~/Documents/Codex/2026-07-07/merlin-job-management-users-bytedance-agents"]
-trust_level = "trusted"
-
-[projects."~/Documents/workspace/infra"]
-trust_level = "trusted"
-
-[projects."~/Documents/Codex/2026-07-11/pocket4"]
-trust_level = "trusted"
-
-[projects."~/Documents/Codex/2026-06-12/macos-bootloader"]
-trust_level = "trusted"
-
-[projects."/Users/bytedance/Documents/workspace"]
-trust_level = "trusted"
-
-[projects."~/Documents/Codex/2026-06-28/23"]
-trust_level = "trusted"
-
-[projects."/app/projects/bagel-migration"]
-trust_level = "trusted"
+"~/Documents/Codex/2026-06-30/new-chat" = { trust_level = "trusted" }
+"~/Documents/Codex/2026-06-30/new-chat-2" = { trust_level = "trusted" }
+"~/Documents/workspace/merlin-cli" = { trust_level = "trusted" }
+"~/Documents/workspace/distill" = { trust_level = "trusted" }
+"~/.dayu" = { trust_level = "trusted" }
+"~/Documents/workspace/infra" = { trust_level = "trusted" }
+"~/Documents/workspace/papers" = { trust_level = "trusted" }
+"~/Documents/Codex/2026-07-07/merlin-job-management-users-bytedance-agents" = { trust_level = "trusted" }
+"~/Documents/Codex/2026-07-11/pocket4" = { trust_level = "trusted" }
+"~/Documents/Codex/2026-06-12/macos-bootloader" = { trust_level = "trusted" }
+"~/Documents/workspace" = { trust_level = "trusted" }
+"~/Documents/Codex/2026-06-28/23" = { trust_level = "trusted" }
+"/app/projects/bagel-migration" = { trust_level = "trusted" }
 
 [plugins]
 "github@openai-curated" = { enabled = true }
@@ -95,22 +72,22 @@ enabled = true
 [plugins."template-creator@openai-primary-runtime"]
 enabled = true
 
-[plugins."sites@openai-bundled"]
+[plugins."visualize@openai-bundled"]
 enabled = true
 
-[plugins."visualize@openai-bundled"]
+[plugins."sites@openai-bundled"]
 enabled = true
 
 [plugins."browser@openai-bundled"]
 enabled = true
 
 [marketplaces.openai-bundled]
-last_updated = "2026-07-14T01:39:46Z"
+last_updated = "2026-07-25T06:56:34Z"
 source_type = "local"
 source = "~/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
 [marketplaces.openai-primary-runtime]
-last_updated = "2026-07-13T03:13:18Z"
+last_updated = "2026-07-24T07:52:20Z"
 source_type = "local"
 source = "~/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
 
@@ -198,24 +175,24 @@ zotero_update_item = { approval_mode = "approve" }
 
 [mcp_servers.node_repl]
 args = []
-command = "/Applications/Codex.app/Contents/Resources/cua_node/bin/node_repl"
+command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
 startup_timeout_sec = 120
 
 [mcp_servers.node_repl.env]
 NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
-NODE_REPL_NODE_MODULE_DIRS = "/Applications/Codex.app/Contents/Resources/cua_node/lib/node_modules"
-NODE_REPL_NODE_PATH = "/Applications/Codex.app/Contents/Resources/cua_node/bin/node"
+NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
 NODE_REPL_TRUSTED_CODE_PATHS = "~/.codex"
 CODEX_HOME = "~/.codex"
-NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "57ee77a283eb230c6c6d47353af13a25cec4c331b511868c8fbf7ccd3dd1b2f6,6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "57ee77a283eb230c6c6d47353af13a25cec4c331b511868c8fbf7ccd3dd1b2f6,6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,e13fd947e846d3d306e9249dd3c73d14931b6494803dbafb16cef85e6add9506"
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
 NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
 NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.707.71524"
-SKY_CUA_SERVICE_PATH = "~/.codex/plugins/cache/openai-bundled/computer-use/1.0.1000387/Codex Computer Use.app"
-CODEX_CLI_PATH = "/Applications/Codex.app/Contents/Resources/codex"
+BROWSER_USE_CODEX_APP_VERSION = "26.721.41059"
+SKY_CUA_SERVICE_PATH = "~/.codex/computer-use/Codex Computer Use.app"
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
 
 [mcp_servers.computer-use]
 command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
@@ -264,10 +241,16 @@ fonts = { code = "monaco", ui = "Inter" }
 semanticColors = { diffAdded = "#00a240", diffRemoved = "#e02e2a", skill = "#b06dff" }
 
 [desktop.open-in-target-preferences]
-global = "vscode"
+global = "cursor"
 
 [desktop.open-in-target-preferences.perPath]
 "~/Documents/agent-dotfiles" = "iterm2"
+"/app/projects/unified-spatial-reasoning" = "cursor"
 
 [sandbox_workspace_write]
 network_access = true
+
+[shell_environment_policy.set]
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "57ee77a283eb230c6c6d47353af13a25cec4c331b511868c8fbf7ccd3dd1b2f6,6d25aa7656feac858f3a3bdaea5bcbab0dbfd426c9de8e6931ce90c399ee8e4f,e13fd947e846d3d306e9249dd3c73d14931b6494803dbafb16cef85e6add9506"
+NODE_REPL_TRUSTED_CODE_PATHS = "~/.codex"
