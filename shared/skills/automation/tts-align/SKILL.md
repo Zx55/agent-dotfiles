@@ -1,6 +1,6 @@
 ---
 name: tts-align
-description: Align fixed narration audio against its script with WhisperX, produce sentence or word timestamps, and compare narration sections against video clips for companion videos, presentations, demos, and TTS QA.
+description: Time fixed narration audio with MLX Whisper, produce segment or word timestamps, and compare narration sections against video clips for companion videos, presentations, demos, and TTS QA.
 ---
 
 # TTS Align
@@ -13,17 +13,18 @@ Use this skill when a user needs timing for an existing narration audio file, es
    - Required: narration audio, usually `.wav`.
    - Recommended: final script `.txt` used to synthesize the narration.
    - Optional: video clip to compare against a section of the narration.
-2. Check whether WhisperX is available.
-   - First try `~/.local/share/agent-dotfiles/python/bin/whisperx --help`, then `command -v whisperx` and `whisperx --help`.
-   - If it is not available or model caches are missing, read `references/installation.md`.
-   - Do not assume the user's bootstrap has already installed the tool.
-3. Run WhisperX for timestamps.
-   - Prefer CPU for short narration under roughly 10 minutes. On macOS, WhisperX is generally more reliable on CPU than Metal/MPS.
-   - Use `tiny` or `small` for timing QA. Use larger models only when recognition errors affect the target section.
+2. Check whether the global MLX Whisper tool is available.
+   - Run `~/.local/bin/mlx_whisper --help`.
+   - If it is unavailable or model caches are missing, read `references/installation.md`.
+   - MLX Whisper requires an Apple Silicon Mac with Metal access.
+3. Generate timestamps with the bundled wrapper.
+   - Use `mlx-community/whisper-tiny` for short timing QA by default.
+   - Use `mlx-community/whisper-small-mlx` when recognition errors affect marker phrases.
    - Keep model caches in normal global locations. Do not point model downloads at project `tmp/` unless the user explicitly wants disposable cache.
+   - Use word timestamps when marker or subtitle timing is required. MLX Whisper derives them from Whisper attention alignment rather than an external forced-alignment model.
 4. Compare timing.
    - For global timing, use wav duration and total script words only as a rough estimate.
-   - For section timing, prefer WhisperX `json` output and marker phrases from the script.
+   - For section timing, prefer MLX Whisper JSON with word timestamps and marker phrases from the script.
    - For video sync, compare section start/end times against `ffprobe` video duration and keyframe inspection.
 5. Report actionable adjustments.
    - If narration is longer than the clip, suggest shortening text or increasing speech rate only if provider controls support it.
@@ -31,30 +32,26 @@ Use this skill when a user needs timing for an existing narration audio file, es
    - For internal mismatch, redistribute words across subsegments instead of only matching total section duration.
 6. Optional subtitle post-processing.
    - If the user asks for subtitles after alignment, use `references/subtitles.md` as the reference workflow.
-   - Keep alignment as the source of timing, and keep the final script as the source of subtitle text.
+   - Keep MLX timestamps as the timing source and the final script as the subtitle text source.
    - If a video is provided, inspect frames first and place subtitles only in a consistently empty region. If no safe region exists, tell the user instead of forcing hard subtitles over important content.
 
-## WhisperX Command
+## Timing Command
 
-After confirming WhisperX is available, prefer the shared agent Python CLI:
+Use the bundled wrapper so the model, output schema, and validation remain consistent:
 
 ```bash
-~/.local/share/agent-dotfiles/python/bin/whisperx narration.wav \
-  --model tiny \
+python scripts/transcribe.py narration.wav \
+  --output-dir output/align \
+  --model mlx-community/whisper-tiny \
   --language en \
-  --device cpu \
-  --compute_type int8 \
-  --vad_method silero \
-  --output_dir output/align \
-  --output_format json \
-  --print_progress False
+  --timing word
 ```
 
-If `whisperx` is missing, broken, or blocked by missing model caches, read `references/installation.md` before trying to install or prewarm anything.
+For segment timestamps only, pass `--timing segment`. The wrapper invokes only the uv-managed global entrypoint at `~/.local/bin/mlx_whisper`.
 
 ## Helper Script
 
-Use `scripts/section_timing.py` when you have a WhisperX JSON and want marker-based section timing:
+Use `scripts/section_timing.py` when you have MLX Whisper JSON and want marker-based section timing:
 
 ```bash
 python scripts/section_timing.py \
@@ -63,10 +60,11 @@ python scripts/section_timing.py \
   --end "To conclude"
 ```
 
-The script estimates marker timestamps from aligned words when available, and falls back to segment interpolation when only segment timestamps are present.
+The script uses timed words when available and falls back to interpolation within timed segments.
 
 ## Boundaries
 
-- This skill aligns existing audio. It does not generate TTS audio. Use `$tts-gen` for synthesis.
+- This skill times existing audio. It does not generate TTS audio. Use `$tts-gen` for synthesis.
 - This skill can inspect video duration and frames. Subtitle generation and burn-in are optional post-processing references, not the primary responsibility of the skill.
-- Word-level timestamps are only as good as WhisperX alignment. For exact editorial timing, verify with the rendered audio/video preview.
+- MLX word timestamps are attention-derived estimates. For exact editorial timing, verify with the rendered audio/video preview.
+- Do not silently switch to another ASR backend when Metal is unavailable.

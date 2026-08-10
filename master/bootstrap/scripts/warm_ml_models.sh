@@ -46,11 +46,8 @@ expand_path() {
 
 python_for_torch_hub() {
   local agent_python="$HOME/.local/share/agent-dotfiles/python/bin/python"
-  local uv_tool_python="$HOME/.local/share/uv/tools/whisperx/bin/python"
   if [[ -x "$agent_python" ]]; then
     printf '%s\n' "$agent_python"
-  elif [[ -x "$uv_tool_python" ]]; then
-    printf '%s\n' "$uv_tool_python"
   elif command -v python3 >/dev/null 2>&1; then
     command -v python3
   else

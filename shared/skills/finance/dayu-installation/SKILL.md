@@ -1,7 +1,6 @@
 ---
 name: dayu-installation
-description: Install, update, verify, and initialize the Dayu CLI with uv-managed Python. Use when Dayu is missing, broken, needs an upgrade, or a workspace has not been initialized with `dayu-cli init`.
-disable-model-invocation: true
+description: Install, update, verify, and initialize the Dayu CLI from the `Zx55/dayu-agent` fork's `dev` branch with uv-managed Python. Use when Dayu is missing, broken, needs the fork workflow or an upgrade, or a workspace has not been initialized with `dayu-cli init`.
 ---
 
 # Dayu Installation
@@ -15,7 +14,7 @@ Do not use this skill for normal Dayu runtime work after setup is complete. Rese
 Use this skill when the user wants to:
 
 - install `dayu-cli` for the first time
-- update Dayu to a newer stable release
+- update Dayu to a newer fork revision
 - verify whether a Dayu installation is healthy
 - initialize a new Dayu workspace
 - repair a broken `uv`, Python, PATH, or `dayu-cli` setup
@@ -26,7 +25,7 @@ This skill owns setup only:
 
 - install `uv` if needed
 - require `uv`-managed Python `3.11+`
-- install or replace the Dayu release wheel
+- install or replace Dayu from `https://github.com/Zx55/dayu-agent.git@dev`
 - verify `dayu-cli` and `dayu-render`
 - run `dayu-cli init` for a target workspace
 - diagnose common setup failures
@@ -58,6 +57,7 @@ Run [scripts/dayu_doctor.sh](scripts/dayu_doctor.sh) before editing the machine 
 - whether a `uv`-managed Python `3.11+` exists
 - whether Dayu is already installed
 - whether `dayu-cli` and `dayu-render` can run
+- whether `dayu-cli prompt` exposes the required `--output` flag
 - whether the target workspace already looks initialized
 
 If the doctor shows setup is already healthy and the user only asked for verification, stop there and summarize the result.
@@ -66,15 +66,16 @@ If the doctor shows setup is already healthy and the user only asked for verific
 
 Use [scripts/dayu_install_or_update.sh](scripts/dayu_install_or_update.sh) for the actual setup path.
 
-For first install or repair, read [references/install.md](references/install.md). For update requests, read [references/update.md](references/update.md) before and after installation; that reference owns release-note review, version-specific cleanup, CLI surface checks, and deciding whether this skill or the sibling `dayu` skill needs documentation changes.
+For first install or repair, read [references/install.md](references/install.md). For update requests, read [references/update.md](references/update.md) before and after installation; that reference owns fork synchronization checks, commit review, CLI surface checks, and deciding whether this skill or the sibling `dayu` skill needs documentation changes.
 
 Default behavior:
 
 - install `uv` with the official standalone installer if it is missing
 - install `uv`-managed Python `3.11`
-- resolve the requested stable Dayu GitHub release wheel
-- install Dayu with `uv tool install`
+- install `dayu-agent @ git+https://github.com/Zx55/dayu-agent.git@dev` with `uv tool install`
+- accept `--ref <branch|tag|commit>` when the user wants a different fork revision
 - verify the installed executables
+- verify `dayu-cli prompt --help` exposes `--output`
 - run `dayu-cli init` unless `--skip-init` is explicitly requested
 
 Use `tty=true` when running the installer if `dayu-cli init` will run, because the init step is interactive.
@@ -87,15 +88,15 @@ Because `init` is interactive, do not try to fake provider selection or API key 
 
 If the workspace already has config:
 
-- use `--skip-init` for ordinary package updates when release notes do not require config refresh
+- use `--skip-init` for ordinary package updates when the reviewed fork change does not require config refresh
 - use `--overwrite-init` only when the user wants config files overwritten in place
-- use `--reset-init` only when release notes require a reset or the user explicitly wants to rebuild generated `.dayu`, `config`, and `assets` directories
+- use `--reset-init` only when the reviewed fork change requires a reset or the user explicitly wants to rebuild generated `.dayu`, `config`, and `assets` directories
 
-For provider/config refreshes after an update, follow [references/update.md](references/update.md). Make destructive reset or overwrite behavior explicit before running it.
+For provider/config refreshes after an update, follow [references/update.md](references/update.md). Make destructive reset or overwrite behavior explicit before running it. A branch update alone does not imply either action.
 
 ### 5. Verify the final state
 
-After installation or update, rerun [scripts/dayu_doctor.sh](scripts/dayu_doctor.sh). For update-specific verification, including CLI help checks and stale documentation search, follow [references/update.md](references/update.md).
+After installation or update, rerun [scripts/dayu_doctor.sh](scripts/dayu_doctor.sh). For update-specific verification, including installed revision review, CLI help checks, and stale documentation search, follow [references/update.md](references/update.md).
 
 Warn, but do not fail setup, if optional render dependencies are missing. Those are only needed for some render flows.
 
@@ -122,7 +123,8 @@ When using this skill, produce:
 - the setup goal and workspace target
 - the doctor result before changes
 - the exact install or update command used
+- the fork ref or commit installed
 - whether `init` was run and against which workspace
-- for updates, the release/CLI audit result and any skill files changed
+- for updates, the fork/CLI audit result and any skill files changed
 - the final verification result
 - any remaining manual follow-up, such as adding the `uv` tool bin directory to `PATH`

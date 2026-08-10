@@ -1,10 +1,10 @@
-# Subtitle Generation From Alignment
+# Subtitle Generation From Timed Narration
 
-This reference is for the optional case where the user already has aligned narration and asks for subtitle files, a soft-subtitle video, or a hard-subtitle preview. The main purpose of `tts-align` remains timing alignment and narration/video QA.
+This reference is for the optional case where the user already has timed narration and asks for subtitle files, a soft-subtitle video, or a hard-subtitle preview. The main purpose of `tts-align` remains timing and narration/video QA.
 
 ## Inputs
 
-- WhisperX JSON with word timestamps.
+- MLX Whisper JSON with word timestamps.
 - Final script text used for narration. Prefer this text over raw ASR text.
 - Optional video file for visual placement and burn-in QA.
 - Optional existing no-subtitle base video. If the current only available video already has burned subtitles, regenerate or request a clean base before burning a new subtitle layer.
@@ -12,13 +12,15 @@ This reference is for the optional case where the user already has aligned narra
 ## Subtitle Text And Timing
 
 1. Treat the final script as authoritative subtitle text.
-2. Use WhisperX word timestamps as the timing source.
-3. Align script tokens to WhisperX words by normalized text, then interpolate small unmatched gaps.
+2. Use MLX Whisper word timestamps as the timing source.
+3. Align script tokens to timed ASR words by normalized text, then interpolate small unmatched gaps.
 4. Split captions for readability.
    - Prefer one-line captions for slide or poster videos.
    - Keep each caption short enough to avoid wrapping.
    - Use more, shorter cues instead of tall two-line boxes when the video has a narrow subtitle band.
 5. Export at least `.srt`. Export `.vtt` when browser or web-video playback is useful.
+
+MLX Whisper timestamps come from Whisper attention alignment rather than an external forced-alignment model. Verify exact editorial cuts against the rendered narration.
 
 ## Video Placement
 
@@ -37,7 +39,7 @@ For slide videos with a reserved subtitle strip near the bottom, place subtitles
 
 Use this workflow when `ffmpeg` lacks `subtitles` or `drawtext`, or when more deterministic placement is needed.
 
-1. Generate `.srt` from the alignment and final script.
+1. Generate `.srt` from the timing JSON and final script.
 2. Render each subtitle cue as a transparent PNG with Python and Pillow.
    - Use a fixed canvas size matching the video.
    - Draw a semi-transparent background box.

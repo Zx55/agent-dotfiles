@@ -1,5 +1,6 @@
 dayu-agent
 ipython
+mlx-whisper
 ./master/tools/mcp-launcher
 ruff
 zotero-mcp-server

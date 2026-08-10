@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Estimate section timing from WhisperX JSON using marker phrases."""
+"""Estimate section timing from MLX Whisper JSON using marker phrases."""
 
 from __future__ import annotations
 
@@ -68,7 +68,9 @@ def find_marker(tokens: list[Token], marker: str) -> float:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--json", type=Path, required=True, help="WhisperX JSON path.")
+    parser.add_argument(
+        "--json", type=Path, required=True, help="MLX Whisper JSON path."
+    )
     parser.add_argument("--start", required=True, help="Start marker phrase.")
     parser.add_argument("--end", help="Optional end marker phrase.")
     args = parser.parse_args()
@@ -80,7 +82,7 @@ def main() -> None:
         tokens = tokens_from_segments(data)
         source = "segments"
     if not tokens:
-        raise SystemExit("No timed words or segments found in WhisperX JSON.")
+        raise SystemExit("No timed words or segments found in MLX Whisper JSON.")
 
     start = find_marker(tokens, args.start)
     result: dict[str, Any] = {"source": source, "start": round(start, 3)}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bilibili Video Summary"
+  short_description: "Download and summarize Bilibili videos"
+  default_prompt: "Use $bilibili-video-summary to download, transcribe, inspect key frames, and summarize this Bilibili video."

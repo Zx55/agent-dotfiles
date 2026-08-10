@@ -7,7 +7,7 @@ This reference maps user intent to Dayu commands.
 For listed-company research, use:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared question>"
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> --output "<OUTPUT_MD>" "<prepared question>"
 ```
 
 This is the normal host-agent entrypoint for:
@@ -83,11 +83,13 @@ Steps:
 2. Prepare the user's question into a clear Dayu prompt.
 3. Check labels with `conv list`.
 4. Reuse or create a label.
-5. Run `dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared question>"`.
-6. Keep the original command open until Dayu completes or fails.
-7. Relay Dayu output directly, unless the user explicitly asked for a transformation.
+5. Create a unique persistent path such as `~/.dayu/workspace/output/prompt/<TICKER>/<YYYYMMDD-HHMMSS>-<LABEL>.md`.
+6. Run `dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> --output "<OUTPUT_MD>" "<prepared question>"`.
+7. Keep the original command open until Dayu completes or fails.
+8. Read the complete Markdown artifact.
+9. Deliver 3–5 grounded takeaways and a clickable absolute-path link to the artifact.
 
-Do not append a second host-originated analysis stage after Dayu answers.
+Do not paste or restate the full artifact in chat, and do not append a second host-originated analysis stage after Dayu answers.
 
 ## Follow-Ups
 
@@ -100,10 +102,10 @@ Examples:
 Use the same label when the follow-up belongs to the same analytical thread:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared follow-up>"
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> --output "<NEW_OUTPUT_MD>" "<prepared follow-up>"
 ```
 
-Create a new label if the follow-up starts a materially different topic.
+Create a new output file for every follow-up so earlier answers remain available. Create a new label if the follow-up starts a materially different topic.
 
 If Dayu's first answer is incomplete, ask Dayu a narrower follow-up under the same label instead of starting a host-side analysis path.
 
@@ -118,7 +120,7 @@ Examples:
 For listed-company filings, still use `prompt --label --ticker` and ask Dayu to prepare or check the filings:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> "<prepared filing-prep request>"
+dayu-cli prompt --base ~/.dayu/workspace --ticker <TICKER> --label <LABEL> --output "<OUTPUT_MD>" "<prepared filing-prep request>"
 ```
 
 If Dayu says filing access failed or the filing is unavailable, report that result directly. Do not build a separate host-side download path.
@@ -150,7 +152,7 @@ Ticker examples:
 Use CSV aliases only when Dayu needs a canonical ticker plus known aliases:
 
 ```bash
-dayu-cli prompt --base ~/.dayu/workspace --ticker BABA,9988,9988.HK --label baba-hk-us "<prepared question>"
+dayu-cli prompt --base ~/.dayu/workspace --ticker BABA,9988,9988.HK --label baba-hk-us --output "<OUTPUT_MD>" "<prepared question>"
 ```
 
 ## Waiting Rule
@@ -159,11 +161,11 @@ For `dayu-cli prompt`:
 
 - Do not treat a short silent period as proof of failure.
 - Do not use elapsed time alone as the failure test.
-- Keep the original command session open and watch its progress, status, and answer output.
+- Keep the original command session open and watch its progress, warnings, status, and final artifact path.
 - Prefer waiting on the original session over opening sidecar sleep commands or replacement runs.
 - If progress or status output continues, treat the run as active.
 - While `dayu-cli runs` shows the run as active, do not cancel it, rerun the same prompt, switch models, or add limiting flags unless the user explicitly asked for that tradeoff.
-- Treat `final_answer` plus stream or command completion as the success signal.
+- Treat the `Markdown 已保存: <absolute path>` line plus command completion as the success signal.
 
 When output appears stuck:
 

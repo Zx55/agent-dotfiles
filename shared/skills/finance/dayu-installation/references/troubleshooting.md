@@ -5,7 +5,6 @@
 Dayu setup needs access to:
 
 - `github.com`
-- `api.github.com`
 - `astral.sh`
 
 If `curl` hangs, times out, or fails with connectivity errors:
@@ -15,20 +14,21 @@ If `curl` hangs, times out, or fails with connectivity errors:
 - if the correct proxy method is not known, ask the user instead of guessing
 - retry the failed command after connectivity is fixed
 
-If GitHub API access is rate-limited or blocked, rerun the installer with an explicit release tag:
+If a mutable branch cannot be resolved reliably, pin the known fork commit:
 
 ```bash
-./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --version <tag>
+./scripts/dayu_install_or_update.sh --workspace ~/.dayu/workspace --ref <full-commit-sha>
 ```
 
-The installer first tries GitHub REST API metadata, then `gh release view`, then a direct wheel URL for explicit tags. If all metadata paths fail but the release tag is known, install the wheel directly:
+Manual fallback for the default fork branch:
 
 ```bash
-tag=vX.Y.Z
-version="${tag#v}"
 uv tool install --managed-python --python 3.11 --force \
-  "dayu-agent @ https://github.com/noho/dayu-agent/releases/download/${tag}/dayu_agent-${version}-py3-none-any.whl"
+  --refresh-package dayu-agent \
+  "dayu-agent @ git+https://github.com/Zx55/dayu-agent.git@dev"
 ```
+
+If this fails, verify GitHub access and confirm the requested ref exists in `Zx55/dayu-agent`.
 
 ## `uv` installed but not on `PATH`
 
