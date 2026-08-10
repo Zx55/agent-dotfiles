@@ -1,0 +1,4 @@
+interface:
+  display_name: "Shareholder Return"
+  short_description: "Use Dayu to calculate shareholder-return tables"
+  default_prompt: "使用 $shareholder-return 调用 Dayu 研究并填满这只股票的股东回报表。"

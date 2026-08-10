@@ -60,14 +60,46 @@ def write_markdown(path: Path, data: dict[str, Any]) -> None:
 def validate_segments(
     data: dict[str, Any], *, require_words: bool
 ) -> tuple[list[dict[str, Any]], int]:
-    segments = data.get("segments") or []
+    raw_segments = data.get("segments") or []
+    nonempty_segments = [
+        segment
+        for segment in raw_segments
+        if str(segment.get("text") or "").strip()
+    ]
+    segments: list[dict[str, Any]] = []
+    index = 0
+    while index < len(nonempty_segments):
+        segment = nonempty_segments[index]
+        if "start" not in segment or "end" not in segment:
+            raise SystemExit(f"Segment {index} has no start/end timestamp.")
+        if float(segment["end"]) <= float(segment["start"]):
+            following = (
+                nonempty_segments[index + 1]
+                if index + 1 < len(nonempty_segments)
+                else None
+            )
+            if (
+                following
+                and "start" in following
+                and "end" in following
+                and float(following["start"]) == float(segment["start"])
+                and float(following["end"]) > float(following["start"])
+            ):
+                following["text"] = (
+                    str(segment.get("text") or "").strip()
+                    + str(following.get("text") or "").strip()
+                )
+                index += 1
+                continue
+            raise SystemExit(f"Segment {index} has invalid timestamps.")
+        segments.append(segment)
+        index += 1
     if not segments:
         raise SystemExit("MLX Whisper produced no transcript segments.")
 
     for index, segment in enumerate(segments):
-        segment.setdefault("id", index)
-        if "start" not in segment or "end" not in segment:
-            raise SystemExit(f"Segment {index} has no start/end timestamp.")
+        segment["id"] = index
+    data["segments"] = segments
 
     timed_words = [
         word
