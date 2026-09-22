@@ -1,0 +1,16 @@
+{
+  "name": "html-slide-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "export:pdf": "node scripts/export-pdf.mjs",
+    "export:pptx": "node scripts/export-pptx.mjs"
+  },
+  "dependencies": {
+    "pdf-lib": "1.17.1",
+    "playwright": "1.62.1"
+  },
+  "optionalDependencies": {
+    "@oai/artifact-tool": "2.8.59"
+  }
+}

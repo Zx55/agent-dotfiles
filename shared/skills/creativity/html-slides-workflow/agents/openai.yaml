@@ -1,0 +1,4 @@
+interface:
+  display_name: "HTML Slide Workflow"
+  short_description: "Plan HTML slides, refine narration, export PDF and PPTX"
+  default_prompt: "Use $html-slide-workflow to turn my materials into a consistent HTML slide deck with speaker notes and a PDF review copy."

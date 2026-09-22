@@ -1,0 +1,31 @@
+:root {
+  /* Replace this starting palette centrally when choosing the deck identity. */
+  --color-surround: #d8d8d8;
+  --color-background: #fbfaf8;
+  --color-surface: #ffffff;
+  --color-ink: #172033;
+  --color-muted: #5f6775;
+  --color-line: #d8d5d1;
+  --color-accent: #8b1e2d;
+  --color-accent-soft: #ead7d9;
+  --color-secondary: #438dbb;
+  --color-secondary-soft: #dfedf5;
+  --color-success: #2f8a57;
+  --color-warning: #e68b4f;
+  --color-error: #c94843;
+  --color-chart-primary: var(--color-accent);
+  --color-chart-comparison: var(--color-secondary);
+  --color-chart-baseline: var(--color-muted);
+
+  --font-sans: "Avenir Next", "Helvetica Neue", "Noto Sans CJK SC", Arial, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --weight-regular: 400;
+  --weight-medium: 550;
+  --weight-semibold: 650;
+  --type-cover-title: 72px;
+  --type-slide-title: 48px;
+  --type-section-title: 36px;
+  --type-subtitle: 28px;
+  --type-body: 25px;
+  --type-caption: 18px;
+}
