@@ -29,9 +29,3 @@ Discuss storyboard and layout when not already agreed. Implement approved layout
 Render and visually inspect changed pages. Render the complete deck before final delivery. Validate page count, order, aspect ratio, assets, cross-page alignment, claims, equations, and chart units. Notes-only changes do not require PDF rerendering.
 
 PDF is the default review format. Export static PPTX only when requested, using the current PDF manifest and latest full note files. Never bypass stale-PDF checks. Report environment limitations and unperformed checks honestly.
-
-## Per-page layout records
-
-Start each page plan from `layouts/template.md` and save it as `layouts/slideNN.md`. Record the current composition, visible text, asset crops, useful dimensions, cross-page alignment, and actual approval/review status. The storyboard owns narrative and order, the layout records design decisions, and HTML remains the rendered visual source.
-
-Discuss a new layout when needed. If the user already approved it or authorized implementation, proceed without another approval loop. Keep the layout record synchronized with visual revisions and renumber it alongside HTML and notes. Use one layout file per page, even when related pages are discussed together. Full spoken scripts belong only in notes. Do not modify an existing deck merely because the skill's template was updated.

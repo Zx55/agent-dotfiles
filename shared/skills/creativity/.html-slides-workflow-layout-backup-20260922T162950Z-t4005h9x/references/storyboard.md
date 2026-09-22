@@ -19,7 +19,3 @@ Write `storyboard.md` using the template. Each page needs a single purpose, prop
 When the number or order of pages changes, update filenames, visible numbers, notes, asset references, and storyboard together. Exporters require a continuous sequence beginning at 1. Do not leave an obsolete `slideNN.html` in the active slides directory.
 
 If the user asks only for layout, provide a compact composition and content plan first. Do not silently implement the entire deck. If a layout is already approved, continue implementation without another approval loop.
-
-## Layout handoff
-
-Once a page's narrative role is decided, link its `layouts/slideNN.md` record from the storyboard. Read [layout.md](layout.md) to turn that role into a concrete composition. Keep narrative, order, and timing here, detailed visual decisions in the layout, and full spoken text in notes. When pages are merged or renumbered, update layout filenames and links too.

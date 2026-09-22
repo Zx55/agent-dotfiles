@@ -1,0 +1,41 @@
+{
+  "skill": "/Users/bytedance/Documents/agent-dotfiles/shared/skills/creativity/html-slides-workflow",
+  "files": [
+    {
+      "path": "SKILL.md",
+      "existed": true
+    },
+    {
+      "path": "references/storyboard.md",
+      "existed": true
+    },
+    {
+      "path": "references/slide.md",
+      "existed": true
+    },
+    {
+      "path": "references/export.md",
+      "existed": true
+    },
+    {
+      "path": "templates/AGENTS.md",
+      "existed": true
+    },
+    {
+      "path": "templates/storyboard.md",
+      "existed": true
+    },
+    {
+      "path": "scripts/init_workspace.py",
+      "existed": true
+    },
+    {
+      "path": "references/layout.md",
+      "existed": false
+    },
+    {
+      "path": "templates/layouts/template.md",
+      "existed": false
+    }
+  ]
+}

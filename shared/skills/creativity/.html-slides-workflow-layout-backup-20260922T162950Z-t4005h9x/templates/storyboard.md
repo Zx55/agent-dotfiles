@@ -15,7 +15,7 @@ For each approved page, record the following fields. Add only as many pages as t
 - Number and working title
 - One sentence the audience should retain
 - Content and evidence
-- Layout record (`layouts/slideNN.md`) and visual assets
+- Layout and visual assets
 - Relationship to neighboring pages, including any fixed visual anchors
 - Approximate speaking time
 - Source files or links and open questions

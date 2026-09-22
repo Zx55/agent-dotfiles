@@ -27,7 +27,7 @@ def initialize(destination: Path) -> None:
         target: Path = destination / "scripts" / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(scripts / name, target)
-    for folder in ("assets/common", "layouts", "notes", "exports"):
+    for folder in ("assets/common", "notes", "exports"):
         (destination / folder).mkdir(parents=True, exist_ok=True)
     print(f"Initialized {destination}")
     print("No content slides or notes were invented. Start from slides/template.html.")

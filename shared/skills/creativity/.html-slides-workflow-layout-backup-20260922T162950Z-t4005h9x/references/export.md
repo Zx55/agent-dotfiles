@@ -12,7 +12,6 @@ workspace/
   storyboard.md
   package.json
   assets/common/
-  layouts/template.md
   slides/template.html
   slides/theme.css
   slides/slide.css
@@ -25,7 +24,7 @@ workspace/
   exports/
 ```
 
-Create `layouts/slideNN.md`, `slides/slideNN.html`, `notes/slideNN.md`, and `assets/slideNN/` as content is approved. No fixed page count or empty content slides are created by initialization. Number slides continuously from 1. Use at least two digits, including three digits for decks over 99 pages. The exporter sorts by numeric ID and rejects duplicates or gaps.
+Create `slides/slideNN.html`, `notes/slideNN.md`, and `assets/slideNN/` as content is approved. No fixed page count or empty content slides are created by initialization. Number slides continuously from 1. Use at least two digits, including three digits for decks over 99 pages. The exporter sorts by numeric ID and rejects duplicates or gaps.
 
 ## Runtime setup
 
@@ -88,7 +87,3 @@ RUN_BROWSER_TESTS=1 node --test scripts/tests/workflow.test.mjs
 ```
 
 The ordinary tests cover initialization, overwrite refusal, numeric ordering, and freshness. The optional PPTX test uses explicitly synthetic PDFs to isolate packaging and full-note verification from browser availability. It is not an HTML-rendering test. The browser test renders a real two-page HTML deck and a single-page preview. Tests use temporary workspaces and remove only their own generated fixtures.
-
-## Layout records and PDF freshness
-
-The initializer copies `templates/layouts/template.md` into `layouts/template.md`. It does not pre-create page plans. Layout Markdown is a design record and is not read by either exporter. Editing it alone does not invalidate the PDF manifest. Once the corresponding visual decision is implemented in HTML, styles, or assets, the normal freshness check requires a new PDF export.

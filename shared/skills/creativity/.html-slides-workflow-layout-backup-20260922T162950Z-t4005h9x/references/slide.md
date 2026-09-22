@@ -1,7 +1,5 @@
 # HTML composition and visual review
 
-Before implementation, read the page's `layouts/slideNN.md`. If a layout is needed but missing, follow [layout.md](layout.md) and save it first. An already-approved layout does not need a second approval. When visual changes alter composition, cropping, or alignment, update that layout record alongside the HTML.
-
 Create each `slides/slideNN.html` from `slides/template.html`. The template is a genuinely blank 16:9 canvas with only its common page-number element. Do not turn a completed cover or content page into the universal template.
 
 The default canvas is 1600 × 900 CSS pixels. `slide.css` owns its size. Preview JavaScript and the PDF exporter read the computed CSS dimensions. Print page size is injected from the same dimensions, so there is no separate hardcoded export size to maintain.
