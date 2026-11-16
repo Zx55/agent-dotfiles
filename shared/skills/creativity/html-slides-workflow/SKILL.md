@@ -1,5 +1,5 @@
 ---
-name: html-slide-workflow
+name: html-slides-workflow
 description: Develop presentation decks as fixed-size HTML slides with a shared theme, storyboard, and speaker notes. Use for an HTML-first slide workflow, iterative page layout, PDF review exports, or image-based PPTX delivery with notes. Not for editing native PowerPoint objects.
 ---
 

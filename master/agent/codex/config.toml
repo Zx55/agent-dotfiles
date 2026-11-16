@@ -1,4 +1,4 @@
-model = "gpt-5.6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 service_tier = "default"
 
@@ -6,11 +6,15 @@ approval_policy = "never"
 approvals_reviewer = "user"
 personality = "pragmatic"
 
-default_permissions = "secret_safe"
-
 
 
 sandbox_mode = "danger-full-access"
+
+
+
+
+
+
 
 notify = ["~/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 
@@ -104,6 +108,60 @@ trust_level = "trusted"
 [projects."~/Documents/workspace/[CVPR26] GCA"]
 trust_level = "trusted"
 
+[projects."~/Documents/Codex/2026-09-23/referenced-chatgpt-conversation-this-is-an"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-23/g-ro"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-25/ni"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-26/wo"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-26/realtime-voice-chat"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-26/test"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-26/realtime-voice-chat-2"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-26/realtime-voice-chat-3"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-26/ben"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-26/you"]
+trust_level = "trusted"
+
+[projects."~"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-26/nik"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-28/ni"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-28/kuai"]
+trust_level = "trusted"
+
+[projects."~/Documents/Codex/2026-09-28/fan"]
+trust_level = "trusted"
+
+[projects."~/Documents/workspace/paper"]
+trust_level = "trusted"
+
+[projects."~/Documents/workspace/CVPR27-spatial"]
+trust_level = "trusted"
+
+[projects."~/Documents/workspace/CVPR27-ReViSE"]
+trust_level = "trusted"
+
 [plugins]
 "github@openai-curated" = { enabled = true }
 "build-web-apps@openai-curated" = { enabled = true }
@@ -130,9 +188,6 @@ enabled = true
 enabled = true
 
 [plugins."visualize@openai-bundled"]
-enabled = true
-
-[plugins."sites@openai-bundled"]
 enabled = true
 
 [plugins."browser@openai-bundled"]
@@ -237,6 +292,7 @@ zotero_update_item = { approval_mode = "approve" }
 [mcp_servers.node_repl]
 args = []
 command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
+env_vars = ["BROWSER_USE_ACCESS_EXECUTOR_ID", "BROWSER_USE_ACCESS_PIPE_PATH", "BROWSER_USE_ACCESS_VERIFYING_IDENTITY"]
 startup_timeout_sec = 120
 
 [mcp_servers.node_repl.env]
@@ -245,16 +301,16 @@ NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_n
 NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
 NODE_REPL_TRUSTED_CODE_PATHS = "~/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
 CODEX_HOME = "~/.codex"
-BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab,mcpapps"
 BROWSER_USE_TINYSKY_ENABLED = "1"
 NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = ""
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = ""
 NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = ""
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.903.61454"
-NODE_REPL_TRUSTED_SERVICES = '{"browser":"~/.codex/plugins/cache/openai-bundled/browser/26.903.61454/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+BROWSER_USE_CODEX_APP_VERSION = "26.1106.51428"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"~/.codex/plugins/cache/openai-bundled/browser/26.1106.51428/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
 SKY_CUA_SERVICE_PATH = "~/.codex/computer-use/Codex Computer Use.app"
-CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"
 
 [mcp_servers.computer-use]
 command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
@@ -282,9 +338,13 @@ notifications-turn-mode = "always"
 selected-avatar-id = "custom:asuka-2"
 mac-menu-bar-enabled = false
 dock-icon-preference = "app-default"
-enabled-reasoning-efforts = ["low", "medium", "high", "xhigh", "ultra", "max"]
+enabled-reasoning-efforts = ["low", "medium", "high", "xhigh", "max", "ultra"]
 conversationDetailMode = "STEPS_COMMANDS"
 open-link-in-target-preference = "external-browser"
+avatar-overlay-pet-visible = false
+sidebar-show-projects-in-recents = false
+confirm-before-close = "never"
+migratedFollowUpQueueToSteer = false
 
 [desktop.appearanceLightChromeTheme]
 accent = "#0169cc"
@@ -313,3 +373,11 @@ global = "cursor"
 
 [shell_environment_policy.set]
 NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "323bc3e687e17d7e377238d9f4c69111c4d0e6219103b6316d8c52082489533b"
+
+[tui]
+screen_reader_detection_done = true
+resume_cwd = "session"
+
+[tui.model_availability_nux]
+gpt-6-astra = 1
+"gpt-6.1-sol" = 2
